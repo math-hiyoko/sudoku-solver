@@ -41,6 +41,15 @@ void knuths_algorithm(
     std::stack<NodeState> search_stack;
     // 最初は最も少ない行数の列を選択する
     ColumnNode *column = header->selectMinSizeColumn();
+
+    assert(column != nullptr);
+    // この列を満たす選択肢がない場合は解が存在しない
+    if (column->down == column) {
+        num_answer = 0;
+        return;
+    }
+
+    // この列の条件を満たすことを考える
     column->cover();
     for (DancingNode *i = column->down; i != column; i = i->down) {
         search_stack.push({0, i});

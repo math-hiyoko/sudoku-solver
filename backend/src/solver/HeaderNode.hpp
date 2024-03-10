@@ -24,7 +24,7 @@ class HeaderNode : public DancingNode {
     ColumnNode* selectMinSizeColumn() {
         ColumnNode* ret = nullptr;
         int minSize = std::numeric_limits<int>::max();
-        for (DancingNode* i = this->right; i != this && minSize > 1; i = i->right) {
+        for (DancingNode* i = this->right; i != this && minSize > 0; i = i->right) {
             ColumnNode* column = static_cast<ColumnNode*>(i);
             if (column->size < minSize) {
                 minSize = column->size;
