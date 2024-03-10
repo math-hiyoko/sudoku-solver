@@ -1,2 +1,2 @@
-# sudoku-solver-backend
-数独ソルバーのためのバックエンド部分実装
+# sudoku-solver
+数独ソルバーウェブアプリ開発
