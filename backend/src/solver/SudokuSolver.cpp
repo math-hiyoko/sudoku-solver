@@ -1,4 +1,8 @@
+#include "SudokuSolver.hpp"
+
 #include <array>
+#include <iostream>
+#include <memory>
 #include <vector>
 
 #include <boost/pool/object_pool.hpp>
@@ -6,7 +10,7 @@
 #include "ColumnNode.hpp"
 #include "DancingNode.hpp"
 #include "HeaderNode.hpp"
-#include "SudokuSolver.hpp"
+#include "KnuthsAlgorithm.hpp"
 #include "SudokuType.hpp"
 
 
@@ -60,21 +64,14 @@ void makeMatrixFromBoard(const SudokuBoard& board, ExactCoverMatrix& matrix) {
     return;
 }
 
-HeaderNode* makeNodesFromMatrix(const ExactCoverMatrix& matrix, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<ColumnNode>& column_node_pool) {
-    HeaderNode* header = &HeaderNode();
-    std::vector<ColumnNode*> column_nodes(EXACT_COVER_COL);
+void makeNodesFromMatrix(const ExactCoverMatrix& matrix, HeaderNode* header, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<ColumnNode>& column_node_pool) {
+    assert(header != nullptr);
+    std::array<ColumnNode*, EXACT_COVER_COL> column_nodes{};
 
     for (int i = 0; i < EXACT_COVER_COL; i++) {
-        // このときの制約
-        int constraint = i / (SUDOKU_SIZE * SUDOKU_SIZE);
-        int key1 = (i  / SUDOKU_SIZE) % SUDOKU_SIZE;
-        int key2 = i % SUDOKU_SIZE;
         // iに対応する列のノードを生成
-        column_nodes[i] = column_node_pool.construct(ConstraintType{static_cast<ConstraintEnum>(constraint), key1, key2});
-        // 最後に作成したノードの右隣に生成したノードを繋げる
+        column_nodes[i] = column_node_pool.construct(i);
         header->left->hookRight(column_nodes[i]);
-        // ヘッダーノードにも繋げる
-        column_nodes[i]->hookRight(header);
     }
 
     for (int i = 0; i < EXACT_COVER_ROW; i++) {
@@ -94,7 +91,7 @@ HeaderNode* makeNodesFromMatrix(const ExactCoverMatrix& matrix, boost::object_po
         }
     }
 
-    return header;
+    return;
 }
 
 void makeBoardFromAnswer(const std::vector<DancingNode*>& answer, SudokuBoard& board) {
@@ -104,23 +101,24 @@ void makeBoardFromAnswer(const std::vector<DancingNode*>& answer, SudokuBoard& b
         int row = -1;
         int column = -1;
         int number = -1;
-        for (DancingNode* row_node = node->right; row_node->left != node; row_node = row_node->right) {
-            auto [constraint, key1, key2] = row_node->column->constraint;
-            switch (constraint) {
+        for (DancingNode* row_node = node->right; row_node != node; row_node = row_node->right) {
+            int constraint_id = row_node->column->id;
+            Constraint constraint = Constraint::getConstraint(constraint_id);
+            switch (constraint.type) {
                 case ConstraintEnum::OCCUPIED:
-                    row = key1;
-                    column = key2;
+                    row = constraint.key1;
+                    column = constraint.key2;
                     break;
                 case ConstraintEnum::ROW:
-                    row = key1;
-                    number = key2;
+                    row = constraint.key1;
+                    number = constraint.key2;
                     break;
                 case ConstraintEnum::COLUMN:
-                    column = key1;
-                    number = key2;
+                    column = constraint.key1;
+                    number = constraint.key2;
                     break;
                 case ConstraintEnum::BLOCK:
-                    number = key2;
+                    number = constraint.key2;
                     break;
             }
         }
@@ -138,14 +136,17 @@ void solveSudoku(const SudokuBoard& board, int& num_answer, SudokuBoard& answer)
     makeMatrixFromBoard(board, matrix);
 
     // 行列被覆問題を表すheaderを生成
-    boost::object_pool<DancingNode> dancing_node_pool;
-    boost::object_pool<ColumnNode> column_node_pool;
-    HeaderNode* header = makeNodesFromMatrix(matrix, dancing_node_pool, column_node_pool);
+    // DancingNodeは行あたり4つ、ColumnNodeは列あたり1つ生成される
+    boost::object_pool<DancingNode> dancing_node_pool(EXACT_COVER_ROW * 4);
+    boost::object_pool<ColumnNode> column_node_pool(EXACT_COVER_COL);
+    std::unique_ptr<HeaderNode> header(new HeaderNode());
+    makeNodesFromMatrix(matrix, header.get(), dancing_node_pool, column_node_pool);
 
     // 行列被覆問題を解く
     num_answer = 0;
     std::vector<DancingNode*> answer_nodes;
-    knuths_algorithm(header, num_answer, answer_nodes);
+    answer_nodes.reserve(SUDOKU_SIZE * SUDOKU_SIZE);
+    knuths_algorithm(header.get(), num_answer, answer_nodes);
     
     // 解が存在する場合、解を復元する
     makeBoardFromAnswer(answer_nodes, answer);

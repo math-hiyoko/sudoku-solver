@@ -35,11 +35,12 @@ void makeMatrixFromBoard(const SudokuBoard& board, ExactCoverMatrix& matrix);
  * @brief 現在の数独の盤面の状態を表す行列被覆問題のノードを生成する
  * 
  * @param board 数独の盤面
+ * @param header 行列被覆問題のヘッダー
  * @param dancing_node_pool DancingNodeのプール
  * @param column_node_pool ColumnNodeのプール
  * @return HeaderNode* 生成したノードのヘッダー
  */
-HeaderNode* makeNodesFromMatrix(const ExactCoverMatrix& matrix, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<ColumnNode>& column_node_pool);
+void makeNodesFromMatrix(const ExactCoverMatrix& matrix, HeaderNode* header, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<ColumnNode>& column_node_pool);
 
 /**
  * @brief knuths_algorithmによってえられたDancingNodeから数独の盤面を復元する
@@ -56,4 +57,4 @@ void makeBoardFromAnswer(const std::vector<DancingNode*>& answer, SudokuBoard& b
  * @param num_answer 解の数
  * @param answer 解のリスト
  */
-void solveSudoku(const SudokuBoard& board, int& num_answer, std::vector<SudokuBoard>& answer);
+void solveSudoku(const SudokuBoard& board, int& num_answer, SudokuBoard& answer);

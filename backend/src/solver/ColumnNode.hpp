@@ -3,7 +3,6 @@
 #include <cassert>
 
 #include "DancingNode.hpp"
-#include "SudokuSolver.hpp"
 #include "SudokuType.hpp"
 
 
@@ -13,9 +12,9 @@
 class ColumnNode : public DancingNode {
  public:
     int size;  // この列に含まれる(覆われていない)ノードの数
-    ConstraintType constraint;    // この列が表す制約
+    int id;    // この列が表す制約のID
     
-    ColumnNode(ConstraintType constraint) : DancingNode(), size(0), constraint(constraint) {}
+    ColumnNode(int id) : DancingNode(), size(0), id(id) {}
 
     /// @brief このノードから辿れるDancingNodeを覆って使えなくする
     void cover() {

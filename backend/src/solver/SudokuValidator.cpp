@@ -1,10 +1,33 @@
+#include "SudokuValidator.hpp"
+
 #include <array>
 #include <vector>
 
-#include "SudokuValidator.hpp"
 
+int countFilled(const SudokuBoard &board) {
+    int count = 0;
+    for (int i = 0; i < SUDOKU_SIZE; i++) {
+        for (int j = 0; j < SUDOKU_SIZE; j++) {
+            if (board[i][j] != 0) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
 
-int isSatisfy(const SudokuBoard &board, std::vector<ConstraintType> &constraints) {
+int isValidRange(const SudokuBoard &board, std::vector<Constraint> &constraints) {
+    for (int i = 0; i < SUDOKU_SIZE; i++) {
+        for (int j = 0; j < SUDOKU_SIZE; j++) {
+            if (board[i][j] < 0 || board[i][j] > SUDOKU_SIZE) {
+                constraints.push_back(Constraint{ConstraintEnum::OCCUPIED, i, j});
+            }
+        }
+    }
+    return constraints.size();
+}
+
+int isSatisfy(const SudokuBoard &board, std::vector<Constraint> &constraints) {
     // 行についてのチェック
     for (int i = 0; i < SUDOKU_SIZE; i++) {
         // check[v] は v+1 がi行目に出現する回数を表す
@@ -18,7 +41,7 @@ int isSatisfy(const SudokuBoard &board, std::vector<ConstraintType> &constraints
         // 出現回数が2以上のものがあれば制約を満たさない
         for (int value = 1; value <= SUDOKU_SIZE; value++) {
             if (check[value - 1] > 1) {
-                constraints.push_back(ConstraintType{ConstraintEnum::ROW, i, value});
+                constraints.push_back(Constraint{ConstraintEnum::ROW, i, value});
             }
         }
     }
@@ -36,7 +59,7 @@ int isSatisfy(const SudokuBoard &board, std::vector<ConstraintType> &constraints
         // 出現回数が2以上のものがあれば制約を満たさない
         for (int value = 1; value <= SUDOKU_SIZE; value++) {
             if (check[value - 1] > 1) {
-                constraints.push_back(ConstraintType{ConstraintEnum::COLUMN, j, value});
+                constraints.push_back(Constraint{ConstraintEnum::COLUMN, j, value});
             }
         }
     }
@@ -58,7 +81,7 @@ int isSatisfy(const SudokuBoard &board, std::vector<ConstraintType> &constraints
             // 出現回数が2以上のものがあれば制約を満たさない
             for (int value = 1; value <= SUDOKU_SIZE; value++) {
                 if (check[value - 1] > 1) {
-                    constraints.push_back(ConstraintType{ConstraintEnum::BLOCK, i * SUDOKU_DIM + j, value});
+                    constraints.push_back(Constraint{ConstraintEnum::BLOCK, i * SUDOKU_DIM + j, value});
                 }
             }
         }

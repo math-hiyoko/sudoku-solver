@@ -32,7 +32,7 @@ enum class ConstraintEnum {
 /**
  * @brief 数独の制約を表す型
  */
-struct ConstraintType {
+struct Constraint {
     ConstraintEnum type;  // 制約の種類
     /**
      * - 制約の種類が OCCUPIED の場合、マス(key1, key2)に数字がはいること
@@ -42,6 +42,19 @@ struct ConstraintType {
     */
     int key1;
     int key2;
+
+    // ConstraintTypeを一意のidに変換する
+    static int getId(const Constraint &constraint) {
+        return static_cast<int>(constraint.type) * SUDOKU_SIZE * SUDOKU_SIZE + constraint.key1 * SUDOKU_SIZE + constraint.key2;
+    }
+
+    // idをConstraintTypeに変換する
+    static Constraint getConstraint(const int &id) {
+        ConstraintEnum type = static_cast<ConstraintEnum>(id / (SUDOKU_SIZE * SUDOKU_SIZE));
+        int key1 = (id / SUDOKU_SIZE) % SUDOKU_SIZE;
+        int key2 = id % SUDOKU_SIZE;
+        return Constraint{type, key1, key2};
+    }
 };
 
 /**
