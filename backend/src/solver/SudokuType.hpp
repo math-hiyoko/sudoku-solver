@@ -26,7 +26,8 @@ enum class ConstraintEnum {
     OCCUPIED,  // マス(i, j)に何か数字が入ること
     ROW,       // 行
     COLUMN,    // 列
-    BLOCK      // ブロック
+    BLOCK,     // ブロック
+    ENUM_COUNT // 要素数を取得するのに使う
 };
 
 /**
@@ -64,7 +65,7 @@ struct Constraint {
  * - 各列jに数字vが入ること (9 x 9 通り)
  * - 各ブロック(i, j)に数字vが入ること (9 x 9 通り)
  */
-constexpr static int EXACT_COVER_COL = 4 * SUDOKU_SIZE * SUDOKU_SIZE;
+constexpr static int EXACT_COVER_COL = SUDOKU_SIZE * SUDOKU_SIZE * static_cast<int>(ConstraintEnum::ENUM_COUNT);
 
 /**
  * 行列被覆問題として見たときの数独の選択肢の数
@@ -74,5 +75,7 @@ constexpr static int EXACT_COVER_ROW = SUDOKU_SIZE * SUDOKU_SIZE * SUDOKU_SIZE;
 
 /**
  * @brief 行列被覆問題の行列を表す型
+ * 
+ * 1行につき4つまでしか要素を持たないので、圧縮した形で持つ
  */
-using ExactCoverMatrix = std::array<std::array<bool, EXACT_COVER_COL>, EXACT_COVER_ROW>;
+using ExactCoverMatrix = std::array<std::array<Constraint, static_cast<int>(ConstraintEnum::ENUM_COUNT)>, EXACT_COVER_ROW>;

@@ -31,7 +31,7 @@ int isSatisfy(const SudokuBoard &board, std::vector<Constraint> &constraints) {
     // 行についてのチェック
     for (int i = 0; i < SUDOKU_SIZE; i++) {
         // check[v] は v+1 がi行目に出現する回数を表す
-        std::array<int, SUDOKU_SIZE> check = {};
+        std::array<int, SUDOKU_SIZE> check{};
         for (int j = 0; j < SUDOKU_SIZE; j++) {
             if (board[i][j] == 0) {
                 continue;
@@ -49,7 +49,7 @@ int isSatisfy(const SudokuBoard &board, std::vector<Constraint> &constraints) {
     // 列についてのチェック
     for (int j = 0; j < SUDOKU_SIZE; j++) {
         // check[v] は v+1 がi列目に出現する回数を表す
-        std::array<int, SUDOKU_SIZE> check = {};
+        std::array<int, SUDOKU_SIZE> check{};
         for (int i = 0; i < SUDOKU_SIZE; i++) {
             if (board[i][j] == 0) {
                 continue;
@@ -68,7 +68,7 @@ int isSatisfy(const SudokuBoard &board, std::vector<Constraint> &constraints) {
     for (int i = 0; i < SUDOKU_DIM; i++) {
         for (int j = 0; j < SUDOKU_DIM; j++) {
             // check[v] は v+1 が(i, j)ブロックに出現する回数を表す
-            std::array<int, SUDOKU_SIZE> check = {};
+            std::array<int, SUDOKU_SIZE> check{};
             // (i, j)ブロック内の各マスについてチェック
             for (int k = 0; k < SUDOKU_DIM; k++) {
                 for (int l = 0; l < SUDOKU_DIM; l++) {

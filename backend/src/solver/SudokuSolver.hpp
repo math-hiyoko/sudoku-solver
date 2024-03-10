@@ -11,25 +11,11 @@
 
 
 /**
- * 行列に入れる際のインデックスを取得する
- * key1 key2 key3をSUDOKU_SIZE進数とみなして計算しているだけ
-*/
-constexpr int getIdx(int key1, int key2, int key3);
-
-/**
  * @brief 数独の盤面を表す行列被覆問題の行列
  * 
  * 何も数字が入っていないときの数独の盤面の状態を表す行列被覆問題の行列を表す
  */
 consteval ExactCoverMatrix makeFullMatrix();
-
-/**
- * @brief 入力された数独の盤面に対応する行列被覆問題の行列を生成する
- * 
- * @param board 数独の盤面
- * @return ExactCoverMatrix 生成した行列被覆問題の行列
- */
-void makeMatrixFromBoard(const SudokuBoard& board, ExactCoverMatrix& matrix);
 
 /**
  * @brief 現在の数独の盤面の状態を表す行列被覆問題のノードを生成する
@@ -40,7 +26,7 @@ void makeMatrixFromBoard(const SudokuBoard& board, ExactCoverMatrix& matrix);
  * @param column_node_pool ColumnNodeのプール
  * @return HeaderNode* 生成したノードのヘッダー
  */
-void makeNodesFromMatrix(const ExactCoverMatrix& matrix, HeaderNode* header, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<ColumnNode>& column_node_pool);
+void makeNodesFromBoard(const SudokuBoard& board, HeaderNode* header, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<ColumnNode>& column_node_pool);
 
 /**
  * @brief knuths_algorithmによってえられたDancingNodeから数独の盤面を復元する

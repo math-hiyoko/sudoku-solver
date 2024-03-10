@@ -14,22 +14,18 @@
 #include "SudokuType.hpp"
 
 
-constexpr int getIdx(int key1, int key2, int key3) {
-    return key1 * SUDOKU_SIZE * SUDOKU_SIZE + key2 * SUDOKU_SIZE + key3;
-}
-
 consteval ExactCoverMatrix makeFullMatrix() {
     ExactCoverMatrix matrix{};
     
-    for (int row = 0; row < SUDOKU_SIZE; row++) {
+    for (int row = 0, idx = 0; row < SUDOKU_SIZE; row++) {
         for (int column = 0; column < SUDOKU_SIZE; column++) {
-            for (int number = 0; number < SUDOKU_SIZE; number++) {
+            for (int number = 0; number < SUDOKU_SIZE; number++, idx++) {
                 // (row, column)マスにnumber+1を入れるとき
-                const int idx = getIdx(row, column, number);
-                matrix[idx][getIdx(0, row, column)] = true;  // (row, column)マスに何か数字が入ること
-                matrix[idx][getIdx(1, row, number)] = true;  // 行rowにnumber+1が入ること
-                matrix[idx][getIdx(2, column, number)] = true;  // 列columnにnumber+1が入ること
-                matrix[idx][getIdx(3, row / SUDOKU_DIM * SUDOKU_DIM + column / SUDOKU_DIM, number)] = true;  // ブロックにnumber+1が入ること
+                // idxは連番でついている
+                matrix[idx][0] = Constraint{ConstraintEnum::OCCUPIED, row, column};   // (row, column)マスに何か数字が入ること
+                matrix[idx][1] = Constraint{ConstraintEnum::ROW, row, number};        // 行rowにnumber+1が入ること
+                matrix[idx][2] = Constraint{ConstraintEnum::COLUMN, column, number};  // 列columnにnumber+1が入ること
+                matrix[idx][3] = Constraint{ConstraintEnum::BLOCK, row / SUDOKU_DIM * SUDOKU_DIM + column / SUDOKU_DIM, number};  // ブロックにnumber+1が入ること
             }
         }
     }
@@ -37,57 +33,42 @@ consteval ExactCoverMatrix makeFullMatrix() {
     return matrix;
 }
 
-void makeMatrixFromBoard(const SudokuBoard& board, ExactCoverMatrix& matrix) {
-    matrix = makeFullMatrix();
-
-    for (int row = 0; row < SUDOKU_SIZE; row++) {
-        for (int column = 0; column < SUDOKU_SIZE; column++) {
-            if (board[row][column] == 0) {
-                continue;
-            }
-            int number = board[row][column] - 1;
-            // マス(row, column)にはnumber+1が入ることが確定している
-            // それ以外の数字が入ることはないので、それに対応する制約を削除する
-            for (int i = 0; i < SUDOKU_SIZE; i++) {
-                if (number == i) {
-                    continue;
-                }
-                int idx = getIdx(row, column, i);
-                matrix[idx][getIdx(0, row, column)] = false;
-                matrix[idx][getIdx(1, row, number)] = false;
-                matrix[idx][getIdx(2, column, number)] = false;
-                matrix[idx][getIdx(3, row / SUDOKU_DIM * SUDOKU_DIM + column / SUDOKU_DIM, i)] = false;
-            }
-        }
-    }
-
-    return;
-}
-
-void makeNodesFromMatrix(const ExactCoverMatrix& matrix, HeaderNode* header, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<ColumnNode>& column_node_pool) {
+void makeNodesFromBoard(const SudokuBoard& board, HeaderNode* header, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<ColumnNode>& column_node_pool) {
     assert(header != nullptr);
-    std::array<ColumnNode*, EXACT_COVER_COL> column_nodes{};
 
+    // ColumnNodeを生成
+    std::array<ColumnNode*, EXACT_COVER_COL> column_nodes{};
     for (int i = 0; i < EXACT_COVER_COL; i++) {
         // iに対応する列のノードを生成
         column_nodes[i] = column_node_pool.construct(i);
         header->left->hookRight(column_nodes[i]);
     }
 
-    for (int i = 0; i < EXACT_COVER_ROW; i++) {
-        DancingNode* prev = nullptr;
-        for (int j = 0; j < EXACT_COVER_COL; j++) {
-            if (!matrix[i][j]) {
-                continue;
+    // DancingNodeを生成
+    constexpr ExactCoverMatrix matrix = makeFullMatrix();
+    for (int row = 0, idx = 0; row < SUDOKU_SIZE; row++) {
+        for (int column = 0; column < SUDOKU_SIZE; column++) {
+            for (int number = 0; number < SUDOKU_SIZE; number++, idx++) {
+                // (row, column)の数字がすでに決まっており、number+1が入らない時はスキップ
+                if (board[row][column] != 0 && board[row][column] - 1 != number) {
+                    continue;
+                }
+                // (row, column)マスにnumber+1が入るとき
+                // DancingNodeを生成し、行列につなげる
+                std::array<DancingNode*, static_cast<int>(ConstraintEnum::ENUM_COUNT)> dancing_nodes{};
+                for (int i = 0; i < static_cast<int>(ConstraintEnum::ENUM_COUNT); i++) {
+                    // このConstraintに対応する列のノードを取得
+                    int column_id = Constraint::getId(matrix[idx][i]);
+                    ColumnNode* column_node = column_nodes[column_id];
+                    dancing_nodes[i] = dancing_node_pool.construct(column_node);
+                    // DancingNodeを行列につなげる
+                    column_node->up->hookDown(dancing_nodes[i]);
+                    column_node->size++;
+                    if (i > 0) {
+                        dancing_nodes[i - 1]->hookRight(dancing_nodes[i]);
+                    }
+                }
             }
-            ColumnNode* column = column_nodes[j];
-            DancingNode* node = dancing_node_pool.construct(column);
-            if (prev == nullptr) {
-                prev = node;
-            }
-            column->up->hookDown(node);
-            prev = prev->hookRight(node);
-            column->size++;
         }
     }
 
@@ -120,6 +101,9 @@ void makeBoardFromAnswer(const std::vector<DancingNode*>& answer, SudokuBoard& b
                 case ConstraintEnum::BLOCK:
                     number = constraint.key2;
                     break;
+                default:
+                    assert(false);
+                    break;
             }
         }
         
@@ -131,16 +115,12 @@ void makeBoardFromAnswer(const std::vector<DancingNode*>& answer, SudokuBoard& b
 }
 
 void solveSudoku(const SudokuBoard& board, int& num_answer, SudokuBoard& answer) {
-    // 数独の盤面に対応する行列被覆問題の行列を生成
-    ExactCoverMatrix matrix;
-    makeMatrixFromBoard(board, matrix);
-
     // 行列被覆問題を表すheaderを生成
     // DancingNodeは行あたり4つ、ColumnNodeは列あたり1つ生成される
-    boost::object_pool<DancingNode> dancing_node_pool(EXACT_COVER_ROW * 4);
+    boost::object_pool<DancingNode> dancing_node_pool(EXACT_COVER_ROW * static_cast<int>(ConstraintEnum::ENUM_COUNT));
     boost::object_pool<ColumnNode> column_node_pool(EXACT_COVER_COL);
     std::unique_ptr<HeaderNode> header(new HeaderNode());
-    makeNodesFromMatrix(matrix, header.get(), dancing_node_pool, column_node_pool);
+    makeNodesFromBoard(board, header.get(), dancing_node_pool, column_node_pool);
 
     // 行列被覆問題を解く
     num_answer = 0;
