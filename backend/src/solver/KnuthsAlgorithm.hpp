@@ -57,15 +57,15 @@ void knuths_algorithm(
     while (!search_stack.empty()) {
         NodeState state = search_stack.top();
         search_stack.pop();
-        // stateをindex番目の要素にするために、indexより後ろの要素を削除する
-        while (answer_buf.size() > state.index) {
-            // answer_buf.back()を選択したという設定を元に戻す
-            for (DancingNode *j = answer_buf.back()->left; j != answer_buf.back(); j = j->left) {
+        // stateをindex番目の要素にするために、indexより後ろの要素の反映を元に戻す
+        for (int i = state.index; i < answer_buf.size(); i++ ) {
+            // answer_buf[i]を選択したという設定を元に戻す
+            for (DancingNode *j = answer_buf[i]->left; j != answer_buf[i]; j = j->left) {
                 j->column->uncover();
             }
-            answer_buf.back()->column->uncover();
-            answer_buf.pop_back();
+            answer_buf[i]->column->uncover();
         }
+        answer_buf.resize(state.index);
 
         // state.nodeを選択したことにして反映を行う
         answer_buf.push_back(state.node);
