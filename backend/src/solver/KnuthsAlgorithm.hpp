@@ -43,8 +43,7 @@ void knuths_algorithm(
     ColumnNode *column = header->selectMinSizeColumn();
 
     assert(column != nullptr);
-    // この列を満たす選択肢がない場合は解が存在しない
-    if (column->down == column) {
+    if (!column->isSatisfiable()) {
         num_answer = 0;
         return;
     }

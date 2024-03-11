@@ -10,6 +10,21 @@
  * @brief 行列被覆問題の列を表すノード
  */
 class ColumnNode : public DancingNode {
+ private:
+    /// @brief この列をheaderの繋がりから外す
+    void unlinkLR() {
+        this->left->right = this->right;
+        this->right->left = this->left;
+        return;
+    }
+
+    /// @brief この列をheaderの繋がりに戻す
+    void relinkLR() {
+        this->left->right = this;
+        this->right->left = this;
+        return;
+    }
+
  public:
     int size;  // この列に含まれる(覆われていない)ノードの数
     int id;    // この列が表す制約のID
@@ -38,5 +53,10 @@ class ColumnNode : public DancingNode {
         }
         this->relinkLR();
         return;
+    }
+
+    /// @brief この列の制約を満たすことができるかどうか
+    bool isSatisfiable() {
+        return this->down != this;
     }
 };

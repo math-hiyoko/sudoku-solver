@@ -48,20 +48,6 @@ class DancingNode {
         return node;
     }
 
-    /// @brief このノードを行のリンクから外す
-    void unlinkLR() {
-        this->left->right = this->right;
-        this->right->left = this->left;
-        return;
-    }
-
-    /// @brief このノードを行のリンクに戻す
-    void relinkLR() {
-        this->left->right = this;
-        this->right->left = this;
-        return;
-    }
-
     /// @brief このノードを列のリンクから外す
     void unlinkUD() {
         this->up->down = this->down;
