@@ -58,7 +58,8 @@ void knuths_algorithm(
         NodeState state = search_stack.top();
         search_stack.pop();
         // stateをindex番目の要素にするために、indexより後ろの要素の反映を元に戻す
-        for (int i = state.index; i < answer_buf.size(); i++ ) {
+        // converした順に戻さないといけない
+        for (int i = answer_buf.size() - 1; i >= state.index; i--) {
             // answer_buf[i]を選択したという設定を元に戻す
             for (DancingNode *j = answer_buf[i]->left; j != answer_buf[i]; j = j->left) {
                 j->column->uncover();
