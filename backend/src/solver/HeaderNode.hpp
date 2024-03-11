@@ -16,12 +16,12 @@ class HeaderNode : public DancingNode {
     HeaderNode() : DancingNode() {}
 
     /// @brief このヘッダーが表す行列被覆問題が空かどうか判定する
-    bool isEmpty() {
+    bool isEmpty() const {
         return this->right == this;
     }
 
     /// @brief 残っている行数が最も少ない列を選択する
-    ColumnNode* selectMinSizeColumn() {
+    ColumnNode* selectMinSizeColumn() const {
         ColumnNode* ret = nullptr;
         int minSize = std::numeric_limits<int>::max();
         for (DancingNode* i = this->right; i != this && minSize > 0; i = i->right) {

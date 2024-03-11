@@ -56,7 +56,7 @@ class ColumnNode : public DancingNode {
     }
 
     /// @brief この列の制約を満たすことができるかどうか
-    bool isSatisfiable() {
+    bool isSatisfiable() const {
         return this->down != this;
     }
 };
