@@ -7,6 +7,7 @@
 #include "ColumnNode.hpp"
 #include "DancingNode.hpp"
 #include "HeaderNode.hpp"
+#include "RowNode.hpp"
 #include "SudokuType.hpp"
 
 
@@ -23,21 +24,22 @@ consteval ExactCoverMatrix makeFullMatrix();
  * @param board 数独の盤面
  * @param header 行列被覆問題のヘッダー
  * @param dancing_node_pool DancingNodeのプール
+ * @param row_node_pool RowNodeのプール
  * @param column_node_pool ColumnNodeのプール
  * @return HeaderNode* 生成したノードのヘッダー
  */
-void makeNodesFromBoard(const SudokuBoard& board, HeaderNode* header, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<ColumnNode>& column_node_pool);
+void makeNodesFromBoard(const SudokuBoard& board, HeaderNode* header, boost::object_pool<DancingNode>& dancing_node_pool, boost::object_pool<RowNode>& row_node_pool, boost::object_pool<ColumnNode>& column_node_pool);
 
 /**
  * @brief knuths_algorithmによってえられたDancingNodeから数独の盤面を復元する
  * 
- * @param answer knuths_algorithmによってえられたDancingNode
+ * @param answer knuths_algorithmによってえられたRowNode
  * @param board 復元した数独の盤面
  */
-void makeBoardFromAnswer(const std::vector<DancingNode*>& answer, SudokuBoard& board);
+void makeBoardFromAnswer(const std::vector<RowNode*>& answer, SudokuBoard& board);
 
 /**
- * @brief 数独の盤面を解く
+ * @brief 数独の盤面を解く、一番メインの関数
  * 
  * @param board 数独の盤面
  * @param num_answer 解の数

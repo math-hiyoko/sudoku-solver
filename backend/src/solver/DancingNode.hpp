@@ -4,6 +4,7 @@
 
 
 class ColumnNode;
+class RowNode;
 
 /**
  * @brief 行列被覆問題における行列のある要素を表すクラス
@@ -18,15 +19,18 @@ class DancingNode {
     DancingNode* right; // 右にリンクするノード
     DancingNode* up;    // 上にリンクするノード
     DancingNode* down;  // 下にリンクするノード
+    RowNode* row;       // このノードが属する行
     ColumnNode* column; // このノードが属する列
 
-    DancingNode() : left(this), right(this), up(this), down(this), column(nullptr) {}
+    DancingNode() : left(this), right(this), up(this), down(this), row(nullptr), column(nullptr) {}
 
-    DancingNode(ColumnNode* column) : left(this), right(this), up(this), down(this), column(column) {}
+    DancingNode(RowNode* row, ColumnNode* column) : left(this), right(this), up(this), down(this), row(row), column(column) {}
 
-    /// @brief 現在のノードの下にnodeを相互リンクする
-    /// @param node リンク相手のnode
-    /// @return 連結後のnode
+    /**
+     * @brief 現在のノードの下にnodeを相互リンクする
+     * @param node リンク相手のnode
+     * @return 連結後のnode
+     */
     DancingNode* hookDown(DancingNode* node) {
         assert(node != nullptr);
         node->down = this->down;
@@ -36,9 +40,11 @@ class DancingNode {
         return node;
     }
 
-    /// @brief 現在のノードの右にnodeを相互リンクする
-    /// @param node リンク相手のnode
-    /// @return 連結後のnode
+    /**
+     * @brief 現在のノードの右にnodeを相互リンクする
+     * @param node リンク相手のnode
+     * @return 連結後のnode
+     */
     DancingNode* hookRight(DancingNode* node) {
         assert(node != nullptr);
         node->right = this->right;
@@ -48,14 +54,18 @@ class DancingNode {
         return node;
     }
 
-    /// @brief このノードを列のリンクから外す
+    /**
+     * @brief このノードを列のリンクから外す
+     */
     void unlinkUD() {
         this->up->down = this->down;
         this->down->up = this->up;
         return;
     }
 
-    /// @brief このノードを列のリンクに戻す
+    /**
+     * @brief このノードを列のリンクに戻す
+     */
     void relinkUD() {
         this->up->down = this;
         this->down->up = this;

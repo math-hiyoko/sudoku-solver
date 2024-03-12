@@ -2,12 +2,12 @@
 
 #include <cassert>
 
-#include <memory>
 #include <stack>
 #include <vector>
 
 #include "ColumnNode.hpp"
 #include "HeaderNode.hpp"
+#include "RowNode.hpp"
 #include "SudokuType.hpp"
 
 
@@ -19,22 +19,19 @@
  * 
  * @param header 行列被覆問題のヘッダー
  * @param num_answer 解の数
- * @param answer 解のリスト
+ * @param answer 解を格納するリスト
  * @param just_answer 解の数が要らない場合はtrue
  */
 void knuths_algorithm(
     HeaderNode *header,
     int &num_answer,
-    std::vector<DancingNode*> &answer,
+    std::vector<RowNode*> &answer,
     bool just_answer = false
 ) {
-    // 解の候補を保存するためのバッファ
-    std::vector<DancingNode*> answer_buf;
-
     // 探索中の状態を保存するための構造体
     struct NodeState {
-        int index;         // answer_buf中の何番目の要素になるか
-        DancingNode *node; // 選択したノード
+        int index;      // answer_buf中の何番目の要素になるか
+        RowNode *node;  // 選択した行
     };
 
     // 探索中の状態を保存するスタック
@@ -48,34 +45,29 @@ void knuths_algorithm(
         return;
     }
 
-    // この列の条件を満たすことを考える
-    column->cover();
-    for (DancingNode *i = column->down; i != column; i = i->down) {
-        search_stack.push({0, i});
+    // この列の条件を満たす選択肢を全てスタックに積む
+    for (DancingNode* i = column->down; i != column; i = i->down) {
+        search_stack.push({0, i->row});
     }
+
+    // 解の候補を保存するためのバッファ
+    std::vector<RowNode*> answer_buf;
 
     while (!search_stack.empty()) {
         NodeState state = search_stack.top();
         search_stack.pop();
+
         // stateをindex番目の要素にするために、indexより後ろの要素の反映を元に戻す
         // converした順に戻さないといけない
         for (int i = answer_buf.size() - 1; i >= state.index; i--) {
             // answer_buf[i]を選択したという設定を元に戻す
-            for (DancingNode *j = answer_buf[i]->left; j != answer_buf[i]; j = j->left) {
-                j->column->uncover();
-            }
-            answer_buf[i]->column->uncover();
+            answer_buf[i]->uncover();
         }
         answer_buf.resize(state.index);
 
         // state.nodeを選択したことにして反映を行う
+        state.node->cover();
         answer_buf.push_back(state.node);
-
-        // state.nodeを選択したことで満たされる制約をカバーする
-        for (DancingNode *j = state.node->right; j != state.node; j = j->right) {
-            j->column->cover();
-        }
-        state.node->column->cover();
 
         if (header->isEmpty()) {
             // headerが空 => 解が見つかった
@@ -84,11 +76,10 @@ void knuths_algorithm(
             if (answer.empty()) {
                 answer = answer_buf;
             }
+
             // state.nodeを選択したという設定を元に戻す
-            for (DancingNode *j = state.node->left; j != state.node; j = j->left) {
-                j->column->uncover();
-            }
-            state.node->column->uncover();
+            state.node->uncover();
+            answer_buf.pop_back();
 
             // 解が1つ欲しいだけの場合は探索を打ち切る
             if (just_answer) {
@@ -101,7 +92,7 @@ void knuths_algorithm(
         // 次の列を選択する
         ColumnNode *next_column = header->selectMinSizeColumn();
         for (DancingNode *i = next_column->down; i != next_column; i = i->down) {
-            search_stack.push({state.index + 1, i});
+            search_stack.push({state.index + 1, i->row});
         }
     }
 
