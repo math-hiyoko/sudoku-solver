@@ -46,5 +46,5 @@ namespace Sudoku {
      * @param num_answer 解の数
      * @param answer 解のリスト
      */
-    void solve(const Board& board, Board& answer, int& num_answer, bool &is_exact_num_answer);
+    void solve(const Board& board, Board& answer, int& num_answer, bool &is_exact_num_answer, const bool just_answer = false, const int max_num_answer = MAX_NUM_ANSWER);
 } // namespace SudokuSolver

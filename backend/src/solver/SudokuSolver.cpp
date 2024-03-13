@@ -87,7 +87,7 @@ namespace Sudoku {
         return;
     } // makeBoardFromAnswer
 
-    void solve(const Board& board, Board& answer, int& num_answer, bool &is_exact_num_answer) {
+    void solve(const Board& board, Board& answer, int& num_answer, bool &is_exact_num_answer, const bool just_answer, const int max_num_answer) {
         // 行列被覆問題を表すheaderを生成
         // DancingNodeは行あたり4つ、ColumnNodeは列あたり1つ生成される
         boost::object_pool<DancingLinks::DancingNode> dancing_node_pool(EXACT_COVER_ROW * static_cast<int>(ConstraintEnum::ENUM_COUNT));
@@ -100,7 +100,7 @@ namespace Sudoku {
         num_answer = 0;
         std::vector<DancingLinks::RowNode*> answer_nodes;
         answer_nodes.reserve(SIZE * SIZE);
-        knuths_algorithm(header.get(), answer_nodes, num_answer, is_exact_num_answer);
+        knuths_algorithm(header.get(), answer_nodes, num_answer, is_exact_num_answer, just_answer, max_num_answer);
         
         // 解が存在する場合、解を復元する
         makeBoardFromAnswer(answer_nodes, answer);

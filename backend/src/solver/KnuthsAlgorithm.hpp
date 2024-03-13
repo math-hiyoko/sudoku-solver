@@ -28,8 +28,8 @@ namespace DancingLinks {
         std::vector<RowNode*> &answer,
         int &num_answer,
         bool &is_exact_num_answer,
-        bool just_answer = false,
-        int MAX_NUM_ANSWER = Sudoku::MAX_NUM_ANSWER
+        const bool just_answer,
+        const int max_num_answer
     ) {
         // 探索中の状態を保存するための構造体
         struct NodeState {
@@ -85,7 +85,7 @@ namespace DancingLinks {
                 answer_buf.pop_back();
 
                 // 解が1つ欲しいだけの場合は探索を打ち切る
-                if (just_answer || num_answer >= MAX_NUM_ANSWER) {
+                if (just_answer || num_answer >= max_num_answer) {
                     is_exact_num_answer = search_stack.empty();
                     return;
                 }
