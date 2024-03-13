@@ -86,7 +86,7 @@ namespace DancingLinks {
 
                 // 解が1つ欲しいだけの場合は探索を打ち切る
                 if (just_answer || num_answer >= MAX_NUM_ANSWER) {
-                    is_exact_num_answer = false;
+                    is_exact_num_answer = search_stack.empty();
                     return;
                 }
 
