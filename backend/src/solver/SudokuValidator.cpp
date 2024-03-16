@@ -4,27 +4,15 @@
 #include <vector>
 
 namespace Sudoku {
-int countFilled(const Board &board) {
-  int count = 0;
-  for (int i = 0; i < SIZE; i++) {
-    for (int j = 0; j < SIZE; j++) {
-      if (board[i][j] != 0) {
-        count++;
-      }
-    }
-  }
-  return count;
-}  // countFilled
-
-int isValidRange(const Board &board, std::vector<Constraint> &constraints) {
+int isValidRange(const Board &board, std::vector<Option> &options) {
   for (int i = 0; i < SIZE; i++) {
     for (int j = 0; j < SIZE; j++) {
       if (board[i][j] < 0 || board[i][j] > SIZE) {
-        constraints.push_back(Constraint{ConstraintEnum::OCCUPIED, i, j});
+        options.push_back(Option{i, j, board[i][j]});
       }
     }
   }
-  return constraints.size();
+  return options.size();
 }  // isValidRange
 
 int isSatisfy(const Board &board, std::vector<Constraint> &constraints) {

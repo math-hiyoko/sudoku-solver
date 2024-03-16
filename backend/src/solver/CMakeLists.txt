@@ -5,9 +5,6 @@ message(STATUS "${INDENT}Starting configuration in ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# ビルドされるライブラリはlib/solverディレクトリに配置
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-
 # ライブラリDancingLinksを作成
 set(TARGET_NAME "DancingLinks")
 add_library(${TARGET_NAME} STATIC
@@ -32,6 +29,10 @@ foreach(env_var IN LISTS ENV_VARS)
   target_compile_definitions(${TARGET_NAME} PRIVATE ${env_var})
 endforeach()
 
+set_target_properties(${TARGET_NAME} PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib
+)
+
 # ライブラリSudokuSolverを作成
 set(TARGET_NAME "SudokuSolver")
 add_library(${TARGET_NAME} STATIC
@@ -53,3 +54,7 @@ target_include_directories(${TARGET_NAME} PRIVATE
 foreach(env_var IN LISTS ENV_VARS)
   target_compile_definitions(${TARGET_NAME} PRIVATE ${env_var})
 endforeach()
+
+set_target_properties(${TARGET_NAME} PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib
+)

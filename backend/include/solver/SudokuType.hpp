@@ -58,6 +58,8 @@ struct Constraint {
   int key1;
   int key2;
 
+  auto operator<=>(const Constraint &) const = default;
+
   // ConstraintTypeを一意のidに変換する
   static int getId(const Constraint &constraint) {
     return static_cast<int>(constraint.type) * SIZE * SIZE + constraint.key1 * SIZE +
@@ -80,6 +82,8 @@ struct Option {
   int row;     // マスの行
   int column;  // マスの列
   int number;  // マスに入る数字
+
+  auto operator<=>(const Option &) const = default;
 
   // Optionを一意のidに変換する
   static int getId(const Option &option) {
