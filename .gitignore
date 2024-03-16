@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# Mac
+.DS_Store
+.vscode
+*.dSYM
+
+# cmake
+build/
+lib/
+bin/
