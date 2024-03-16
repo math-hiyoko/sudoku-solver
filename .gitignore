@@ -35,3 +35,7 @@
 .DS_Store
 .vscode
 *.dSYM
+
+# cmake
+build/
+lib/
