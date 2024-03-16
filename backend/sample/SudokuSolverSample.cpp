@@ -85,7 +85,7 @@ int main() {
   }
 
   if (is_exact_num_answer && num_answers == 1) {
-    std::cout << "Unique answer" << std::endl;
+    std::cout << "Unique answer exists" << std::endl;
   } else if (is_exact_num_answer) {
     std::cout << num_answers << " answers exist" << std::endl;
   } else {
