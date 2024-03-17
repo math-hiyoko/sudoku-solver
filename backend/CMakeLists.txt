@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 # プロジェクト名と対象言語の指定
 project(sudoku_solver_backend LANGUAGES CXX)
 
-# CMAKE_BUILD_TYPEの設定を確認
+# 変数の設定を確認
 macro(check_cmake_build_type)
   if(CMAKE_BUILD_TYPE)
     message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
