@@ -22,8 +22,8 @@ TEST(ValidateSolveTest, testValidrange) {
   int num_invalid = Sudoku::isValidRange(input, options);
 
   std::vector<Sudoku::Option> expected_options = {
-      Sudoku::Option{0, 5, -1},
-      Sudoku::Option{5, 0, 10},
+      Sudoku::Option{.row = 0, .column = 5, .number = -1},
+      Sudoku::Option{.row = 5, .column = 0, .number = 10},
   };
   int expected_num_invalid = 2;
 
@@ -47,12 +47,12 @@ TEST(ValidateSolveTest, testisSatisfy) {
   int num_invalid = Sudoku::isSatisfy(input, constraints);
 
   std::vector<Sudoku::Constraint> expected_constraints = {
-      Sudoku::Constraint{Sudoku::ConstraintEnum::ROW, 2, 9},
-      Sudoku::Constraint{Sudoku::ConstraintEnum::ROW, 6, 1},
-      Sudoku::Constraint{Sudoku::ConstraintEnum::COLUMN, 2, 3},
-      Sudoku::Constraint{Sudoku::ConstraintEnum::COLUMN, 3, 1},
-      Sudoku::Constraint{Sudoku::ConstraintEnum::BLOCK, 0, 3},
-      Sudoku::Constraint{Sudoku::ConstraintEnum::BLOCK, 1, 9},
+      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::ROW, .key1 = 2, .key2 = 9},
+      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::ROW, .key1 = 6, .key2 = 1},
+      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::COLUMN, .key1 = 2, .key2 = 3},
+      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::COLUMN, .key1 = 3, .key2 = 1},
+      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::BLOCK, .key1 = 0, .key2 = 3},
+      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::BLOCK, .key1 = 1, .key2 = 9},
   };
   int expected_num_invalid = 6;
 

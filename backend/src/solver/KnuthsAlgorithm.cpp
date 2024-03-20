@@ -31,7 +31,7 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &answer, int &n
 
   // この列の条件を満たす選択肢を全てスタックに積む
   for (DancingNode *i = column->down; i != column; i = i->down) {
-    search_stack.push({0, i->row});
+    search_stack.push(NodeState{.index = 0, .node = i->row});
   }
 
   // 解の候補を保存するためのバッファ
@@ -77,7 +77,7 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &answer, int &n
     // 次の列を選択する
     ColumnNode *next_column = header->selectMinSizeColumn();
     for (DancingNode *i = next_column->down; i != next_column; i = i->down) {
-      search_stack.push({state.index + 1, i->row});
+      search_stack.push(NodeState{.index = state.index + 1, .node = i->row});
     }
   }
 

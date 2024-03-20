@@ -21,13 +21,24 @@ consteval ExactCoverMatrix makeFullMatrix() {
       for (int number = 0; number < SIZE; number++, idx++) {
         // (row, column)マスにnumber+1を入れるとき
         // idxは連番でついている
-        matrix[idx][0] = Constraint{ConstraintEnum::OCCUPIED, row,
-                                    column};  // (row, column)マスに何か数字が入ること
-        matrix[idx][1] = Constraint{ConstraintEnum::ROW, row, number};  // 行rowにnumber+1が入ること
-        matrix[idx][2] =
-            Constraint{ConstraintEnum::COLUMN, column, number};  // 列columnにnumber+1が入ること
-        matrix[idx][3] = Constraint{ConstraintEnum::BLOCK, row / DIM * DIM + column / DIM,
-                                    number};  // ブロックにnumber+1が入ること
+        matrix[idx][0] = Constraint{
+            .type = ConstraintEnum::OCCUPIED,
+            .key1 = row,
+            .key2 = column,
+        };  // (row, column)マスに何か数字が入ること
+        matrix[idx][1] = Constraint{
+            .type = ConstraintEnum::ROW,
+            .key1 = row,
+            .key2 = number,
+        };  // 行rowにnumber+1が入ること
+        matrix[idx][2] = Constraint{
+            .type = ConstraintEnum::COLUMN,
+            .key1 = column,
+            .key2 = number,
+        };  // 列columnにnumber+1が入ること
+        matrix[idx][3] = Constraint{.type = ConstraintEnum::BLOCK,
+                                    .key1 = row / DIM * DIM + column / DIM,
+                                    .key2 = number};  // ブロックにnumber+1が入ること
       }
     }
   }
@@ -60,8 +71,8 @@ void makeNodesFromBoard(const Board& board, DancingLinks::HeaderNode* header,
         }
         // (row, column)マスにnumber+1が入るとき
         // RowNodeを生成し、横につなげる
-        DancingLinks::RowNode* row_node =
-            row_node_pool.construct(Option::getId(Option{row, column, number}));
+        DancingLinks::RowNode* row_node = row_node_pool.construct(
+            Option::getId(Option{.row = row, .column = column, .number = number}));
         for (int i = 0; i < static_cast<int>(ConstraintEnum::ENUM_COUNT); i++) {
           // このConstraintに対応する列のノードを取得
           int column_id = Constraint::getId(matrix[idx][i]);
