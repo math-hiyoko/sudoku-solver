@@ -7,6 +7,7 @@ message(STATUS "${INDENT}Starting configuration in ${CMAKE_CURRENT_SOURCE_DIR}")
 set(TARGET_NAME "unittest")
 
 add_executable(${TARGET_NAME}
+  JsonHandlerTest.cpp
   Solve4x4SudokuTest.cpp
   Solve9x9SudokuTest.cpp
   Solve16x16SudokuTest.cpp
@@ -23,8 +24,11 @@ target_link_directories(${TARGET_NAME} PRIVATE
 )
 target_link_libraries(${TARGET_NAME}
   gtest_main
+  AWS::aws-lambda-runtime
+  Boost::json
   DancingLinks
   SudokuSolver
+  HandlerTools
 )
 foreach(env_var IN LISTS ENV_VARS)
   target_compile_definitions(${TARGET_NAME} PRIVATE ${env_var})

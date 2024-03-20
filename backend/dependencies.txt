@@ -1,1 +1,2 @@
-Boost 1.75
+Boost 1.75 json
+aws-lambda-runtime 0.0

@@ -13,7 +13,11 @@ add_library(${TARGET_NAME} STATIC
 )
 
 target_include_directories(${TARGET_NAME} PRIVATE
+  ${Boost_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
+)
+target_link_libraries(${TARGET_NAME}
+  AWS::aws-lambda-runtime
 )
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 target_compile_options(${TARGET_NAME} PRIVATE
@@ -46,6 +50,7 @@ target_link_directories(${TARGET_NAME} PRIVATE
 )
 target_link_libraries(${TARGET_NAME}
   AWS::aws-lambda-runtime
+  Boost::json
   DancingLinks
   SudokuSolver
   HandlerTools
@@ -57,3 +62,5 @@ endforeach()
 set_target_properties(${TARGET_NAME} PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin
 )
+
+aws_lambda_package_target(${TARGET_NAME} NO_LIBC)

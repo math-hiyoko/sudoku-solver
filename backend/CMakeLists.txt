@@ -23,8 +23,17 @@ macro(find_and_report_packages)
     string(REPLACE " " ";" dep_info ${dep})
     list(GET dep_info 0 lib_name)
     list(GET dep_info 1 lib_version)
-
-    find_package(${lib_name} ${lib_version} REQUIRED COMPONENTS filesystem)
+    
+    # コンポーネントが指定されているかチェック
+    list(LENGTH dep_info dep_info_length)
+    if(dep_info_length GREATER 2)
+      list(GET dep_info 2 components_list)
+      # コンポーネントをリストに変換
+      string(REPLACE "," ";" components ${components_list})
+      find_package(${lib_name} ${lib_version} REQUIRED COMPONENTS ${components})
+    else()
+      find_package(${lib_name} ${lib_version} REQUIRED)
+    endif()
 
     if(${lib_name}_FOUND)
       message(STATUS "${lib_name} found - version: ${${lib_name}_VERSION}")

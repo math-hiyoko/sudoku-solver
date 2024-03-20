@@ -3,6 +3,6 @@
 #include "handler/JsonHandler.hpp"
 
 int main() {
-  aws::lambda_runtime::run_handler(sudoku_handler);
+  aws::lambda_runtime::run_handler(Handler::sudoku_handler);
   return 0;
 }

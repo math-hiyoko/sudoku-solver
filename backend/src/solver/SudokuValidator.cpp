@@ -8,7 +8,7 @@ int isValidRange(const Board &board, std::vector<Option> &options) {
   for (int i = 0; i < SIZE; i++) {
     for (int j = 0; j < SIZE; j++) {
       if (board[i][j] < 0 || board[i][j] > SIZE) {
-        options.push_back(Option{i, j, board[i][j]});
+        options.push_back(Option{.row = i, .column = j, .number = board[i][j]});
       }
     }
   }
@@ -29,7 +29,7 @@ int isSatisfy(const Board &board, std::vector<Constraint> &constraints) {
     // 出現回数が2以上のものがあれば制約を満たさない
     for (int value = 1; value <= SIZE; value++) {
       if (check[value - 1] > 1) {
-        constraints.push_back(Constraint{ConstraintEnum::ROW, i, value});
+        constraints.push_back(Constraint{.type = ConstraintEnum::ROW, .key1 = i, .key2 = value});
       }
     }
   }  // 行についてのチェック
@@ -47,7 +47,7 @@ int isSatisfy(const Board &board, std::vector<Constraint> &constraints) {
     // 出現回数が2以上のものがあれば制約を満たさない
     for (int value = 1; value <= SIZE; value++) {
       if (check[value - 1] > 1) {
-        constraints.push_back(Constraint{ConstraintEnum::COLUMN, j, value});
+        constraints.push_back(Constraint{.type = ConstraintEnum::COLUMN, .key1 = j, .key2 = value});
       }
     }
   }  // 列についてのチェック
@@ -69,7 +69,8 @@ int isSatisfy(const Board &board, std::vector<Constraint> &constraints) {
       // 出現回数が2以上のものがあれば制約を満たさない
       for (int value = 1; value <= SIZE; value++) {
         if (check[value - 1] > 1) {
-          constraints.push_back(Constraint{ConstraintEnum::BLOCK, i * DIM + j, value});
+          constraints.push_back(
+              Constraint{.type = ConstraintEnum::BLOCK, .key1 = i * DIM + j, .key2 = value});
         }
       }
     }

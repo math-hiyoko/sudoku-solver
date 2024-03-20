@@ -4,6 +4,7 @@
 
 #include <boost/json.hpp>
 
+namespace Handler {
 /**
  * @brief 通常のレスポンスを返す
  *
@@ -19,8 +20,8 @@ aws::lambda_runtime::invocation_response success_response(const boost::json::obj
  * @param status_code ステータスコード
  * @return aws::lambda_runtime::invocation_response エラーレスポンス
  */
-aws::lambda_runtime::invocation_response error_response(const boost::json::object &payload,
-                                                        const int &status_code);
+aws::lambda_runtime::invocation_response error_response(const boost::json::object &error_payload,
+                                                        const std::string &error_type);
 
 /**
  * @brief 全体を通してのハンドラ
@@ -30,3 +31,4 @@ aws::lambda_runtime::invocation_response error_response(const boost::json::objec
  */
 aws::lambda_runtime::invocation_response sudoku_handler(
     const aws::lambda_runtime::invocation_request &request);
+}  // namespace Handler

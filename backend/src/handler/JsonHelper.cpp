@@ -7,6 +7,7 @@
 
 #include "solver/SudokuType.hpp"
 
+namespace Handler {
 int parse_invocation_request(const aws::lambda_runtime::invocation_request &request,
                              boost::json::object &json) {
   // リクエストのペイロードをパースして JSON 値を取得
@@ -21,19 +22,13 @@ int parse_invocation_request(const aws::lambda_runtime::invocation_request &requ
   return 0;
 }
 
-int json_to_sudokuboard(const boost::json::object &json, Sudoku::Board &board) {
-  // JSON 値がオブジェクトで、"board" キーが含まれているか確認
-  if (!json.contains("board")) {
-    return 1;
-  }
-
-  const boost::json::value &board_json = json.at("board");
+int json_to_sudokuboard(const boost::json::array &json, Sudoku::Board &board) {
   // Sudoku::SIZEと一致する大きさの配列の配列でなければいけない
-  if (!board_json.is_array() || board_json.as_array().size() != Sudoku::SIZE) {
+  if (json.size() != Sudoku::SIZE) {
     return 1;
   }
   for (int i = 0; i < Sudoku::SIZE; i++) {
-    const boost::json::value &inner_json = board_json.as_array().at(i);
+    const boost::json::value &inner_json = json.at(i);
     // Sudoku::SIZEと一致する大きさの配列でなければいけない
     if (!inner_json.is_array() || inner_json.as_array().size() != Sudoku::SIZE) {
       return 1;
@@ -96,3 +91,4 @@ int options_to_json(const std::vector<Sudoku::Option> &options, boost::json::arr
   }
   return 0;
 }
+}  // namespace Handler

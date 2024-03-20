@@ -7,6 +7,7 @@
 
 #include "solver/SudokuType.hpp"
 
+namespace Handler {
 /**
  * @brief AWS LambdaのリクエストからSudoku::boardに変換する
  *
@@ -20,11 +21,11 @@ int parse_invocation_request(const aws::lambda_runtime::invocation_request &requ
 /**
  * @brief JSONからSudoku::boardに変換する
  *
- * @param json JSONのうちboardの部分、配列の配列を想定
+ * @param json 配列の配列を表すJSON、json::array
  * @param board 変換先のSudoku::board
  * @return int 正常に変換できたら0, それ以外は1
  */
-int json_to_sudokuboard(const boost::json::object &json, Sudoku::Board &board);
+int json_to_sudokuboard(const boost::json::array &json, Sudoku::Board &board);
 
 /**
  * @brief Sudoku::boardからJSONに変換する
@@ -53,3 +54,4 @@ int constraints_to_json(const std::vector<Sudoku::Constraint> &constraints,
  * @return int 正常に変換できたら0, それ以外は1
  */
 int options_to_json(const std::vector<Sudoku::Option> &options, boost::json::array &json);
+}  // namespace Handler
