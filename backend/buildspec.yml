@@ -24,17 +24,23 @@ phases:
       - cd build
       - cmake .. -DCMAKE_BUILD_TYPE=Release
       - make
-      - echo "Runnning Tests..."
+      - echo "Running Tests..."
       - ctest -V
 
   post_build:
     commands:
-      - echo "Packaging the application..."
-      - make aws-lambda-package-SudokuLambda
-      - mv SudokuLambda.zip ../
+      - if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
+          echo "Packaging and deploying the application..."
+          make aws-lambda-package-SudokuLambda
+          mv SudokuLambda.zip ../
+        else
+          echo "Skipping packaging and deployment for pull requests."
+        fi
 
 artifacts:
   files:
-    - backend/SudokuLambda.zip
+    - if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
+        backend/SudokuLambda.zip
+      fi
 aws_codepipeline:
   enabled: true
