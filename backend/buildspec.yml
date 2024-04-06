@@ -1,0 +1,40 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies..."
+      - apt-get update && apt-get install -y cmake gcc valgrind
+
+  pre_build:
+    commands:
+      - echo "Building external projects..."
+      - git submodule update --init --recursive
+      - cd extern/aws-lambda-cpp
+      - mkdir build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE=Release
+      - make && make install
+      - cd -
+
+  build:
+    commands:
+      - echo "Building the application..."
+      - mkdir build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE=Release
+      - make
+      - echo "Runnning Tests..."
+      - ctest -V
+
+  post_build:
+    commands:
+      - echo "Packaging the application..."
+      - make aws-lambda-package-SudokuLambda
+      - mv SudokuLambda.zip ../
+
+artifacts:
+  files:
+    - backend/SudokuLambda.zip
+aws_codepipeline:
+  enabled: true
