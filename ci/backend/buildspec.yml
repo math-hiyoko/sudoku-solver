@@ -32,6 +32,7 @@ phases:
 
   post_build:
     commands:
+      - nm ../lib/libSudokuSolver.a
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
           echo "Packaging and deploying the application..."
@@ -45,5 +46,5 @@ artifacts:
   files:
     - |
       if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
-        backend/SudokuLambda.zip
+        $CODEBUILD_SRC_DIR/backend/SudokuLambda.zip
       fi
