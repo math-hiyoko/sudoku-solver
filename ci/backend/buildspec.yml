@@ -8,7 +8,7 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - yum -y update
-      - yum -y install cmake gcc valgrind
+      - yum -y install cmake gcc valgrind boost-devel
 
   pre_build:
     commands:
