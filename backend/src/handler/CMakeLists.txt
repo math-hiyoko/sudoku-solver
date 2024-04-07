@@ -48,11 +48,15 @@ target_include_directories(${TARGET_NAME} PRIVATE
 target_link_directories(${TARGET_NAME} PRIVATE
   ${PROJECT_SOURCE_DIR}/lib
 )
+target_link_libraries(SudokuSolver PUBLIC
+  DancingLinks
+)
+target_link_libraries(HandlerTools PUBLIC
+  SudokuSolver
+)
 target_link_libraries(${TARGET_NAME}
   AWS::aws-lambda-runtime
   Boost::json
-  DancingLinks
-  SudokuSolver
   HandlerTools
 )
 foreach(env_var IN LISTS ENV_VARS)
