@@ -1,25 +1,28 @@
 version: 0.2
 
+env:
+  git-credential-helper: yes
+
 phases:
   install:
     commands:
       - echo "Installing dependencies..."
-      - apt-get update && apt-get install -y cmake gcc valgrind
+      - yum -y update
+      - yum -y install cmake gcc valgrind
 
   pre_build:
     commands:
       - echo "Building external projects..."
-      - git submodule update --init --recursive
-      - cd extern/aws-lambda-cpp
+      - cd $CODEBUILD_SRC_DIR/backend/extern/aws-lambda-cpp
       - mkdir build
       - cd build
       - cmake .. -DCMAKE_BUILD_TYPE=Release
       - make && make install
-      - cd -
 
   build:
     commands:
       - echo "Building the application..."
+      - cd $CODEBUILD_SRC_DIR/backend
       - mkdir build
       - cd build
       - cmake .. -DCMAKE_BUILD_TYPE=Release
@@ -42,5 +45,3 @@ artifacts:
     - if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
         backend/SudokuLambda.zip
       fi
-aws_codepipeline:
-  enabled: true
