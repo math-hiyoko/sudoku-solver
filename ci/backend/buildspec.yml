@@ -32,8 +32,8 @@ phases:
 
   post_build:
     commands:
+      - nm ../lib/libDancingLinks.a
       - nm ../lib/libSudokuSolver.a
-      - nm ../lib/libSudokuValidator.a
       - nm ../lib/libHandlerTools.a
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
