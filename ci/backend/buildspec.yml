@@ -8,7 +8,7 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - yum -y update
-      - yum -y install cmake gcc valgrind boost-devel
+      - yum -y install cmake gcc valgrind boost-json
 
   pre_build:
     commands:
@@ -32,7 +32,8 @@ phases:
 
   post_build:
     commands:
-      - if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
+      - |
+        if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
           echo "Packaging and deploying the application..."
           make aws-lambda-package-SudokuLambda
           mv SudokuLambda.zip ../
@@ -42,6 +43,7 @@ phases:
 
 artifacts:
   files:
-    - if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
+    - |
+      if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
         backend/SudokuLambda.zip
       fi
