@@ -51,6 +51,12 @@ target_include_directories(${TARGET_NAME} PRIVATE
   ${PROJECT_SOURCE_DIR}/include
   ${Boost_INCLUDE_DIRS}
 )
+target_link_directories(${TARGET_NAME} PRIVATE
+  ${PROJECT_SOURCE_DIR}/lib
+)
+target_link_libraries(${TARGET_NAME} PUBLIC
+  DancingLinks
+)
 foreach(env_var IN LISTS ENV_VARS)
   target_compile_definitions(${TARGET_NAME} PRIVATE ${env_var})
 endforeach()

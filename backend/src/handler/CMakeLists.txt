@@ -16,8 +16,13 @@ target_include_directories(${TARGET_NAME} PRIVATE
   ${Boost_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
 )
+target_link_directories(${TARGET_NAME} PRIVATE
+  ${PROJECT_SOURCE_DIR}/lib
+)
 target_link_libraries(${TARGET_NAME}
   AWS::aws-lambda-runtime
+  Boost::json
+  SudokuSolver
 )
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 target_compile_options(${TARGET_NAME} PRIVATE
@@ -44,15 +49,6 @@ target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 target_include_directories(${TARGET_NAME} PRIVATE
   ${Boost_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
-)
-target_link_directories(${TARGET_NAME} PRIVATE
-  ${PROJECT_SOURCE_DIR}/lib
-)
-target_link_libraries(SudokuSolver PUBLIC
-  DancingLinks
-)
-target_link_libraries(HandlerTools PUBLIC
-  SudokuSolver
 )
 target_link_libraries(${TARGET_NAME}
   AWS::aws-lambda-runtime
