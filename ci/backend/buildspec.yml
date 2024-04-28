@@ -46,7 +46,7 @@ phases:
   post_build:
     commands:
       - echo "Deploying the application..."
-      - mv SudokuLambda.zip $CODEBUILD_SRC_DIR/backend/$ARTIFACT_NAME.zip
+      - mv $CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuLambda.zip $CODEBUILD_SRC_DIR/backend/$ARTIFACT_NAME.zip
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
           git tag ${VERSION}
