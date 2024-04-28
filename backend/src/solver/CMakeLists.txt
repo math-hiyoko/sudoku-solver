@@ -21,7 +21,6 @@ target_include_directories(${TARGET_NAME} PRIVATE
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 target_compile_options(${TARGET_NAME} PRIVATE
   -O3
-  -march=native
   -flto
   -fstrict-aliasing
 )
@@ -43,7 +42,6 @@ add_library(${TARGET_NAME} STATIC
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 target_compile_options(${TARGET_NAME} PRIVATE
   -O3
-  -march=native
   -flto
   -fstrict-aliasing
 )

@@ -27,7 +27,6 @@ target_link_libraries(${TARGET_NAME} INTERFACE
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 target_compile_options(${TARGET_NAME} PRIVATE
   -O3
-  -march=native
   -flto
   -fstrict-aliasing
 )
