@@ -12,42 +12,47 @@ phases:
 
   pre_build:
     commands:
+      - echo "Setting up the environment..."
+      - export VERSION=$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)
+      - |
+        if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
+          export CMAKE_BUILD_TYPE=Release
+          export ARTIFACT_NAME="SudokuLambda-${VERSION}-${CMAKE_BUILD_TYPE}"
+        else
+          export CMAKE_BUILD_TYPE=Debug
+          export ARTIFACT_NAME="SudokuLambda-${VERSION}-${CMAKE_BUILD_TYPE}-${CODEBUILD_START_TIME}"
+        fi
+      - echo "CMAKE_BUILD_TYPE: $CMAKE_BUILD_TYPE"
+      - echo "VERSION: $VERSION"
+      - echo "ARTIFACT_NAME: $ARTIFACT_NAME"
+
+  build:
+    commands:
       - echo "Building external projects..."
       - cd $CODEBUILD_SRC_DIR/backend/extern/aws-lambda-cpp
       - mkdir build
       - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=Release
+      - cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
       - make && make install
-
-  build:
-    commands:
       - echo "Building the application..."
       - cd $CODEBUILD_SRC_DIR/backend
       - mkdir build
       - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=Release
+      - cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
       - make
       - echo "Running Tests..."
       - ctest -V
 
   post_build:
     commands:
-      - |
-        if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
-          echo "Packaging and deploying the application..."
-          make aws-lambda-package-SudokuLambda
-          mv SudokuLambda.zip ../
-        else
-          echo "Skipping packaging and deployment for pull requests."
-        fi
+      - echo "Packaging and deploying the application..."
+      - make aws-lambda-package-SudokuLambda
+      - mv SudokuLambda.zip ../$ARTIFACT_NAME.zip
 
 reports:
   unittest_reports:
-    files: 'unittest.xml'
-    base-directory: 'backend/build/tests/unittest_reports/'
-    discard-paths: no
+    files: $CODEBUILD_SRC_DIR/backend/build/tests/unittest_reports/unittest.xml
     file-format: JUnit
 
 artifacts:
-  files: $CODEBUILD_SRC_DIR/backend/SudokuLambda.zip
-  if: CODEBUILD_WEBHOOK_EVENT == 'PULL_REQUEST_MERGED'
+  files: $CODEBUILD_SRC_DIR/backend/$ARTIFACT_NAME.zip
