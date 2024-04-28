@@ -39,15 +39,14 @@ phases:
       - mkdir build
       - cd build
       - cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
-      - make
+      - make && make aws-lambda-package-SudokuLambda
       - echo "Running Tests..."
       - ctest -V
 
   post_build:
     commands:
-      - echo "Packaging and deploying the application..."
-      - make aws-lambda-package-SudokuLambda
-      - mv SudokuLambda.zip ../$ARTIFACT_NAME.zip
+      - echo "Deploying the application..."
+      - mv SudokuLambda.zip $CODEBUILD_SRC_DIR/backend/$ARTIFACT_NAME.zip
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
           git tag ${VERSION}
@@ -57,8 +56,8 @@ phases:
 
 reports:
   unittest_reports:
-    files: $CODEBUILD_SRC_DIR/backend/build/tests/unittest_reports/unittest.xml
+    files: backend/build/tests/unittest_reports/unittest.xml
     file-format: JUnit
 
 artifacts:
-  files: $CODEBUILD_SRC_DIR/backend/$ARTIFACT_NAME.zip
+  files: backend/$ARTIFACT_NAME.zip
