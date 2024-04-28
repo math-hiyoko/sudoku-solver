@@ -74,12 +74,12 @@ macro(load_env_file)
       string(REGEX MATCH "^[^=]+" env_key "${env_line}")
       string(REPLACE "${env_key}=" "" env_val "${env_line}")
       string(STRIP "${env_val}" env_val)
-      #エスケープが必要な文字をエスケープします。
+      #エスケープが必要な文字をエスケープする
       string(REPLACE "\\" "\\\\" env_val "${env_val}")
       string(REPLACE "\"" "\\\"" env_val "${env_val}")
-      # ENV_VARS リストにキーバリューペアを追加します。
+      # ENV_VARS リストにキーバリューペアを追加
       list(APPEND ENV_VARS "${env_key}=${env_val}")
-      # メッセージとしてキーバリューペアを出力します。
+      # メッセージとしてキーバリューペアを出力
       message(STATUS "Set: ${env_key}=${env_val}")
     endforeach()
   else()
