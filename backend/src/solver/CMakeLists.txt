@@ -54,7 +54,7 @@ target_include_directories(${TARGET_NAME} PRIVATE
 target_link_directories(${TARGET_NAME} PRIVATE
   ${PROJECT_SOURCE_DIR}/lib
 )
-target_link_libraries(${TARGET_NAME} PUBLIC
+target_link_libraries(${TARGET_NAME} INTERFACE
   DancingLinks
 )
 foreach(env_var IN LISTS ENV_VARS)

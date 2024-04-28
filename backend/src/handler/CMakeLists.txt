@@ -19,7 +19,7 @@ target_include_directories(${TARGET_NAME} PRIVATE
 target_link_directories(${TARGET_NAME} PRIVATE
   ${PROJECT_SOURCE_DIR}/lib
 )
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} INTERFACE
   AWS::aws-lambda-runtime
   Boost::json
   SudokuSolver
@@ -50,7 +50,7 @@ target_include_directories(${TARGET_NAME} PRIVATE
   ${Boost_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
 )
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} PRIVATE
   AWS::aws-lambda-runtime
   Boost::json
   HandlerTools

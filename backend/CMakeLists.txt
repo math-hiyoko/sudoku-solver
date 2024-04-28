@@ -92,6 +92,7 @@ macro(add_and_report_subdirectories)
   # テストを有効化
   enable_testing()
   # 依存先から依存元の順にサブディレクトリを追加
+  set(CMAKE_OPTIMIZE_DEPENDENCIES ON)
   set(subdirs extern src sample tests)
   foreach(subdir IN LISTS subdirs)
     message(STATUS "Adding subdirectory: ${subdir}")
