@@ -16,15 +16,15 @@ phases:
       - export VERSION=$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
-          export CMAKE_BUILD_TYPE=Release
+          export CMAKE_BUILD_TYPE="Release"
           export ARTIFACT_NAME="SudokuLambda-${VERSION}-${CMAKE_BUILD_TYPE}"
         else
-          export CMAKE_BUILD_TYPE=Debug
+          export CMAKE_BUILD_TYPE="Debug"
           export ARTIFACT_NAME="SudokuLambda-${VERSION}-${CMAKE_BUILD_TYPE}-${CODEBUILD_START_TIME}"
         fi
-      - echo "CMAKE_BUILD_TYPE: $CMAKE_BUILD_TYPE"
-      - echo "VERSION: $VERSION"
-      - echo "ARTIFACT_NAME: $ARTIFACT_NAME"
+      - echo "CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
+      - echo "VERSION=$VERSION"
+      - echo "ARTIFACT_NAME=$ARTIFACT_NAME"
 
   build:
     commands:
@@ -48,6 +48,12 @@ phases:
       - echo "Packaging and deploying the application..."
       - make aws-lambda-package-SudokuLambda
       - mv SudokuLambda.zip ../$ARTIFACT_NAME.zip
+      - |
+        if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
+          git tag ${VERSION}
+          git push origin ${VERSION}
+          echo "Tagged the version: ${VERSION}"
+        fi
 
 reports:
   unittest_reports:
