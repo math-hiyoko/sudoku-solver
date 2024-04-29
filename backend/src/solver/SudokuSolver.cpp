@@ -76,13 +76,48 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
     header->left->hookRight(column_nodes[i]);
   }
 
+  // あり得る選択肢かどうかのフラグを設定する
+  // ある数字が特定のマスに入る場合、同じ列、行、ブロックにその数字が入らないことが決まっている
+  std::array<std::array<std::array<bool, Sudoku::SIZE>, Sudoku::SIZE>, Sudoku::SIZE> unfeasible{};
+  for (int row = 0; row < Sudoku::SIZE; row++) {
+    for (int column = 0; column < Sudoku::SIZE; column++) {
+      for (int number = 0; number < Sudoku::SIZE; number++) {
+        if (board[row][column] == 0) {
+          continue;
+        }
+        for (int n_row = 0; n_row < Sudoku::SIZE; n_row++) {
+          // 同じ列にnumber+1が入らない
+          if (n_row != row) {
+            unfeasible[n_row][column][board[row][column] - 1] = true;
+          }
+        }
+        for (int n_column = 0; n_column < Sudoku::SIZE; n_column++) {
+          // 同じ行にnumber+1が入らない
+          if (n_column != column) {
+            unfeasible[row][n_column][board[row][column] - 1] = true;
+          }
+        }
+        for (int n_row = row / Sudoku::DIM * Sudoku::DIM;
+             n_row < (row / Sudoku::DIM + 1) * Sudoku::DIM; n_row++) {
+          for (int n_column = column / Sudoku::DIM * Sudoku::DIM;
+               n_column < (column / Sudoku::DIM + 1) * Sudoku::DIM; n_column++) {
+            // 同じブロックにnumber+1が入らない
+            if (n_row != row && n_column != column) {
+              unfeasible[n_row][n_column][board[row][column] - 1] = true;
+            }
+          }
+        }
+      }
+    }
+  }
+
   // DancingNodeを生成
   constexpr Sudoku::ExactCoverMatrix matrix = makeFullMatrix();
   for (int row = 0, idx = 0; row < Sudoku::SIZE; row++) {
     for (int column = 0; column < Sudoku::SIZE; column++) {
       for (int number = 0; number < Sudoku::SIZE; number++, idx++) {
         // (row, column)にnumber+1が入らないことが決まっている場合はスキップ
-        if (board[row][column] != 0 && board[row][column] - 1 != number) {
+        if (unfeasible[row][column][number]) {
           continue;
         }
         // (row, column)マスにnumber+1が入るとき
