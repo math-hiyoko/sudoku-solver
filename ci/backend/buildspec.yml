@@ -45,10 +45,9 @@ phases:
 
   post_build:
     commands:
-      - echo "Deploying the application..."
-      - mv $CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuLambda.zip $CODEBUILD_SRC_DIR/backend/$ARTIFACT_NAME.zip
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
+          echo "Tagging the version..."
           git tag ${VERSION}
           git push origin ${VERSION}
           echo "Tagged the version: ${VERSION}"
@@ -58,6 +57,9 @@ reports:
   unittest_reports:
     files: backend/build/tests/unittest_reports/unittest.xml
     file-format: JUnit
+    discard-paths: yes
 
 artifacts:
-  files: backend/$ARTIFACT_NAME.zip
+  files: backend/build/src/handler/SudokuLambda.zip
+  name: $ARTIFACT_NAME
+  discard-paths: yes
