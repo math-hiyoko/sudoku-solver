@@ -57,7 +57,6 @@ reports:
   unittest_reports:
     files: backend/build/tests/unittest_reports/unittest.xml
     file-format: JUnit
-    discard-paths: yes
 
 artifacts:
   files: backend/build/src/handler/SudokuLambda.zip
