@@ -17,6 +17,8 @@ phases:
       - echo "$CODEBUILD_SOURCE_VERSION"
       - cd $CODEBUILD_SRC_DIR
       - ls -a
+      - git branch -a
+      - git submodule update --init --recursive
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
           export CMAKE_BUILD_TYPE="Release"
