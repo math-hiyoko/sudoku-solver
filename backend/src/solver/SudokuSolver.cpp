@@ -41,9 +41,10 @@ consteval Sudoku::ExactCoverMatrix makeFullMatrix() {
             .key1 = column,
             .key2 = number,
         };  // 列columnにnumber+1が入ること
-        matrix[idx][3] = Sudoku::Constraint{.type = Sudoku::ConstraintEnum::BLOCK,
-                                    .key1 = row / Sudoku::DIM * Sudoku::DIM + column / Sudoku::DIM,
-                                    .key2 = number};  // ブロックにnumber+1が入ること
+        matrix[idx][3] =
+            Sudoku::Constraint{.type = Sudoku::ConstraintEnum::BLOCK,
+                               .key1 = row / Sudoku::DIM * Sudoku::DIM + column / Sudoku::DIM,
+                               .key2 = number};  // ブロックにnumber+1が入ること
       }
     }
   }
@@ -115,7 +116,8 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
  * @param solution knuths_algorithmによってえられたRowNode
  * @param board 復元した数独の盤面
  */
-void makeBoardFromSolution(const std::vector<DancingLinks::RowNode*>& solution, Sudoku::Board& board) {
+void makeBoardFromSolution(const std::vector<DancingLinks::RowNode*>& solution,
+                           Sudoku::Board& board) {
   board = Sudoku::Board{};
   for (const DancingLinks::RowNode* row_node : solution) {
     Sudoku::Option option = Sudoku::Option::getOption(row_node->option_id);
