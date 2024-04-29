@@ -10,11 +10,12 @@
 #include "solver/SudokuType.hpp"
 
 namespace DancingLinks {
-void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &answer, int &num_answer,
-                      bool &is_exact_num_answer, const bool just_answer, const int max_num_answer) {
+void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &solution, int &num_solutions,
+                      bool &is_exact_num_solutions, const bool just_solution,
+                      const int max_num_solutions) {
   // 探索中の状態を保存するための構造体
   struct NodeState {
-    int index;      // answer_buf中の何番目の要素になるか
+    int index;      // solution_buf中の何番目の要素になるか
     RowNode *node;  // 選択した行
   };
 
@@ -25,7 +26,7 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &answer, int &n
 
   assert(column != nullptr);
   if (!column->isSatisfiable()) {
-    num_answer = 0;
+    num_solutions = 0;
     return;
   }
 
@@ -35,7 +36,7 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &answer, int &n
   }
 
   // 解の候補を保存するためのバッファ
-  std::vector<RowNode *> answer_buf;
+  std::vector<RowNode *> solution_buf;
 
   while (!search_stack.empty()) {
     NodeState state = search_stack.top();
@@ -43,31 +44,31 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &answer, int &n
 
     // stateをindex番目の要素にするために、indexより後ろの要素の反映を元に戻す
     // converした順に戻さないといけない
-    for (int i = answer_buf.size() - 1; i >= state.index; i--) {
-      // answer_buf[i]を選択したという設定を元に戻す
-      answer_buf[i]->uncover();
+    for (int i = solution_buf.size() - 1; i >= state.index; i--) {
+      // solution_buf[i]を選択したという設定を元に戻す
+      solution_buf[i]->uncover();
     }
-    answer_buf.resize(state.index);
+    solution_buf.resize(state.index);
 
     // state.nodeを選択したことにして反映を行う
     state.node->cover();
-    answer_buf.push_back(state.node);
+    solution_buf.push_back(state.node);
 
     if (header->isEmpty()) {
       // headerが空 => 解が見つかった
-      assert(answer_buf.size() == Sudoku::SIZE * Sudoku::SIZE);
-      num_answer++;
-      if (answer.empty()) {
-        answer = answer_buf;
+      assert(solution_buf.size() == Sudoku::SIZE * Sudoku::SIZE);
+      num_solutions++;
+      if (solution.empty()) {
+        solution = solution_buf;
       }
 
       // state.nodeを選択したという設定を元に戻す
       state.node->uncover();
-      answer_buf.pop_back();
+      solution_buf.pop_back();
 
       // 解が1つ欲しいだけの場合は探索を打ち切る
-      if (just_answer || num_answer >= max_num_answer) {
-        is_exact_num_answer = search_stack.empty();
+      if (just_solution || num_solutions >= max_num_solutions) {
+        is_exact_num_solutions = search_stack.empty();
         return;
       }
 
@@ -81,7 +82,7 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &answer, int &n
     }
   }
 
-  is_exact_num_answer = true;
+  is_exact_num_solutions = true;
   return;
 }  // knuths_algorithm
 }  // namespace DancingLinks

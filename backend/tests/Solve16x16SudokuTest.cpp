@@ -26,9 +26,9 @@ TEST(Sudoku16x16SolveTest, testRegularSolve) {
   }};
 
   Sudoku::Board output;
-  int num_answer;
-  bool is_exact_num_answer;
-  Sudoku::solve(input, output, num_answer, is_exact_num_answer);
+  int num_solutions;
+  bool is_exact_num_solutions;
+  Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
   Sudoku::Board expected_output = {{
       {16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
@@ -48,12 +48,12 @@ TEST(Sudoku16x16SolveTest, testRegularSolve) {
       {2, 14, 4, 6, 9, 13, 8, 11, 16, 1, 5, 3, 15, 7, 12, 10},
       {15, 12, 7, 11, 5, 4, 14, 1, 10, 8, 2, 6, 16, 13, 3, 9},
   }};
-  int expected_num_answer = 1;
-  bool expected_is_exact_num_answer = true;
+  int expected_num_solutions = 1;
+  bool expected_is_exact_num_solutions = true;
 
   EXPECT_EQ(output, expected_output);
-  EXPECT_EQ(num_answer, expected_num_answer);
-  EXPECT_EQ(is_exact_num_answer, expected_is_exact_num_answer);
+  EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
 
 TEST(Sudoku16x16SolveTest, testEmptySolve) {
@@ -77,9 +77,9 @@ TEST(Sudoku16x16SolveTest, testEmptySolve) {
   }};
 
   Sudoku::Board output;
-  int num_answer;
-  bool is_exact_num_answer;
-  Sudoku::solve(input, output, num_answer, is_exact_num_answer);
+  int num_solutions;
+  bool is_exact_num_solutions;
+  Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
   Sudoku::Board expected_output = {{
       {16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
@@ -99,15 +99,15 @@ TEST(Sudoku16x16SolveTest, testEmptySolve) {
       {2, 14, 4, 6, 9, 13, 8, 11, 16, 1, 5, 3, 15, 7, 12, 10},
       {15, 12, 7, 11, 5, 4, 14, 1, 10, 8, 2, 6, 16, 13, 3, 9},
   }};
-  int expected_num_answer = Sudoku::MAX_NUM_ANSWER;
-  bool expected_is_exact_num_answer = false;
+  int expected_num_solutions = Sudoku::MAX_NUM_SOLUTIONS;
+  bool expected_is_exact_num_solutions = false;
 
   EXPECT_EQ(output, expected_output);
-  EXPECT_EQ(num_answer, expected_num_answer);
-  EXPECT_EQ(is_exact_num_answer, expected_is_exact_num_answer);
+  EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
 
-TEST(Sudoku16x16SolveTest, testMultipleOneAnswer) {
+TEST(Sudoku16x16SolveTest, testMultipleOneSolution) {
   const Sudoku::Board input = {{
       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -128,9 +128,9 @@ TEST(Sudoku16x16SolveTest, testMultipleOneAnswer) {
   }};
 
   Sudoku::Board output;
-  int num_answer;
-  bool is_exact_num_answer;
-  Sudoku::solve(input, output, num_answer, is_exact_num_answer, true);
+  int num_solutions;
+  bool is_exact_num_solutions;
+  Sudoku::solve(input, output, num_solutions, is_exact_num_solutions, true);
 
   Sudoku::Board expected_output = {{
       {16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
@@ -150,11 +150,11 @@ TEST(Sudoku16x16SolveTest, testMultipleOneAnswer) {
       {2, 14, 4, 6, 9, 13, 8, 11, 16, 1, 5, 3, 15, 7, 12, 10},
       {15, 12, 7, 11, 5, 4, 14, 1, 10, 8, 2, 6, 16, 13, 3, 9},
   }};
-  int expected_num_answer = 1;
-  bool expected_is_exact_num_answer = false;
+  int expected_num_solutions = 1;
+  bool expected_is_exact_num_solutions = false;
 
   EXPECT_EQ(output, expected_output);
-  EXPECT_EQ(num_answer, expected_num_answer);
-  EXPECT_EQ(is_exact_num_answer, expected_is_exact_num_answer);
+  EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
 #endif

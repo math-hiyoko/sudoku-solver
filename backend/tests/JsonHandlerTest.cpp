@@ -4,6 +4,7 @@
 #include <string>
 
 #include "handler/JsonHandler.hpp"
+#include "solver/SudokuType.hpp"
 
 #if defined(SUDOKU_DIM) && SUDOKU_DIM == 3
 TEST(JsonHandlerTest, testSuccessResponse) {
@@ -30,7 +31,7 @@ TEST(JsonHandlerTest, testSuccessResponse) {
   aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
 
   boost::json::object expected_response = {
-      {"answer",
+      {"solution",
        {
            {8, 3, 2, 4, 7, 1, 6, 9, 5},
            {9, 1, 4, 6, 5, 2, 3, 8, 7},
@@ -42,8 +43,8 @@ TEST(JsonHandlerTest, testSuccessResponse) {
            {7, 2, 8, 5, 6, 4, 9, 1, 3},
            {5, 9, 6, 8, 1, 3, 4, 7, 2},
        }},
-      {"num_answer", 271710},
-      {"is_exact_num_answer", true},
+      {"num_solutions", std::min(271'710, Sudoku::MAX_NUM_SOLUTIONS)},
+      {"is_exact_num_solutions", 271'710 <= Sudoku::MAX_NUM_SOLUTIONS ? true : false},
   };
 
   EXPECT_TRUE(response.is_success());
@@ -71,7 +72,9 @@ TEST(JsonHandlerTest, testIncorrectInputResponse) {
   };
   aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
 
-  std::string expected_payload = "{\"errorMessage\":\"{\\\"statusCode\\\":400,\\\"errorDetail\\\":\\\"Array size is incorrect or Invalid input type.\\\"}\",\"errorType\":\"InvalidInput\", \"stackTrace\":[]}";
+  std::string expected_payload =
+      "{\"errorMessage\":\"{\\\"statusCode\\\":400,\\\"errorDetail\\\":\\\"Array size is incorrect "
+      "or Invalid input type.\\\"}\",\"errorType\":\"InvalidInput\", \"stackTrace\":[]}";
 
   EXPECT_FALSE(response.is_success());
   EXPECT_EQ(response.get_payload(), expected_payload);
@@ -98,7 +101,12 @@ TEST(JsonHandlerTest, testOutOfRangeResponse) {
   };
   aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
 
-  std::string expected_payload = "{\"errorMessage\":\"{\\\"statusCode\\\":400,\\\"errorDetail\\\":\\\"Input validation error: some numbers are out of the allowed range.\\\",\\\"errors\\\":[{\\\"row\\\":8,\\\"column\\\":7,\\\"number\\\":10},{\\\"row\\\":8,\\\"column\\\":8,\\\"number\\\":-1}]}\",\"errorType\":\"OutOfRangeError\", \"stackTrace\":[]}";
+  std::string expected_payload =
+      "{\"errorMessage\":\"{\\\"statusCode\\\":400,\\\"errorDetail\\\":\\\"Input validation error: "
+      "some numbers are out of the allowed "
+      "range.\\\",\\\"errors\\\":[{\\\"row\\\":8,\\\"column\\\":7,\\\"number\\\":10},{\\\"row\\\":"
+      "8,\\\"column\\\":8,\\\"number\\\":-1}]}\",\"errorType\":\"OutOfRangeError\", "
+      "\"stackTrace\":[]}";
 
   EXPECT_FALSE(response.is_success());
   EXPECT_EQ(response.get_payload(), expected_payload);
@@ -125,7 +133,13 @@ TEST(JsonHandlerTest, testConstraintViolationResponse) {
   };
   aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
 
-  std::string expected_payload = "{\"errorMessage\":\"{\\\"statusCode\\\":500,\\\"errorDetail\\\":\\\"Input does not meet the required constraints.\\\",\\\"errors\\\":[{\\\"index\\\":6,\\\"number\\\":1,\\\"type\\\":\\\"row\\\"},{\\\"index\\\":3,\\\"number\\\":1,\\\"type\\\":\\\"column\\\"},{\\\"index\\\":3,\\\"number\\\":6,\\\"type\\\":\\\"column\\\"},{\\\"index\\\":1,\\\"number\\\":6,\\\"type\\\":\\\"block\\\"}]}\",\"errorType\":\"ConstraintViolation\", \"stackTrace\":[]}";
+  std::string expected_payload =
+      "{\"errorMessage\":\"{\\\"statusCode\\\":500,\\\"errorDetail\\\":\\\"Input does not meet the "
+      "required "
+      "constraints.\\\",\\\"errors\\\":[{\\\"index\\\":6,\\\"number\\\":1,\\\"type\\\":\\\"row\\\"}"
+      ",{\\\"index\\\":3,\\\"number\\\":1,\\\"type\\\":\\\"column\\\"},{\\\"index\\\":3,"
+      "\\\"number\\\":6,\\\"type\\\":\\\"column\\\"},{\\\"index\\\":1,\\\"number\\\":6,"
+      "\\\"type\\\":\\\"block\\\"}]}\",\"errorType\":\"ConstraintViolation\", \"stackTrace\":[]}";
 
   EXPECT_FALSE(response.is_success());
   EXPECT_EQ(response.get_payload(), expected_payload);
