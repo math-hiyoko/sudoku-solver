@@ -14,9 +14,9 @@ TEST(Sudoku4x4SolveTest, testRegularSolve) {
   }};
 
   Sudoku::Board output;
-  int num_answer;
-  bool is_exact_num_answer;
-  Sudoku::solve(input, output, num_answer, is_exact_num_answer);
+  int num_solutions;
+  bool is_exact_num_solutions;
+  Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
   Sudoku::Board expected_output = {{
       {1, 3, 4, 2},
@@ -24,12 +24,12 @@ TEST(Sudoku4x4SolveTest, testRegularSolve) {
       {3, 1, 2, 4},
       {2, 4, 1, 3},
   }};
-  int expected_num_answer = 1;
-  bool expected_is_exact_num_answer = true;
+  int expected_num_solutions = 1;
+  bool expected_is_exact_num_solutions = true;
 
   EXPECT_EQ(output, expected_output);
-  EXPECT_EQ(num_answer, expected_num_answer);
-  EXPECT_EQ(is_exact_num_answer, expected_is_exact_num_answer);
+  EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
 
 TEST(Sudoku4x4SolveTest, testEmptySolve) {
@@ -41,9 +41,9 @@ TEST(Sudoku4x4SolveTest, testEmptySolve) {
   }};
 
   Sudoku::Board output;
-  int num_answer;
-  bool is_exact_num_answer;
-  Sudoku::solve(input, output, num_answer, is_exact_num_answer);
+  int num_solutions;
+  bool is_exact_num_solutions;
+  Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
   Sudoku::Board expected_output = {{
       {4, 3, 2, 1},
@@ -51,15 +51,15 @@ TEST(Sudoku4x4SolveTest, testEmptySolve) {
       {1, 2, 4, 3},
       {3, 4, 1, 2},
   }};
-  int expected_num_answer = std::min(288, Sudoku::MAX_NUM_ANSWER);
-  bool expected_is_exact_num_answer = 288 <= Sudoku::MAX_NUM_ANSWER ? true : false;
+  int expected_num_solutions = std::min(288, Sudoku::MAX_NUM_SOLUTIONS);
+  bool expected_is_exact_num_solutions = 288 <= Sudoku::MAX_NUM_SOLUTIONS ? true : false;
 
   EXPECT_EQ(output, expected_output);
-  EXPECT_EQ(num_answer, expected_num_answer);
-  EXPECT_EQ(is_exact_num_answer, expected_is_exact_num_answer);
+  EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
 
-TEST(Sudoku4x4SolveTest, testMultipleOneAnswer) {
+TEST(Sudoku4x4SolveTest, testMultipleOneSolution) {
   const Sudoku::Board input = {{
       {0, 0, 0, 0},
       {0, 0, 0, 0},
@@ -68,9 +68,9 @@ TEST(Sudoku4x4SolveTest, testMultipleOneAnswer) {
   }};
 
   Sudoku::Board output;
-  int num_answer;
-  bool is_exact_num_answer;
-  Sudoku::solve(input, output, num_answer, is_exact_num_answer, true);
+  int num_solutions;
+  bool is_exact_num_solutions;
+  Sudoku::solve(input, output, num_solutions, is_exact_num_solutions, true);
 
   Sudoku::Board expected_output = {{
       {4, 3, 2, 1},
@@ -78,11 +78,11 @@ TEST(Sudoku4x4SolveTest, testMultipleOneAnswer) {
       {1, 2, 4, 3},
       {3, 4, 1, 2},
   }};
-  int expected_num_answer = 1;
-  bool expected_is_exact_num_answer = false;
+  int expected_num_solutions = 1;
+  bool expected_is_exact_num_solutions = false;
 
   EXPECT_EQ(output, expected_output);
-  EXPECT_EQ(num_answer, expected_num_answer);
-  EXPECT_EQ(is_exact_num_answer, expected_is_exact_num_answer);
+  EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
 #endif

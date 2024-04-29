@@ -75,25 +75,25 @@ int main() {
     return 1;
   }
 
-  Sudoku::Board answer;
-  int num_answers;
-  bool is_exact_num_answer;
-  Sudoku::solve(board, answer, num_answers, is_exact_num_answer);
-  if (num_answers == 0) {
-    std::cout << "No answer" << std::endl;
+  Sudoku::Board solution;
+  int num_solutions;
+  bool is_exact_num_solutions;
+  Sudoku::solve(board, solution, num_solutions, is_exact_num_solutions);
+  if (num_solutions == 0) {
+    std::cout << "No solution" << std::endl;
     return 0;
   }
 
-  if (is_exact_num_answer && num_answers == 1) {
-    std::cout << "Unique answer exists" << std::endl;
-  } else if (is_exact_num_answer) {
-    std::cout << num_answers << " answers exist" << std::endl;
+  if (is_exact_num_solutions && num_solutions == 1) {
+    std::cout << "Unique solution exists" << std::endl;
+  } else if (is_exact_num_solutions) {
+    std::cout << num_solutions << " solutions exist" << std::endl;
   } else {
-    std::cout << "More than " << (num_answers + 1) << " answers exist" << std::endl;
+    std::cout << "No less than " << num_solutions << " solutions exist" << std::endl;
   }
   for (int i = 0; i < Sudoku::SIZE; i++) {
     for (int j = 0; j < Sudoku::SIZE; j++) {
-      std::cout << answer[i][j];
+      std::cout << solution[i][j];
       if (j != Sudoku::SIZE - 1) {
         std::cout << " ";
       }

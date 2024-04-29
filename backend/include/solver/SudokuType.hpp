@@ -7,10 +7,10 @@ namespace Sudoku {
  * 数独の解の個数の上限
  * 解がこの個数より多くなったら計算を打ち切る
  */
-#ifdef SUDOKU_MAX_NUM_ANSWER
-constexpr static int MAX_NUM_ANSWER = SUDOKU_MAX_NUM_ANSWER;
+#ifdef SUDOKU_MAX_NUM_SOLUTIONS
+constexpr static int MAX_NUM_SOLUTIONS = SUDOKU_MAX_NUM_SOLUTIONS;
 #else
-constexpr static int MAX_NUM_ANSWER = 100'000'000;
+constexpr static int MAX_NUM_SOLUTIONS = 100'000'000;
 #endif
 
 /**

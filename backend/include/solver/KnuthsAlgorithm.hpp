@@ -13,10 +13,13 @@ namespace DancingLinks {
  * 制約を満たせる行が最も少ない列を選び、その列に対する選択肢を決め打ちして探索する
  *
  * @param header 行列被覆問題のヘッダー
- * @param num_answer 解の数
- * @param answer 解を格納するリスト
- * @param just_answer 解の数が要らない場合はtrue
+ * @param solution 解を表すリストを格納
+ * @param num_solutions 解の数
+ * @param is_exact_num_solutions 解の数が正確かどうかを返す
+ * @param just_solution 解の数が要らない場合はtrue
+ * @param max_num_solutions 探索する解の数の上限
  */
-void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &answer, int &num_answer,
-                      bool &is_exact_num_answer, const bool just_answer, const int max_num_answer);
+void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &solution, int &num_solutios,
+                      bool &is_exact_num_solutions, const bool just_solution,
+                      const int max_num_solutions);
 }  // namespace DancingLinks

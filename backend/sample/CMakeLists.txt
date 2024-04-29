@@ -16,14 +16,13 @@ target_include_directories(${TARGET_NAME} PRIVATE
 target_link_directories(${TARGET_NAME} PRIVATE
   ${PROJECT_SOURCE_DIR}/lib
 )
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} PRIVATE
   DancingLinks
   SudokuSolver
 )
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 target_compile_options(${TARGET_NAME} PRIVATE
   -O3
-  -march=native
   -flto
   -fstrict-aliasing
 )

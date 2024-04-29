@@ -16,6 +16,13 @@
 ```
 $ pwd
 sudoku-solver/backend
+# aws-lambda-cppのインストール
+$ cd extern/aws-lambda-cpp
+$ mkdir build && cd build
+$ cmake .. -DCMAKE_INSTALL_PREFIX=../../..
+$ make && make install
+$ cd -
+# SudokuSolberのビルド
 $ mkdir build && cd build
 $ cmake ..
 $ make

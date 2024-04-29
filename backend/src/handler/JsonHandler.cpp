@@ -95,14 +95,14 @@ aws::lambda_runtime::invocation_response sudoku_handler(
   }
 
   // 数独を解く
-  Sudoku::Board answer_board;
-  int num_answer;
-  bool is_exact_num_answer;
-  Sudoku::solve(input_board, answer_board, num_answer, is_exact_num_answer);
+  Sudoku::Board solution_board;
+  int num_solutions;
+  bool is_exact_num_solutions;
+  Sudoku::solve(input_board, solution_board, num_solutions, is_exact_num_solutions);
 
   // 数独の解答を JSON に変換
-  boost::json::array answer_json;
-  if (sudokuboard_to_json(answer_board, answer_json) != 0) {
+  boost::json::array solution_json;
+  if (sudokuboard_to_json(solution_board, solution_json) != 0) {
     boost::json::object response_json = {
         {"statusCode", 500},
         {"errorDetail", "An unexpected error occurred."},
@@ -111,9 +111,9 @@ aws::lambda_runtime::invocation_response sudoku_handler(
   }
 
   // レスポンスを返す
-  boost::json::object response_json = {{"answer", answer_json},
-                                       {"num_answer", num_answer},
-                                       {"is_exact_num_answer", is_exact_num_answer}};
+  boost::json::object response_json = {{"solution", solution_json},
+                                       {"num_solutions", num_solutions},
+                                       {"is_exact_num_solutions", is_exact_num_solutions}};
 
   return success_response(response_json);
 }
