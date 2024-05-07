@@ -15,6 +15,11 @@ endmacro()
 
 # 必要なパッケージを検索して読み込むための関数
 macro(find_and_report_packages)
+  # カスタムでインストールしたものも探せるようにパスを追加
+  list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/backend/lib")
+  if(EXISTS "${PROJECT_SOURCE_DIR}/backend/lib64/")
+    list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/backend/lib64/")
+  endif()
   # dependencies.txtからバージョン情報を1行ずつ読み込む
   file(STRINGS dependencies.txt dependencies)
   # それぞれの依存ライブラリに対してfind_packageを呼び出す
@@ -93,10 +98,6 @@ macro(add_and_report_subdirectories)
   enable_testing()
   # 依存先から依存元の順にサブディレクトリを追加
   set(CMAKE_OPTIMIZE_DEPENDENCIES ON)
-  list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/backend/lib")
-  if(EXISTS "${PROJECT_SOURCE_DIR}/backend/lib64/")
-    list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/backend/lib64/")
-  endif()
   set(subdirs extern src sample tests)
   foreach(subdir IN LISTS subdirs)
     message(STATUS "Adding subdirectory: ${subdir}")
