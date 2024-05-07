@@ -18,6 +18,7 @@ target_include_directories(${TARGET_NAME} PRIVATE
 )
 target_link_directories(${TARGET_NAME} PRIVATE
   ${PROJECT_SOURCE_DIR}/lib
+  ${PROJECT_SOURCE_DIR}/lib64
 )
 target_link_libraries(${TARGET_NAME} INTERFACE
   AWS::aws-lambda-runtime
@@ -48,6 +49,10 @@ target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 target_include_directories(${TARGET_NAME} PRIVATE
   ${Boost_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
+)
+target_link_directories(${TARGET_NAME} PRIVATE
+  ${PROJECT_SOURCE_DIR}/lib
+  ${PROJECT_SOURCE_DIR}/lib64
 )
 target_link_libraries(${TARGET_NAME} PRIVATE
   AWS::aws-lambda-runtime
