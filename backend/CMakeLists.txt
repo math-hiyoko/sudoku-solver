@@ -16,11 +16,9 @@ endmacro()
 # 必要なパッケージを検索して読み込むための関数
 macro(find_and_report_packages)
   # カスタムでインストールしたものも探せるようにパスを追加
-  list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/backend/lib")
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/backend/lib")
+  list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/backend/")
   if(EXISTS "${PROJECT_SOURCE_DIR}/backend/lib64/")
-    list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/backend/lib64/")
-    list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/backend/lib64/")
+    list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/backend/")
   endif()
   # dependencies.txtからバージョン情報を1行ずつ読み込む
   file(STRINGS dependencies.txt dependencies)
