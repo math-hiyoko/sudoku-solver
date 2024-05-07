@@ -5,3 +5,6 @@
 [submodule "backend/extern/aws-lambda-cpp"]
 	path = backend/extern/aws-lambda-cpp
 	url = https://github.com/awslabs/aws-lambda-cpp.git
+[submodule "frontend/themes/PaperMod"]
+	path = frontend/themes/PaperMod
+	url = https://github.com/adityatelange/hugo-PaperMod.git
