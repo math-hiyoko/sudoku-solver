@@ -38,7 +38,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR/backend
       - mkdir build
       - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
+      - cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_PREFIX_PATH=$CODEBUILD_SRC_DIR/backend
       - make && make aws-lambda-package-SudokuLambda
       - echo "Running Tests..."
       - ctest -V
