@@ -49,6 +49,9 @@ target_include_directories(${TARGET_NAME} PRIVATE
   ${Boost_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
 )
+target_link_directories(${TARGET_NAME} PRIVATE
+  ${PROJECT_SOURCE_DIR}/lib
+)
 target_link_libraries(${TARGET_NAME} PRIVATE
   AWS::aws-lambda-runtime
   Boost::json
