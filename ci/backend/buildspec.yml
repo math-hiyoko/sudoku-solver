@@ -17,10 +17,12 @@ phases:
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
           export CMAKE_BUILD_TYPE="Release"
-          export ARTIFACT_NAME="SudokuLambda-${VERSION}-${CMAKE_BUILD_TYPE}"
+          export GIT_REVISION=$(git rev-list HEAD --count)
+          export ARTIFACT_NAME="SudokuLambda-${CMAKE_BUILD_TYPE}-${VERSION}-${GIT_REVISION}"
         else
           export CMAKE_BUILD_TYPE="Debug"
-          export ARTIFACT_NAME="SudokuLambda-${VERSION}-${CMAKE_BUILD_TYPE}-${CODEBUILD_START_TIME}"
+          export DATE=$(date +%Y%m%d%H%M%S)
+          export ARTIFACT_NAME="SudokuLambda-${CMAKE_BUILD_TYPE}-${VERSION}-${DATE}"
         fi
       - echo "CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
       - echo "VERSION=$VERSION"
@@ -48,9 +50,9 @@ phases:
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
           echo "Tagging the version..."
-          git tag ${VERSION}
-          git push origin ${VERSION}
-          echo "Tagged the version: ${VERSION}"
+          git tag ${VERSION}-${GIT_REVISION}
+          git push origin ${VERSION}-${GIT_REVISION}
+          echo "Tagged the version: ${VERSION}-${GIT_REVISION}"
         fi
 
 reports:
