@@ -2,9 +2,10 @@ version: 0.2
 
 env:
   git-credential-helper: yes
-  VERSION: "$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)"
-  GIT_REVISION: "$(git rev-list HEAD --count)"
-  DATE: "$(date +%Y%m%d%H%M%S)"
+  variables:
+    VERSION: "$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)"
+    GIT_REVISION: "$(git rev-list HEAD --count)"
+    DATE: "$(date +%Y%m%d%H%M%S)"
 
 phases:
   install:
