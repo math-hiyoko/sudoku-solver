@@ -15,7 +15,7 @@ phases:
       - echo "Setting up the environment..."
       - export VERSION=$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)
       - |
-        if [[ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" || "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/merged ]]; then
+        if [ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" ]; then
           export CMAKE_BUILD_TYPE="Release"
           export GIT_REVISION=$(git rev-list HEAD --count)
           export ARTIFACT_NAME="SudokuLambda-${CMAKE_BUILD_TYPE}-${VERSION}-${GIT_REVISION}"
@@ -48,7 +48,7 @@ phases:
   post_build:
     commands:
       - |
-        if [[ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" || "$CODEBUILD_WEBHOOK_TRIGGER" =~ ^pr/merged ]]; then
+        if [ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" ]; then
           echo "Tagging the version..."
           git tag ${VERSION}-${GIT_REVISION}
           git push origin ${VERSION}-${GIT_REVISION}
