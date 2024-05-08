@@ -2,10 +2,6 @@ version: 0.2
 
 env:
   git-credential-helper: yes
-  variables:
-    VERSION: "$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)"
-    GIT_REVISION: "$(git rev-list HEAD --count)"
-    DATE: "$(date +%Y%m%d%H%M%S)"
 
 phases:
   install:
@@ -17,12 +13,15 @@ phases:
   pre_build:
     commands:
       - echo "Setting up the environment..."
+      - export VERSION=$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)
       - |
         if [ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" ]; then
           export CMAKE_BUILD_TYPE="Release"
+          export GIT_REVISION=$(git rev-list HEAD --count)
           export ARTIFACT_NAME="SudokuLambda-${CMAKE_BUILD_TYPE}-${VERSION}-${GIT_REVISION}"
         else
           export CMAKE_BUILD_TYPE="Debug"
+          export DATE=$(date +%Y%m%d%H%M%S)
           export ARTIFACT_NAME="SudokuLambda-${CMAKE_BUILD_TYPE}-${VERSION}-${DATE}"
         fi
       - echo "CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
