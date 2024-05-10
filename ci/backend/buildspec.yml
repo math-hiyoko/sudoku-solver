@@ -53,6 +53,8 @@ phases:
           git tag ${VERSION}-${GIT_REVISION}
           git push origin ${VERSION}-${GIT_REVISION}
           echo "Tagged the version: ${VERSION}-${GIT_REVISION}"
+          echo "Uploading to aws lambda"
+          aws lambda update-function-code --function-name SudokuSolverBackend --zip-file fileb://$CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuLambda.zip
         fi
 
 reports:
