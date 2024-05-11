@@ -38,7 +38,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
     };
     return error_response(response_json, "JSONParseError");
   }
-  return success_response(request_json);
+  return error_response(request_json, "hogeerror");
 
   // リクエストの JSON から Sudoku::Board を取得
   if (!request_json.contains("board") || !request_json.at("board").is_array()) {
