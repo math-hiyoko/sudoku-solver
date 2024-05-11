@@ -30,6 +30,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
     const aws::lambda_runtime::invocation_request &request) {
   // リクエストのペイロードをパースして JSON 値を取得
   boost::json::object request_json;
+
   if (parse_invocation_request(request, request_json) != 0) {
     boost::json::object response_json = {
         {"statusCode", 400},
@@ -37,6 +38,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
     };
     return error_response(response_json, "JSONParseError");
   }
+  return success_response(request_json);
 
   // リクエストの JSON から Sudoku::Board を取得
   if (!request_json.contains("board") || !request_json.at("board").is_array()) {
