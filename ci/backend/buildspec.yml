@@ -13,16 +13,17 @@ phases:
   pre_build:
     commands:
       - echo "Setting up the environment..."
+      - export FUCTION_NAME="SudokuSolverBackend"
       - export VERSION=$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)
       - |
         if [ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" ]; then
           export CMAKE_BUILD_TYPE="Release"
           export GIT_REVISION=$(git rev-list HEAD --count)
-          export ARTIFACT_NAME="SudokuLambda-${CMAKE_BUILD_TYPE}-${VERSION}-${GIT_REVISION}"
+          export ARTIFACT_NAME="${FUCTION_NAME}-${CMAKE_BUILD_TYPE}-${VERSION}-${GIT_REVISION}"
         else
           export CMAKE_BUILD_TYPE="Debug"
           export DATE=$(date +%Y%m%d%H%M%S)
-          export ARTIFACT_NAME="SudokuLambda-${CMAKE_BUILD_TYPE}-${VERSION}-${DATE}"
+          export ARTIFACT_NAME="${FUCTION_NAME}-${CMAKE_BUILD_TYPE}-${VERSION}-${DATE}"
         fi
       - echo "CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
       - echo "VERSION=$VERSION"
@@ -31,19 +32,21 @@ phases:
   build:
     commands:
       - echo "Building external projects..."
-      - cd $CODEBUILD_SRC_DIR/backend/extern/aws-lambda-cpp
-      - mkdir build
-      - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$CODEBUILD_SRC_DIR/backend
-      - make && make install
+      - |
+        cd $CODEBUILD_SRC_DIR/backend/extern/aws-lambda-cpp
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=$CODEBUILD_SRC_DIR/backend
+        make && make install
       - echo "Building the application..."
-      - cd $CODEBUILD_SRC_DIR/backend
-      - mkdir build
-      - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_PREFIX_PATH=$CODEBUILD_SRC_DIR/backend
-      - make && make aws-lambda-package-SudokuLambda
+      - |
+        cd $CODEBUILD_SRC_DIR/backend
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_PREFIX_PATH=$CODEBUILD_SRC_DIR/backend
+        make
       - echo "Running Tests..."
-      - ctest -V
+      - ctest -V && make aws-lambda-package-$FUCTION_NAME
 
   post_build:
     commands:
@@ -53,8 +56,10 @@ phases:
           git tag ${VERSION}-${GIT_REVISION}
           git push origin ${VERSION}-${GIT_REVISION}
           echo "Tagged the version: ${VERSION}-${GIT_REVISION}"
-          echo "Uploading to aws lambda"
-          aws lambda update-function-code --function-name SudokuSolverBackend --zip-file fileb://$CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuLambda.zip
+          if [ -f $CODEBUILD_SRC_DIR/backend/build/src/handler/$FUCTION_NAME.zip ]; then
+            echo "Uploading to aws lambda"
+            aws lambda update-function-code --function-name $FUCTION_NAME --zip-file fileb://$CODEBUILD_SRC_DIR/backend/build/src/handler/$FUCTION_NAME.zip
+          fi
         fi
 
 reports:
@@ -63,6 +68,6 @@ reports:
     file-format: JUnit
 
 artifacts:
-  files: backend/build/src/handler/SudokuLambda.zip
+  files: backend/build/src/handler/$FUCTION_NAME.zip
   name: $ARTIFACT_NAME
   discard-paths: yes
