@@ -45,9 +45,7 @@ phases:
         cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_PREFIX_PATH=$CODEBUILD_SRC_DIR/backend
         make && make aws-lambda-package-SudokuLambda
       - echo "Running Tests..."
-      - |
-        set -e
-        ctest -V
+      - ctest -V || exit 1
 
   post_build:
     commands:
