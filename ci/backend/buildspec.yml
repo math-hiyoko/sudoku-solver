@@ -45,7 +45,7 @@ phases:
         cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_PREFIX_PATH=$CODEBUILD_SRC_DIR/backend
         make
       - echo "Running Tests..."
-      - ctest -V && make aws-lambda-package-SudokuLambda
+      - ctest -V || exit 1
 
   post_build:
     commands:
@@ -68,4 +68,3 @@ artifacts:
   files: backend/build/src/handler/SudokuLambda.zip
   name: $ARTIFACT_NAME
   discard-paths: yes
-  if: -f backend/build/src/handler/SudokuLambda.zip
