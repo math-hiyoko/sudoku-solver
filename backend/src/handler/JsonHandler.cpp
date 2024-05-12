@@ -18,7 +18,7 @@ aws::lambda_runtime::invocation_response success_response(const boost::json::obj
       {"headers", {
           {"content-type", "application/json"},
       }},
-      {"body", body},
+      {"body", boost::json::serialize(body)},
       {"isBase64Encoded", false},
   };
   // JSON ペイロードを文字列に変換
@@ -29,15 +29,16 @@ aws::lambda_runtime::invocation_response success_response(const boost::json::obj
 
 aws::lambda_runtime::invocation_response error_response(const int &status_code,
                                                         const boost::json::object &error_json) {
+  boost::json::object error_body = {
+      {"error", error_json},
+  };
   // ペイロードを作成
   boost::json::object response_payload = {
       {"statusCode", status_code},
       {"headers", {
           {"content-type", "application/json"},
       }},
-      {"body", {
-        {"error", error_json},
-      }},
+      {"body", boost::json::serialize(error_body)},
       {"isBase64Encoded", false},
   };
   // JSON ペイロードを文字列に変換
