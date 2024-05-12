@@ -7,7 +7,7 @@
 
 #include "solver/SudokuType.hpp"
 
-namespace Handler {
+namespace HandlerHelper {
 /**
  * @brief AWS LambdaのリクエストからSudoku::boardに変換する
  *
@@ -54,4 +54,4 @@ int constraints_to_json(const std::vector<Sudoku::Constraint> &constraints,
  * @return int 正常に変換できたら0, それ以外は1
  */
 int options_to_json(const std::vector<Sudoku::Option> &options, boost::json::array &json);
-}  // namespace Handler
+}  // namespace HandlerHelper

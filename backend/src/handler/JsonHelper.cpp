@@ -7,7 +7,7 @@
 
 #include "solver/SudokuType.hpp"
 
-namespace Handler {
+namespace HandlerHelper {
 int parse_invocation_request(const aws::lambda_runtime::invocation_request &request,
                              boost::json::object &json) {
   // リクエストのペイロードをパースして JSON 値を取得
@@ -97,4 +97,4 @@ int options_to_json(const std::vector<Sudoku::Option> &options, boost::json::arr
   }
   return 0;
 }
-}  // namespace Handler
+}  // namespace HandlerHelper
