@@ -23,7 +23,7 @@ int parse_invocation_request(const aws::lambda_runtime::invocation_request &requ
   if (!payload_json.contains("body") || !payload_json.at("body").is_string()) {
     return 1;
   }
-  boost::json::value json = boost::json::parse(payload_json.at("body").as_string());
+  json = boost::json::parse(payload_json.at("body").as_string());
 
   return 0;
 }
