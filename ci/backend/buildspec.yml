@@ -36,7 +36,6 @@ phases:
       - cd build
       - >
         cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
-                 -DBUILD_SHARED_LIBS=OFF
                  -DCMAKE_INSTALL_PREFIX=$CODEBUILD_SRC_DIR/backend
       - make && make install
       - echo "Building the application..."
