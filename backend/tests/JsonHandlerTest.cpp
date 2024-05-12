@@ -200,7 +200,7 @@ TEST(JsonHandlerTest, testConstraintViolationResponse) {
            {"detail",
             {
                 {
-                    {"index", 6},
+                    {"index", 5},
                     {"number", 1},
                     {"type", "row"},
                 },
