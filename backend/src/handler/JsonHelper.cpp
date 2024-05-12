@@ -17,8 +17,14 @@ int parse_invocation_request(const aws::lambda_runtime::invocation_request &requ
   if (!parsed_json.is_object()) {
     return 1;
   }
+  boost::json::object payload_json = parsed_json.as_object();
 
-  json = parsed_json.as_object();
+  // body要素にstring形式で入力が入っている
+  if (!payload_json.contains("body") || !payload_json.at("body").is_string()) {
+    return 1;
+  }
+  boost::json::value json = boost::json::parse(payload_json.at("body").as_string());
+
   return 0;
 }
 
