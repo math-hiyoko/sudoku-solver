@@ -43,9 +43,9 @@ phases:
         mkdir build
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_PREFIX_PATH=$CODEBUILD_SRC_DIR/backend
-        make && make aws-lambda-package-SudokuLambda
+        make
       - echo "Running Tests..."
-      - ctest -V || exit 1
+      - ctest -V && make aws-lambda-package-SudokuLambda
 
   post_build:
     commands:
@@ -55,8 +55,10 @@ phases:
           git tag ${VERSION}-${GIT_REVISION}
           git push origin ${VERSION}-${GIT_REVISION}
           echo "Tagged the version: ${VERSION}-${GIT_REVISION}"
-          echo "Uploading to aws lambda"
-          aws lambda update-function-code --function-name SudokuSolverBackend --zip-file fileb://$CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuLambda.zip
+          if [ -f $CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuLambda.zip ]; then
+            echo "Uploading to aws lambda"
+            aws lambda update-function-code --function-name SudokuSolverBackend --zip-file fileb://$CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuLambda.zip
+          fi
         fi
 
 reports:
