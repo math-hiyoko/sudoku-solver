@@ -39,7 +39,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 )
 
 # 実行ファイルを作成
-set(TARGET_NAME "SudokuLambda")
+set(TARGET_NAME "SudokuSolverBackend")
 add_executable(${TARGET_NAME}
   main.cpp
 )
