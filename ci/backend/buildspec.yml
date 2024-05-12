@@ -68,3 +68,4 @@ artifacts:
   files: backend/build/src/handler/SudokuLambda.zip
   name: $ARTIFACT_NAME
   discard-paths: yes
+  if: -f backend/build/src/handler/SudokuLambda.zip
