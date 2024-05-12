@@ -8,7 +8,7 @@
 
 #if defined(SUDOKU_DIM) && SUDOKU_DIM == 3
 TEST(JsonHandlerTest, testSuccessResponse) {
-  boost::json::object payload = {
+  boost::json::object board_json = {
       {"board",
        {
            {8, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -22,15 +22,17 @@ TEST(JsonHandlerTest, testSuccessResponse) {
            {0, 9, 0, 0, 0, 0, 4, 0, 0},
        }},
   };
-  std::string aws_request_id = "aws_request_id";
+  boost::json::object payload = {
+      {"body", boost::json::serialize(board_json)},
+  };
 
   aws::lambda_runtime::invocation_request request = {
       .payload = boost::json::serialize(payload),
-      .request_id = aws_request_id,
+      .request_id = "aws_request_id",
   };
   aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
 
-  boost::json::object expected_response = {
+  boost::json::object expected_body = {
       {"solution",
        {
            {8, 3, 2, 4, 7, 1, 6, 9, 5},
@@ -46,13 +48,22 @@ TEST(JsonHandlerTest, testSuccessResponse) {
       {"num_solutions", std::min(271'710, Sudoku::MAX_NUM_SOLUTIONS)},
       {"is_exact_num_solutions", 271'710 <= Sudoku::MAX_NUM_SOLUTIONS ? true : false},
   };
+  boost::json::object expected_payload = {
+      {"statusCode", 200},
+      {"headers",
+       {
+           {"content-type", "application/json"},
+       }},
+      {"body", boost::json::serialize(expected_body)},
+      {"isBase64Encoded", false},
+  };
 
   EXPECT_TRUE(response.is_success());
-  EXPECT_EQ(response.get_payload(), boost::json::serialize(expected_response));
+  EXPECT_EQ(response.get_payload(), boost::json::serialize(expected_payload));
 }
 
 TEST(JsonHandlerTest, testIncorrectInputResponse) {
-  boost::json::object payload = {
+  boost::json::object board_json = {
       {"board",
        {
            {8, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -66,22 +77,39 @@ TEST(JsonHandlerTest, testIncorrectInputResponse) {
            {0, 9, 0, 0, 0, 0, 4, 0},
        }},
   };
+  boost::json::object payload = {
+      {"body", boost::json::serialize(board_json)},
+  };
 
   aws::lambda_runtime::invocation_request request = {
       .payload = boost::json::serialize(payload),
+      .request_id = "aws_request_id",
   };
   aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
 
-  std::string expected_payload =
-      "{\"errorMessage\":\"{\\\"statusCode\\\":400,\\\"errorDetail\\\":\\\"Array size is incorrect "
-      "or Invalid input type.\\\"}\",\"errorType\":\"InvalidInput\", \"stackTrace\":[]}";
+  boost::json::object expected_body = {
+      {"error",
+       {
+           {"type", "InvalidInput"},
+           {"message", "Array size is incorrect or Invalid input type."},
+       }},
+  };
+  boost::json::object expected_payload = {
+      {"statusCode", 400},
+      {"headers",
+       {
+           {"content-type", "application/json"},
+       }},
+      {"body", boost::json::serialize(expected_body)},
+      {"isBase64Encoded", false},
+  };
 
-  EXPECT_FALSE(response.is_success());
-  EXPECT_EQ(response.get_payload(), expected_payload);
+  EXPECT_TRUE(response.is_success());
+  EXPECT_EQ(response.get_payload(), boost::json::serialize(expected_payload));
 }
 
 TEST(JsonHandlerTest, testOutOfRangeResponse) {
-  boost::json::object payload = {
+  boost::json::object board_json = {
       {"board",
        {
            {8, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -95,25 +123,52 @@ TEST(JsonHandlerTest, testOutOfRangeResponse) {
            {0, 9, 0, 0, 0, 0, 4, 10, -1},
        }},
   };
+  boost::json::object payload = {
+      {"body", boost::json::serialize(board_json)},
+  };
 
   aws::lambda_runtime::invocation_request request = {
       .payload = boost::json::serialize(payload),
+      .request_id = "aws_request_id",
   };
   aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
 
-  std::string expected_payload =
-      "{\"errorMessage\":\"{\\\"statusCode\\\":400,\\\"errorDetail\\\":\\\"Input validation error: "
-      "some numbers are out of the allowed "
-      "range.\\\",\\\"errors\\\":[{\\\"row\\\":8,\\\"column\\\":7,\\\"number\\\":10},{\\\"row\\\":"
-      "8,\\\"column\\\":8,\\\"number\\\":-1}]}\",\"errorType\":\"OutOfRangeError\", "
-      "\"stackTrace\":[]}";
+  boost::json::object expected_body = {
+      {"error",
+       {
+           {"type", "OutOfRangeError"},
+           {"message", "Input validation error: some numbers are out of the allowed range."},
+           {"detail",
+            {
+                {
+                    {"row", 8},
+                    {"column", 7},
+                    {"number", 10},
+                },
+                {
+                    {"row", 8},
+                    {"column", 8},
+                    {"number", -1},
+                },
+            }},
+       }},
+  };
+  boost::json::object expected_payload = {
+      {"statusCode", 400},
+      {"headers",
+       {
+           {"content-type", "application/json"},
+       }},
+      {"body", boost::json::serialize(expected_body)},
+      {"isBase64Encoded", false},
+  };
 
-  EXPECT_FALSE(response.is_success());
-  EXPECT_EQ(response.get_payload(), expected_payload);
+  EXPECT_TRUE(response.is_success());
+  EXPECT_EQ(response.get_payload(), boost::json::serialize(expected_payload));
 }
 
 TEST(JsonHandlerTest, testConstraintViolationResponse) {
-  boost::json::object payload = {
+  boost::json::object board_json = {
       {"board",
        {
            {8, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -127,21 +182,57 @@ TEST(JsonHandlerTest, testConstraintViolationResponse) {
            {0, 9, 0, 0, 0, 0, 4, 0, 0},
        }},
   };
+  boost::json::object payload = {
+      {"body", boost::json::serialize(board_json)},
+  };
 
   aws::lambda_runtime::invocation_request request = {
       .payload = boost::json::serialize(payload),
+      .request_id = "aws_request_id",
   };
   aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
 
-  std::string expected_payload =
-      "{\"errorMessage\":\"{\\\"statusCode\\\":500,\\\"errorDetail\\\":\\\"Input does not meet the "
-      "required "
-      "constraints.\\\",\\\"errors\\\":[{\\\"index\\\":6,\\\"number\\\":1,\\\"type\\\":\\\"row\\\"}"
-      ",{\\\"index\\\":3,\\\"number\\\":1,\\\"type\\\":\\\"column\\\"},{\\\"index\\\":3,"
-      "\\\"number\\\":6,\\\"type\\\":\\\"column\\\"},{\\\"index\\\":1,\\\"number\\\":6,"
-      "\\\"type\\\":\\\"block\\\"}]}\",\"errorType\":\"ConstraintViolation\", \"stackTrace\":[]}";
+  boost::json::object expected_body = {
+      {"error",
+       {
+           {"type", "ConstraintViolation"},
+           {"message", "Input does not meet the required constraints."},
+           {"detail",
+            {
+                {
+                    {"index", 6},
+                    {"number", 1},
+                    {"type", "row"},
+                },
+                {
+                    {"index", 3},
+                    {"number", 1},
+                    {"type", "column"},
+                },
+                {
+                    {"index", 3},
+                    {"number", 6},
+                    {"type", "column"},
+                },
+                {
+                    {"index", 1},
+                    {"number", 6},
+                    {"type", "block"},
+                },
+            }},
+       }},
+  };
+  boost::json::object expected_payload = {
+      {"statusCode", 400},
+      {"headers",
+       {
+           {"content-type", "application/json"},
+       }},
+      {"body", boost::json::serialize(expected_body)},
+      {"isBase64Encoded", false},
+  };
 
-  EXPECT_FALSE(response.is_success());
-  EXPECT_EQ(response.get_payload(), expected_payload);
+  EXPECT_TRUE(response.is_success());
+  EXPECT_EQ(response.get_payload(), boost::json::serialize(expected_payload));
 }
 #endif
