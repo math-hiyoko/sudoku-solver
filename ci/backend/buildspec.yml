@@ -34,15 +34,17 @@ phases:
       - cd $CODEBUILD_SRC_DIR/backend/extern/aws-lambda-cpp
       - mkdir build
       - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
-                 -DBUILD_SHARED_LIBS=OFF \
+      - >
+        cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
+                 -DBUILD_SHARED_LIBS=OFF
                  -DCMAKE_INSTALL_PREFIX=$CODEBUILD_SRC_DIR/backend
       - make && make install
       - echo "Building the application..."
       - cd $CODEBUILD_SRC_DIR/backend
       - mkdir build
       - cd build
-      - cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+      - >
+        cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE 
                  -DCMAKE_PREFIX_PATH=$CODEBUILD_SRC_DIR/backend
       - make && make aws-lambda-package-SudokuLambda
       - echo "Running Tests..."
