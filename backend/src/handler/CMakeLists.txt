@@ -57,6 +57,11 @@ target_link_libraries(${TARGET_NAME} PRIVATE
   Boost::json
   HandlerTools
 )
+target_compile_options(${TARGET_NAME} PRIVATE
+  -O3
+  -flto
+  -fstrict-aliasing
+)
 foreach(env_var IN LISTS ENV_VARS)
   target_compile_definitions(${TARGET_NAME} PRIVATE ${env_var})
 endforeach()
