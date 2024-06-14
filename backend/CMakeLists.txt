@@ -91,7 +91,8 @@ macro(setup_format)
     endforeach()
     add_custom_target(
       cmake-format
-      COMMAND ${cmake_format_exe} -i ${all_cmake_files}
+      COMMAND ${cmake_format_exe} -i ${all_cmake_files} --config-file
+              ${PROJECT_SOURCE_DIR}/.cmake-format
       COMMENT "Running cmake-format on CMake files"
       VERBATIM)
   else()
