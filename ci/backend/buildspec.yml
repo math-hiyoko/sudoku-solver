@@ -8,7 +8,11 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - yum -y update
-      - yum -y install cmake gcc boost-devel boost-json
+      - |
+        yum -y install cmake \
+                       gcc \
+                       boost-devel \
+                       boost-json
 
   pre_build:
     commands:
@@ -67,8 +71,10 @@ phases:
 
 reports:
   unittest_reports:
-    files: backend/build/tests/unittest_reports/unittest.xml
-    file-format: JUnit
+    base-directory: backend/build/tests/unittest_reports
+    files: *.xml
+    discard-paths: yes
+    file-format: JUNITXML
 
 artifacts:
   files: backend/build/src/handler/$FUCTION_NAME.zip
