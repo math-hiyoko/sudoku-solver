@@ -12,7 +12,8 @@ add_library(${target_name} STATIC DancingNode.cpp ColumnNode.cpp RowNode.cpp
 
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(${target_name} PRIVATE cxx_std_20)
-target_compile_options(${target_name} PRIVATE -O3 -flto -fstrict-aliasing)
+target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
+                                              -fstrict-aliasing -funroll-loops)
 foreach(env_var IN LISTS env_vars)
   target_compile_definitions(${target_name} PRIVATE ${env_var})
 endforeach()
@@ -25,7 +26,8 @@ set(target_name "SudokuSolver")
 add_library(${target_name} STATIC SudokuSolver.cpp SudokuValidator.cpp)
 
 target_compile_features(${target_name} PRIVATE cxx_std_20)
-target_compile_options(${target_name} PRIVATE -O3 -flto -fstrict-aliasing)
+target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
+                                              -fstrict-aliasing -funroll-loops)
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
                                                   ${Boost_INCLUDE_DIRS})
 target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)
