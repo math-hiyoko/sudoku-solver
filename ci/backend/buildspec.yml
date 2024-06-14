@@ -72,7 +72,7 @@ phases:
 reports:
   unittest_reports:
     base-directory: backend/build/tests/unittest_reports
-    files: *.xml
+    files: "*.xml"
     discard-paths: yes
     file-format: JUNITXML
 
