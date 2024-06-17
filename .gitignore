@@ -41,7 +41,7 @@ build/
 lib/
 bin/
 aws/
+frontend/package-lock.json
 frontend/public/
 frontend/node_modules/
-frontend/resources/_gen/
-frontend/.hugo_build.lock
+frontend/.chache/
