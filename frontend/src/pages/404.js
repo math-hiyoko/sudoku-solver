@@ -1,15 +1,16 @@
-import * as React from "react"
+import React from 'react';
+import { Link } from 'gatsby';
+import { useTranslation } from 'react-i18next';
 
-import Layout from "../components/layout"
-import Seo from "../components/seo"
+const NotFoundPage = () => {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <h1>404: Not Found</h1>
+      <p>{t('page_not_found')}</p>
+      <Link to="/">{t('back_to_home')}</Link>
+    </div>
+  );
+};
 
-const NotFoundPage = () => (
-  <Layout>
-    <h1>404: Not Found</h1>
-    <p>You just hit a route that doesn&#39;t exist... the sadness.</p>
-  </Layout>
-)
-
-export const Head = () => <Seo title="404: Not Found" />
-
-export default NotFoundPage
+export default NotFoundPage;
