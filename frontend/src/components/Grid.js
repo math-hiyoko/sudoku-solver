@@ -1,18 +1,19 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const sudokuDim = parseInt(process.env.SUDOKU_DIM, 10) || 3;
 const gridSize = sudokuDim * sudokuDim;
 
-
-let gridStyles = `
+let inputStyles = `
   & > input {
     box-sizing: border-box;
     border: 1px solid #ccc; /* 通常のセル境界線 */
+    margin: 0;
+    padding: 0;
     width: 100%;
-    height: 0;
-    padding-bottom: 100%;
+    height: 100%;
     display: block;
+    font-size: 2em;
   }
   
   /* 大きなグリッドの境界線を追加 */
@@ -26,7 +27,7 @@ let gridStyles = `
 `;
 
 for (let i = 0; i < sudokuDim; i++) {
-  gridStyles += `
+  inputStyles += `
     & > input:nth-child(n+${gridSize * sudokuDim * i + 1}):nth-child(-n+${gridSize * sudokuDim * i + gridSize}) { /* 各ブロックの上側の境界を太く */
       border-top: 2px solid black;
     }
@@ -41,33 +42,22 @@ const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(${gridSize}, 1fr);
   grid-template-rows: repeat(${gridSize}, 1fr);
+  border: 2px solid black;
   gap: 0; /* セル間のギャップを削除 */
 
-  ${gridStyles}
+  ${inputStyles}
 `;
 
 const Cell = styled.input`
   width: 100%;
   height: 100%;
   text-align: center;
-  font-size: 1.5em;
-
-  @media (max-width: 600px) {
-    font-size: 1em;
-  }
-  
-  &::before {
-    content: "";
-    display: block;
-    padding-bottom: 100%; /* 正方形を維持 */
-  }
+  border: none;
 `;
 
-const Grid = ({ board, setBoard }) => {
-  const handleInputChange = (index, value) => {
-    const newBoard = [...board];
-    newBoard[index] = value;
-    setBoard(newBoard);
+const Grid = ({ board, setBoard, onCellClick }) => {
+  const handleCellClick = (index) => {
+    onCellClick(index); // セルクリック時のハンドラー呼び出し
   };
 
   return (
@@ -76,8 +66,9 @@ const Grid = ({ board, setBoard }) => {
         <Cell
           key={index}
           value={cell}
-          onChange={(e) => handleInputChange(index, e.target.value)}
+          onClick={() => handleCellClick(index)} // セルクリック対応
           maxLength="1"
+          readOnly // セルに直接入力できないようにする
         />
       ))}
     </GridContainer>

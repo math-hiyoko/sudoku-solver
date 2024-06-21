@@ -1,14 +1,12 @@
-import React from 'react';
-import { Link } from 'gatsby';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Link } from "gatsby";
 
 const NotFoundPage = () => {
-  const { t } = useTranslation();
   return (
     <div>
-      <h1>404: Not Found</h1>
-      <p>{t('page_not_found')}</p>
-      <Link to="/">{t('back_to_home')}</Link>
+      <h1>Page Not Found</h1>
+      <p>The page you are looking for does not exist.</p>
+      <Link to="/">Go to Home</Link>
     </div>
   );
 };
