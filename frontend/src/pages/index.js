@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import Seo from '../components/Seo'; // SEOコンポーネントのインポート
+import Seo from '../components/Seo';
 import styled from 'styled-components';
 import Grid from '../components/Grid';
+import NumberInput from '../components/NumberInput';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { navigate } from 'gatsby';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { useLocation } from '@reach/router';
 
 const sudokuDim = parseInt(process.env.SUDOKU_DIM, 10) || 3;
 const gridSize = sudokuDim * sudokuDim;
@@ -34,24 +36,44 @@ const Button = styled.button`
 `;
 
 const IndexPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [board, setBoard] = useState(initialBoard);
   const [loading, setLoading] = useState(false); // ロード中の状態管理
+  const [error, setError] = useState(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const lang = params.get('lang');
+    if (lang && i18n.language !== lang) {
+      i18n.changeLanguage(lang);
+    }
+  }, [location.search, i18n]);
 
   const handleSolve = async () => {
-    setLoading(true); // 処理前にロードを開始
+    setError(null);
+
+    const isValidInput = board.every(cell => /^[1-9]$/.test(cell) || cell === '');
+
+    if (!isValidInput) {
+      setError('Please enter numbers between 1 and 9.');
+      return;
+    }
+
+    setLoading(true);
     try {
-      const response = await fetch('https://api.example.com/solve', {
+      const response = await fetch('https://your-api-endpoint.amazonaws.com/your-stage/your-resource', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ board }),
       });
       const data = await response.json();
-      setLoading(false); // 処理完了後にロードを終了
+      setLoading(false);
       navigate('/result', { state: { solvedBoard: data.solvedBoard } });
     } catch (error) {
       console.error('Error solving sudoku:', error);
-      setLoading(false); // エラー時にもロードを終了
+      setLoading(false);
+      setError('There was an error solving the puzzle. Please try again.');
     }
   };
 

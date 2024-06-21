@@ -21,6 +21,10 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+    detection: {
+      order: ['querystring'],
+      lookupQuerystring: 'lang',
+    },
   });
 
 export default i18n;

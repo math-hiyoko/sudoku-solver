@@ -21,6 +21,10 @@ module.exports = {
           interpolation: {
             escapeValue: false,
           },
+          detection: {
+            order: ['querystring'],
+            lookupQuerystring: 'lang',
+          },
         },
         pages: [
           {
