@@ -12,29 +12,13 @@ class RowNode;
  * 具体的には、行がマスと数字の組み合わせ、列がそのマスと数字の組み合わせによって満たされるブロックと行と列の制約を表す。
  */
 class DancingNode {
- public:
+ private:
   DancingNode* left;   // 左にリンクするノード
   DancingNode* right;  // 右にリンクするノード
   DancingNode* up;     // 上にリンクするノード
   DancingNode* down;   // 下にリンクするノード
   RowNode* row;        // このノードが属する行
   ColumnNode* column;  // このノードが属する列
-
-  DancingNode(RowNode* row, ColumnNode* column);
-
-  /**
-   * @brief 現在のノードの下にnodeを相互リンクする
-   * @param node リンク相手のnode
-   * @return 連結後のnode
-   */
-  DancingNode* hookDown(DancingNode* node);
-
-  /**
-   * @brief 現在のノードの右にnodeを相互リンクする
-   * @param node リンク相手のnode
-   * @return 連結後のnode
-   */
-  DancingNode* hookRight(DancingNode* node);
 
   /**
    * @brief このノードを列のリンクから外す
@@ -55,5 +39,39 @@ class DancingNode {
    * @brief coverを元に戻す、coverした順の逆順に呼び出す
    */
   void uncover();
+
+  friend class ColumnNode;
+  friend class HeaderNode;
+
+ public:
+  DancingNode(RowNode* row, ColumnNode* column);
+
+  /**
+   * @brief 現在のノードの下にnodeを相互リンクする
+   * @param node リンク相手のnode
+   * @return 連結後のnode
+   */
+  DancingNode* hookDown(DancingNode* node);
+
+  /**
+   * @brief 現在のノードの上にnodeを相互リンクする
+   * @param node リンク相手のnode
+   * @return 連結後のnode
+   */
+  DancingNode* hookUp(DancingNode* node);
+
+  /**
+   * @brief 現在のノードの右にnodeを相互リンクする
+   * @param node リンク相手のnode
+   * @return 連結後のnode
+   */
+  DancingNode* hookRight(DancingNode* node);
+
+  /**
+   * @brief 現在のノードの左にnodeを相互リンクする
+   * @param node リンク相手のnode
+   * @return 連結後のnode
+   */
+  DancingNode* hookLeft(DancingNode* node);
 };  // class DancingNode
 }  // namespace DancingLinks

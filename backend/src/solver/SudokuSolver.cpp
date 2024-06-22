@@ -8,7 +8,6 @@
 #include "solver/ColumnNode.hpp"
 #include "solver/DancingNode.hpp"
 #include "solver/HeaderNode.hpp"
-#include "solver/KnuthsAlgorithm.hpp"
 #include "solver/RowNode.hpp"
 #include "solver/SudokuType.hpp"
 
@@ -73,7 +72,7 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
   for (int i = 0; i < Sudoku::EXACT_COVER_COL; i++) {
     // iに対応する列のノードを生成
     column_nodes[i] = column_node_pool.construct();
-    header->left->hookRight(column_nodes[i]);
+    header->hookLeft(column_nodes[i]);
   }
 
   // あり得る選択肢かどうかのフラグを設定する
@@ -132,12 +131,12 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
           DancingLinks::DancingNode* dancing_node =
               dancing_node_pool.construct(row_node, column_node);
           // DancingNodeを行列につなげる
-          column_node->up->hookDown(dancing_node);
+          column_node->hookUp(dancing_node);
           column_node->size++;
           if (row_node_front == nullptr) {
             row_node_front = dancing_node;
           }
-          row_node_front->left->hookRight(dancing_node);
+          row_node_front->hookLeft(dancing_node);
         }
       }
     }
@@ -180,8 +179,8 @@ void solve(const Board& board, Board& solution, int& num_solutions, bool& is_exa
   num_solutions = 0;
   std::vector<DancingLinks::RowNode*> solution_nodes;
   solution_nodes.reserve(SIZE * SIZE);
-  knuths_algorithm(header.get(), solution_nodes, num_solutions, is_exact_num_solutions,
-                   just_solution, max_num_solutions);
+  header->knuths_algorithm(solution_nodes, num_solutions, is_exact_num_solutions, just_solution,
+                           max_num_solutions);
 
   // 解が存在する場合、解を復元する
   makeBoardFromSolution(solution_nodes, solution);

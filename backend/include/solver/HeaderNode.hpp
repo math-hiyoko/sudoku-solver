@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "solver/ColumnNode.hpp"
 
 namespace DancingLinks {
@@ -9,9 +11,7 @@ namespace DancingLinks {
  * このヘッダーに繋がるノードがないとき、制約を満たす選択肢が見つかったことを意味する
  */
 class HeaderNode : public ColumnNode {
- public:
-  HeaderNode();
-
+ private:
   /**
    * @brief このヘッダーが表す行列被覆問題が空かどうか判定する
    * @return true 空
@@ -22,6 +22,25 @@ class HeaderNode : public ColumnNode {
    * @brief 残っている行数が最も少ない列を選択する
    * @return 選択された列
    */
-  ColumnNode* selectMinSizeColumn() const;
+  ColumnNode *selectMinSizeColumn() const;
+
+ public:
+  HeaderNode();
+
+  /**
+   * @brief 行列被覆問題を解く関数
+   *
+   * 行列被覆問題はKnuthsAlgorithmというアルゴリズムで解くことができる
+   * 制約を満たせる行が最も少ない列を選び、その列に対する選択肢を決め打ちして探索する
+   *
+   * @param solution 解を表すリストを格納
+   * @param num_solutions 解の数
+   * @param is_exact_num_solutions 解の数が正確かどうかを返す
+   * @param just_solution 解の数が要らない場合はtrue
+   * @param max_num_solutions 探索する解の数の上限
+   */
+  void knuths_algorithm(std::vector<RowNode *> &solution, int &num_solutios,
+                        bool &is_exact_num_solutions, const bool just_solution,
+                        const int max_num_solutions);
 };  // class HeaderNode
 }  // namespace DancingLinks

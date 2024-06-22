@@ -17,12 +17,24 @@ DancingNode* DancingNode::hookDown(DancingNode* node) {
   return node;
 }
 
+DancingNode* DancingNode::hookUp(DancingNode* node) {
+  assert(node != nullptr);
+  this - up->hookDown(node);
+  return node;
+}
+
 DancingNode* DancingNode::hookRight(DancingNode* node) {
   assert(node != nullptr);
   node->right = this->right;
   node->right->left = node;
   node->left = this;
   this->right = node;
+  return node;
+}
+
+DancingNode* DancingNode::hookLeft(DancingNode* node) {
+  assert(node != nullptr);
+  this->left->hookRight(node);
   return node;
 }
 

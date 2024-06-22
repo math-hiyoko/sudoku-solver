@@ -7,18 +7,7 @@ namespace DancingLinks {
  * @brief 行列被覆問題の列を表すノード
  */
 class ColumnNode : public DancingNode {
- public:
-  int size;  // この列に含まれる(覆われていない)ノードの数
-
-  ColumnNode();
-
-  /**
-   * @brief 現在の列の右にnodeを相互リンクする
-   * @param node リンク相手のnode
-   * @return 連結後のnode
-   */
-  ColumnNode* hookRight(ColumnNode* node);
-
+ private:
   /**
    * @brief この列をheaderの繋がりから外す
    */
@@ -33,5 +22,20 @@ class ColumnNode : public DancingNode {
    * @brief この列の制約を満たすことができるかどうか
    */
   bool isSatisfiable() const;
+
+  friend class DancingNode;
+  friend class HeaderNode;
+
+ public:
+  int size;  // この列に含まれる(覆われていない)ノードの数
+
+  ColumnNode();
+
+  /**
+   * @brief 現在の列の右にnodeを相互リンクする
+   * @param node リンク相手のnode
+   * @return 連結後のnode
+   */
+  ColumnNode* hookRight(ColumnNode* node);
 };  // class ColumnNode
 }  // namespace DancingLinks
