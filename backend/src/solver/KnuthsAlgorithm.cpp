@@ -1,6 +1,8 @@
 #include "solver/KnuthsAlgorithm.hpp"
 
+#include <algorithm>
 #include <cassert>
+#include <iterator>
 #include <stack>
 #include <vector>
 
@@ -15,8 +17,8 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &solution, int 
                       const int max_num_solutions) {
   // 探索中の状態を保存するための構造体
   struct NodeState {
-    int index;      // solution_buf中の何番目の要素になるか
-    RowNode *node;  // 選択した行
+    int index;          // solution_buf中の何番目の要素になるか
+    DancingNode *node;  // 選択したノード
   };
 
   // 探索中の状態を保存するスタック
@@ -32,18 +34,18 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &solution, int 
 
   // この列の条件を満たす選択肢を全てスタックに積む
   for (DancingNode *i = column->down; i != column; i = i->down) {
-    search_stack.push(NodeState{.index = 0, .node = i->row});
+    search_stack.push(NodeState{.index = 0, .node = i});
   }
 
   // 解の候補を保存するためのバッファ
-  std::vector<RowNode *> solution_buf;
+  std::vector<DancingNode *> solution_buf;
 
   while (!search_stack.empty()) {
     NodeState state = search_stack.top();
     search_stack.pop();
 
     // stateをindex番目の要素にするために、indexより後ろの要素の反映を元に戻す
-    // converした順に戻さないといけない
+    // coverした順に戻さないといけない
     for (int i = solution_buf.size() - 1; i >= state.index; i--) {
       // solution_buf[i]を選択したという設定を元に戻す
       solution_buf[i]->uncover();
@@ -59,7 +61,8 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &solution, int 
       assert(solution_buf.size() == Sudoku::SIZE * Sudoku::SIZE);
       num_solutions++;
       if (solution.empty()) {
-        solution = solution_buf;
+        std::transform(solution_buf.begin(), solution_buf.end(), std::back_inserter(solution),
+                       [](DancingNode *node) { return node->row; });
       }
 
       // state.nodeを選択したという設定を元に戻す
@@ -78,7 +81,7 @@ void knuths_algorithm(HeaderNode *header, std::vector<RowNode *> &solution, int 
     // 次の列を選択する
     ColumnNode *next_column = header->selectMinSizeColumn();
     for (DancingNode *i = next_column->down; i != next_column; i = i->down) {
-      search_stack.push(NodeState{.index = state.index + 1, .node = i->row});
+      search_stack.push(NodeState{.index = state.index + 1, .node = i});
     }
   }
 

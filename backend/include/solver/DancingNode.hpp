@@ -45,5 +45,15 @@ class DancingNode {
    * @brief このノードを列のリンクに戻す
    */
   void relinkUD();
+
+  /**
+   * @brief この選択を選択した時の行列の状態を覆って使えなくする
+   */
+  void cover();
+
+  /**
+   * @brief coverを元に戻す、coverした順の逆順に呼び出す
+   */
+  void uncover();
 };  // class DancingNode
 }  // namespace DancingLinks

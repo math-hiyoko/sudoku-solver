@@ -124,6 +124,7 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
         // RowNodeを生成し、横につなげる
         DancingLinks::RowNode* row_node = row_node_pool.construct(
             Sudoku::Option::getId(Sudoku::Option{.row = row, .column = column, .number = number}));
+        DancingLinks::DancingNode* row_node_front = nullptr;
         for (int i = 0; i < static_cast<int>(Sudoku::ConstraintEnum::ENUM_COUNT); i++) {
           // このConstraintに対応する列のノードを取得
           int column_id = Sudoku::Constraint::getId(matrix[idx][i]);
@@ -133,10 +134,10 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
           // DancingNodeを行列につなげる
           column_node->up->hookDown(dancing_node);
           column_node->size++;
-          if (row_node->front == nullptr) {
-            row_node->front = dancing_node;
+          if (row_node_front == nullptr) {
+            row_node_front = dancing_node;
           }
-          row_node->front->left->hookRight(dancing_node);
+          row_node_front->left->hookRight(dancing_node);
         }
       }
     }
