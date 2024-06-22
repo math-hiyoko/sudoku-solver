@@ -14,7 +14,6 @@ target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(${target_name} PRIVATE cxx_std_20)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
-target_link_libraries(${target_name} PRIVATE ${OpenMP_CXX_FLAGS})
 foreach(env_var IN LISTS env_vars)
   target_compile_definitions(${target_name} PRIVATE ${env_var})
 endforeach()
