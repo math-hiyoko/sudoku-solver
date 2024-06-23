@@ -63,7 +63,7 @@ const IndexPage = () => {
     
     try {
       const response = await fetch(
-        "https://4cubkquqti.execute-api.-northeast-1.amazonaws.com/SolveSudoku",
+        "https://4cubkquqti.execute-api.ap-northeast-1.amazonaws.com/SolveSudoku",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
