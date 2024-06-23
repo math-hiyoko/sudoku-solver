@@ -19,7 +19,7 @@ DancingNode* DancingNode::hookDown(DancingNode* node) {
 
 DancingNode* DancingNode::hookUp(DancingNode* node) {
   assert(node != nullptr);
-  this - up->hookDown(node);
+  this->up->hookDown(node);
   return node;
 }
 

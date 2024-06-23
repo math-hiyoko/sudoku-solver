@@ -13,8 +13,6 @@ class RowNode;
  */
 class DancingNode {
  private:
-  DancingNode* left;   // 左にリンクするノード
-  DancingNode* right;  // 右にリンクするノード
   DancingNode* up;     // 上にリンクするノード
   DancingNode* down;   // 下にリンクするノード
   RowNode* row;        // このノードが属する行
@@ -42,6 +40,10 @@ class DancingNode {
 
   friend class ColumnNode;
   friend class HeaderNode;
+
+ protected:
+  DancingNode* left;   // 左にリンクするノード
+  DancingNode* right;  // 右にリンクするノード
 
  public:
   DancingNode(RowNode* row, ColumnNode* column);

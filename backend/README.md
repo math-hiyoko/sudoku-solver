@@ -21,7 +21,7 @@ $ cd extern/aws-lambda-cpp
 $ mkdir build && cd build
 $ cmake .. -DCMAKE_INSTALL_PREFIX=../../..
 $ make && make install
-$ cd -
+$ cd ../../..
 # SudokuSolberのビルド
 $ mkdir build && cd build
 $ cmake .. -DCMAKE_PREFIX_PATH=..
