@@ -15,16 +15,6 @@ target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 target_link_libraries(${target_name} INTERFACE AWS::aws-lambda-runtime
                                                Boost::json SudokuSolver)
 target_compile_features(${target_name} PRIVATE cxx_std_20)
-target_compile_options(${target_name} PRIVATE -O3 -flto -fstrict-aliasing)
-foreach(env_var IN LISTS env_vars)
-  target_compile_definitions(${target_name} PRIVATE ${env_var})
-endforeach()
-target_include_directories(${target_name} PRIVATE ${Boost_INCLUDE_DIRS}
-                                                  ${PROJECT_SOURCE_DIR}/include)
-target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)
-target_link_libraries(${target_name} INTERFACE AWS::aws-lambda-runtime
-                                               Boost::json SudokuSolver)
-target_compile_features(${target_name} PRIVATE cxx_std_20)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
 foreach(env_var IN LISTS ENV_VARS)

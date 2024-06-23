@@ -10,19 +10,8 @@ namespace DancingLinks {
  */
 class RowNode {
  public:
-  int option_id;       // この行が表す選択肢の番号
-  DancingNode* front;  // この行の先頭のノード
+  int option_id;  // この行が表す選択肢の番号
 
   RowNode(int option_id);
-
-  /**
-   * @brief この選択を選択した時の行列の状態を覆って使えなくする
-   */
-  void cover();
-
-  /**
-   * @brief coverを元に戻す、coverした順の逆順に呼び出す
-   */
-  void uncover();
 };  // class RowNode
 }  // namespace DancingLinks
