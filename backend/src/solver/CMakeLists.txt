@@ -8,7 +8,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # ライブラリDancingLinksを作成
 set(target_name "DancingLinks")
 add_library(${target_name} STATIC DancingNode.cpp ColumnNode.cpp RowNode.cpp
-                                  HeaderNode.cpp KnuthsAlgorithm.cpp)
+                                  HeaderNode.cpp)
 
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(${target_name} PRIVATE cxx_std_20)
