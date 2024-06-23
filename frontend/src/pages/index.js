@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Grid from "../components/Grid";
 import NumberInput from "../components/NumberInput";
+import Footer from "../components/Footer";
 
 const sudokuDim = parseInt(process.env.SUDOKU_DIM, 10) || 3;
 const gridSize = sudokuDim * sudokuDim;
@@ -12,6 +13,13 @@ const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+`;
+
+const Content = styled.div`
+  flex: 1;
 `;
 
 const ButtonContainer = styled.div`
@@ -34,6 +42,7 @@ const IndexPage = () => {
 
   const handleSolve = async () => {
     setError(null);
+    setLoading(true);
 
     const isValidInput = board.every(
       (cell) => /^[1-9]$/.test(cell) || cell === "",
@@ -41,26 +50,34 @@ const IndexPage = () => {
 
     if (!isValidInput) {
       setError("Please enter numbers between 1 and 9.");
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
+    const board2D = [];
+    for (let row = 0; row < gridSize; row++) {
+      const start = row * gridSize;
+      const end = start + gridSize;
+      board2D.push(board.slice(start, end).map(val => (val === "" ? 0 : parseInt(val, 10))));
+    }
+    
     try {
       const response = await fetch(
-        "https://your-api-endpoint.amazonaws.com/your-stage/your-resource",
+        "https://4cubkquqti.execute-api.-northeast-1.amazonaws.com/SolveSudoku",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ board }),
+          body: JSON.stringify({ "board": board2D }),
         },
       );
       const data = await response.json();
-      setLoading(false);
-      console.log("Solved Board:", data.solvedBoard);
+      console.log("Solved Board:", data.solution);
+      setBoard(data.solution.flat());
     } catch (error) {
       console.error("Error solving sudoku:", error);
-      setLoading(false);
       setError("There was an error solving the puzzle. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,30 +86,30 @@ const IndexPage = () => {
   };
 
   const handleCellClick = (index) => {
-    if (selectedNumber !== null) {
-      const newBoard = [...board];
-      newBoard[index] = selectedNumber;
-      setBoard(newBoard);
-    }
+    const newBoard = [...board];
+    newBoard[index] = selectedNumber !== "delete" ? selectedNumber : '';
+    setBoard(newBoard);
   };
 
   return (
     <Container>
-      <h1>Sudoku Solver</h1>
-      <NumberInput onSelect={handleNumberSelect} />
-      <Grid board={board} setBoard={setBoard} onCellClick={handleCellClick} />
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <ButtonContainer>
-          <Button onClick={handleSolve}>Solve</Button>
-          <Button onClick={() => setBoard(Array(gridSize * gridSize).fill(""))}>
-            Clear
-          </Button>
-          <Button>Random</Button>
-        </ButtonContainer>
-      )}
+      <Content>
+        <h1>Sudoku Solver</h1>
+        <NumberInput onSelect={handleNumberSelect} />
+        <Grid board={board} setBoard={setBoard} onCellClick={handleCellClick} />
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <ButtonContainer>
+            <Button onClick={handleSolve}>Solve</Button>
+            <Button onClick={() => setBoard(Array(gridSize * gridSize).fill(""))}>
+              Clear
+            </Button>
+          </ButtonContainer>
+        )}
+      </Content>
+      <Footer />
     </Container>
   );
 };
