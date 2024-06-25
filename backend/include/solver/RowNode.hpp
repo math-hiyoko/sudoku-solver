@@ -10,8 +10,8 @@ namespace DancingLinks {
  */
 class RowNode {
  public:
-  int option_id;  // この行が表す選択肢の番号
+  const int option_id;  // この行が表す選択肢の番号
 
-  RowNode(int option_id);
+  RowNode(const int option_id);
 };  // class RowNode
 }  // namespace DancingLinks

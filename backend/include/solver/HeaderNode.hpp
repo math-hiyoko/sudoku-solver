@@ -40,7 +40,7 @@ class HeaderNode : public ColumnNode {
    * @param max_num_solutions 探索する解の数の上限
    */
   void knuths_algorithm(std::vector<RowNode *> &solution, int &num_solutios,
-                        bool &is_exact_num_solutions, const bool just_solution,
-                        const int max_num_solutions);
+                        bool &is_exact_num_solutions, const bool &just_solution,
+                        const int &max_num_solutions);
 };  // class HeaderNode
 }  // namespace DancingLinks

@@ -13,11 +13,6 @@ class RowNode;
  */
 class DancingNode {
  private:
-  DancingNode* up;     // 上にリンクするノード
-  DancingNode* down;   // 下にリンクするノード
-  RowNode* row;        // このノードが属する行
-  ColumnNode* column;  // このノードが属する列
-
   /**
    * @brief このノードを列のリンクから外す
    */
@@ -42,18 +37,15 @@ class DancingNode {
   friend class HeaderNode;
 
  protected:
+  DancingNode* up;     // 上にリンクするノード
+  DancingNode* down;   // 下にリンクするノード
   DancingNode* left;   // 左にリンクするノード
   DancingNode* right;  // 右にリンクするノード
+  RowNode* const row;        // このノードが属する行
+  ColumnNode* const column;  // このノードが属する列
 
  public:
-  DancingNode(RowNode* row, ColumnNode* column);
-
-  /**
-   * @brief 現在のノードの下にnodeを相互リンクする
-   * @param node リンク相手のnode
-   * @return 連結後のnode
-   */
-  DancingNode* hookDown(DancingNode* node);
+  DancingNode(RowNode* const row, ColumnNode* const column);
 
   /**
    * @brief 現在のノードの上にnodeを相互リンクする
@@ -61,13 +53,6 @@ class DancingNode {
    * @return 連結後のnode
    */
   DancingNode* hookUp(DancingNode* node);
-
-  /**
-   * @brief 現在のノードの右にnodeを相互リンクする
-   * @param node リンク相手のnode
-   * @return 連結後のnode
-   */
-  DancingNode* hookRight(DancingNode* node);
 
   /**
    * @brief 現在のノードの左にnodeを相互リンクする

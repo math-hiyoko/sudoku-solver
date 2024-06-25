@@ -5,36 +5,24 @@
 #include "solver/ColumnNode.hpp"
 
 namespace DancingLinks {
-DancingNode::DancingNode(RowNode* row, ColumnNode* column)
+DancingNode::DancingNode(RowNode* const row, ColumnNode* const column)
     : left(this), right(this), up(this), down(this), row(row), column(column) {}
-
-DancingNode* DancingNode::hookDown(DancingNode* node) {
-  assert(node != nullptr);
-  node->down = this->down;
-  node->down->up = node;
-  node->up = this;
-  this->down = node;
-  return node;
-}
 
 DancingNode* DancingNode::hookUp(DancingNode* node) {
   assert(node != nullptr);
-  this->up->hookDown(node);
-  return node;
-}
-
-DancingNode* DancingNode::hookRight(DancingNode* node) {
-  assert(node != nullptr);
-  node->right = this->right;
-  node->right->left = node;
-  node->left = this;
-  this->right = node;
+  node->up = this->up;
+  node->down = this;
+  this->up->down = node;
+  this->up = node;
   return node;
 }
 
 DancingNode* DancingNode::hookLeft(DancingNode* node) {
   assert(node != nullptr);
-  this->left->hookRight(node);
+  node->right = this;
+  node->left = this->left;
+  this->left->right = node;
+  this->left = node;
   return node;
 }
 
@@ -45,8 +33,7 @@ void DancingNode::unlinkUD() {
 }
 
 void DancingNode::relinkUD() {
-  this->up->down = this;
-  this->down->up = this;
+  this->up->down = this->down->up = this;
   return;
 }
 
