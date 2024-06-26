@@ -51,7 +51,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
   do {
     int next_index = 0; // 次がsolution_buf中の何番目の要素になるか
 
-    if (!search_stack.empty()) {
+    if (!search_stack.empty()) [[likely]] {
       const NodeState state = search_stack.top();
       search_stack.pop();
 
@@ -82,7 +82,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
         state.node->uncover();
         solution_buf.pop_back();
 
-        if (just_solution || num_solutions >= max_num_solutions) {
+        if (just_solution || num_solutions >= max_num_solutions) [[unlikely]] {
           is_exact_num_solutions = search_stack.empty();
           break;
         }
