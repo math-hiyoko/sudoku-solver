@@ -62,6 +62,61 @@ TEST(JsonHandlerTest, testSuccessResponse) {
   EXPECT_EQ(response.get_payload(), boost::json::serialize(expected_payload));
 }
 
+TEST(JsonHandlerTest, testSuccessResponseEmptyBoard) {
+  boost::json::object board_json = {
+      {"board",
+       {
+           {0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0},
+       }},
+  };
+  boost::json::object payload = {
+      {"body", boost::json::serialize(board_json)},
+  };
+
+  aws::lambda_runtime::invocation_request request = {
+      .payload = boost::json::serialize(payload),
+      .request_id = "aws_request_id",
+  };
+  aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
+
+  boost::json::object expected_body = {
+      {"solution",
+       {
+           {9, 8, 7, 6, 5, 4, 3, 2, 1},
+           {4, 5, 6, 2, 3, 1, 7, 8, 9},
+           {3, 2, 1, 7, 8, 9, 4, 5, 6},
+           {1, 3, 5, 8, 6, 7, 2, 9, 4},
+           {8, 4, 2, 3, 9, 5, 6, 1, 7},
+           {6, 7, 9, 1, 4, 2, 5, 3, 8},
+           {2, 6, 3, 9, 7, 8, 1, 4, 5},
+           {7, 9, 4, 5, 1, 3, 8, 6, 2},
+           {5, 1, 8, 4, 2, 6, 9, 7, 3},
+       }},
+      {"num_solutions", Sudoku::MAX_NUM_SOLUTIONS},
+      {"is_exact_num_solutions", false},
+  };
+  boost::json::object expected_payload = {
+      {"statusCode", 200},
+      {"headers",
+       {
+           {"content-type", "application/json"},
+       }},
+      {"body", boost::json::serialize(expected_body)},
+      {"isBase64Encoded", false},
+  };
+
+  EXPECT_TRUE(response.is_success());
+  EXPECT_EQ(response.get_payload(), boost::json::serialize(expected_payload));
+}
+
 TEST(JsonHandlerTest, testIncorrectInputResponse) {
   boost::json::object board_json = {
       {"board",

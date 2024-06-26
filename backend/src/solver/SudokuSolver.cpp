@@ -133,7 +133,7 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
           // DancingNodeを行列につなげる
           column_node->hookUp(dancing_node);
           column_node->size++;
-          if (row_node_front == nullptr) {
+          if (row_node_front == nullptr) [[unlikely]] {
             row_node_front = dancing_node;
           }
           row_node_front->hookLeft(dancing_node);

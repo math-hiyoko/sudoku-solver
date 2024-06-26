@@ -17,7 +17,7 @@ target_link_libraries(${target_name} INTERFACE AWS::aws-lambda-runtime
 target_compile_features(${target_name} PRIVATE cxx_std_20)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
-foreach(env_var IN LISTS ENV_VARS)
+foreach(env_var IN LISTS env_vars)
   target_compile_definitions(${target_name} PRIVATE ${env_var})
 endforeach()
 
