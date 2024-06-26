@@ -14,7 +14,5 @@ void ColumnNode::unlinkLR() {
   return;
 }
 
-void ColumnNode::relinkLR() {
-  this->left->right = this->right->left = this;
-}
+void ColumnNode::relinkLR() { this->left->right = this->right->left = this; }
 }  // namespace DancingLinks

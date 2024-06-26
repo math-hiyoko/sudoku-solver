@@ -20,7 +20,7 @@ ColumnNode *HeaderNode::selectMinSizeColumn() const {
   ColumnNode *ret = nullptr;
   int minSize = std::numeric_limits<int>::max();
   for (DancingNode *i = this->right; i != this && minSize > 0; i = i->right) {
-    ColumnNode * const column_node = static_cast<ColumnNode *>(i);
+    ColumnNode *const column_node = static_cast<ColumnNode *>(i);
     if (column_node->size < minSize) {
       minSize = column_node->size;
       ret = column_node;
@@ -38,9 +38,9 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
   // 探索中の状態を保存するための構造体
   struct NodeState {
     const int index;          // solution_buf中の何番目の要素になるか
-    DancingNode * const node;  // 選択したノード
+    DancingNode *const node;  // 選択したノード
 
-    NodeState(const int index, DancingNode * const node) : index(index), node(node) {}
+    NodeState(const int index, DancingNode *const node) : index(index), node(node) {}
   };
 
   // 探索中の状態を保存するスタック
@@ -49,7 +49,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
   std::vector<DancingNode *> solution_buf;
 
   do {
-    int next_index = 0; // 次がsolution_buf中の何番目の要素になるか
+    int next_index = 0;  // 次がsolution_buf中の何番目の要素になるか
 
     if (!search_stack.empty()) [[likely]] {
       const NodeState state = search_stack.top();
@@ -65,7 +65,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
       }
       solution_buf.resize(state.index);
 
-       // state.nodeを選択したことにして反映を行う
+      // state.nodeを選択したことにして反映を行う
       state.node->cover();
       solution_buf.emplace_back(state.node);
 
@@ -73,7 +73,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
         // headerが空 => 解が見つかった
         assert(solution_buf.size() == Sudoku::SIZE * Sudoku::SIZE);
         num_solutions++;
-        if (solution.empty()) {
+        if (solution.empty()) [[unlikely]] {
           std::transform(solution_buf.begin(), solution_buf.end(), std::back_inserter(solution),
                          [](DancingNode *node) { return node->row; });
         }
@@ -92,7 +92,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     }
 
     // 次の列を選択する
-    const ColumnNode * const next_column = this->selectMinSizeColumn();
+    const ColumnNode *const next_column = this->selectMinSizeColumn();
     for (DancingNode *i = next_column->down; i != next_column; i = i->down) {
       search_stack.emplace(next_index, i);
     }

@@ -42,7 +42,7 @@ void DancingNode::cover() {
   DancingNode* i = this;
   do {
     for (DancingNode* j = i->down; j != i; j = j->down) {
-      if (j == i->column) {
+      if (j == i->column) [[unlikely]] {
         // この選択肢を満たす行を覆う
         static_cast<ColumnNode*>(j)->unlinkLR();
         continue;

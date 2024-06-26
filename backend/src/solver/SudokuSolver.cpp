@@ -86,13 +86,13 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
         }
         for (int n_row = 0; n_row < Sudoku::SIZE; n_row++) {
           // 同じ列にnumber+1が入らない
-          if (n_row != row) {
+          if (n_row != row) [[likely]] {
             unfeasible[n_row][column][board[row][column] - 1] = true;
           }
         }
         for (int n_column = 0; n_column < Sudoku::SIZE; n_column++) {
           // 同じ行にnumber+1が入らない
-          if (n_column != column) {
+          if (n_column != column) [[likely]] {
             unfeasible[row][n_column][board[row][column] - 1] = true;
           }
         }
@@ -101,7 +101,7 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
           for (int n_column = column / Sudoku::DIM * Sudoku::DIM;
                n_column < (column / Sudoku::DIM + 1) * Sudoku::DIM; n_column++) {
             // 同じブロックにnumber+1が入らない
-            if (n_row != row && n_column != column) {
+            if (n_row != row && n_column != column) [[likely]] {
               unfeasible[n_row][n_column][board[row][column] - 1] = true;
             }
           }

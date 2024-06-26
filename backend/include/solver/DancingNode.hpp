@@ -37,10 +37,10 @@ class DancingNode {
   friend class HeaderNode;
 
  protected:
-  DancingNode* up;     // 上にリンクするノード
-  DancingNode* down;   // 下にリンクするノード
-  DancingNode* left;   // 左にリンクするノード
-  DancingNode* right;  // 右にリンクするノード
+  DancingNode* up;           // 上にリンクするノード
+  DancingNode* down;         // 下にリンクするノード
+  DancingNode* left;         // 左にリンクするノード
+  DancingNode* right;        // 右にリンクするノード
   RowNode* const row;        // このノードが属する行
   ColumnNode* const column;  // このノードが属する列
 
