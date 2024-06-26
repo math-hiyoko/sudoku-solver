@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "solver/ColumnNode.hpp"
+#include "solver/IDancingLinksNode.hpp"
+#include "solver/RowNode.hpp"
 
 namespace DancingLinks {
 /** @brief 行列被覆問題のヘッダー
@@ -10,7 +12,7 @@ namespace DancingLinks {
  * 現在の行列被覆問題に残っている列を管理する
  * このヘッダーに繋がるノードがないとき、制約を満たす選択肢が見つかったことを意味する
  */
-class HeaderNode : public ColumnNode {
+class HeaderNode : public IDancingLinksNode {
  private:
   /**
    * @brief このヘッダーが表す行列被覆問題が空かどうか判定する

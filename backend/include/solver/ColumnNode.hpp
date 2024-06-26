@@ -2,13 +2,13 @@
 
 #include <vector>
 
-#include "solver/DancingNode.hpp"
+#include "solver/IDancingLinksBodyNode.hpp"
 
 namespace DancingLinks {
 /**
  * @brief 行列被覆問題の列を表すノード
  */
-class ColumnNode : public DancingNode {
+class ColumnNode : public IDancingLinksBodyNode {
  public:
   ColumnNode();
 

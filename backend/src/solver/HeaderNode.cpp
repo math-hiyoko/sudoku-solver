@@ -8,18 +8,20 @@
 #include <vector>
 
 #include "solver/ColumnNode.hpp"
+#include "solver/DancingNode.hpp"
+#include "solver/IDancingLinksNode.hpp"
 #include "solver/RowNode.hpp"
 #include "solver/SudokuType.hpp"
 
 namespace DancingLinks {
-HeaderNode::HeaderNode() : ColumnNode() {}
+HeaderNode::HeaderNode() : IDancingLinksNode() {}
 
 bool HeaderNode::isEmpty() const { return this->right == this; }
 
 ColumnNode *HeaderNode::selectMinSizeColumn() const {
   ColumnNode *ret = nullptr;
   int minSize = std::numeric_limits<int>::max();
-  for (DancingNode *i = this->right; i != this && minSize > 0; i = i->right) {
+  for (IDancingLinksNode *i = this->right; i != this && minSize > 0; i = i->right) {
     ColumnNode *const column_node = static_cast<ColumnNode *>(i);
     if (column_node->size < minSize) {
       minSize = column_node->size;
@@ -93,8 +95,8 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
 
     // 次の列を選択する
     const ColumnNode *const next_column = this->selectMinSizeColumn();
-    for (DancingNode *i = next_column->down; i != next_column; i = i->down) {
-      search_stack.emplace(next_index, i);
+    for (IDancingLinksBodyNode *i = next_column->down; i != next_column; i = i->down) {
+      search_stack.emplace(next_index, static_cast<DancingNode *>(i));
     }
   } while (!search_stack.empty());
 

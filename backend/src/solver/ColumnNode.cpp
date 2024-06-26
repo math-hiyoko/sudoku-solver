@@ -3,10 +3,10 @@
 #include <cassert>
 #include <vector>
 
-#include "solver/DancingNode.hpp"
+#include "solver/IDancingLinksBodyNode.hpp"
 
 namespace DancingLinks {
-ColumnNode::ColumnNode() : DancingNode(nullptr, this), size(0) {}
+ColumnNode::ColumnNode() : IDancingLinksBodyNode(), size(0) {}
 
 void ColumnNode::unlinkLR() {
   this->left->right = this->right;

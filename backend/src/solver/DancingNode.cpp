@@ -3,28 +3,11 @@
 #include <cassert>
 
 #include "solver/ColumnNode.hpp"
+#include "solver/IDancingLinksBodyNode.hpp"
 
 namespace DancingLinks {
 DancingNode::DancingNode(RowNode* const row, ColumnNode* const column)
-    : left(this), right(this), up(this), down(this), row(row), column(column) {}
-
-DancingNode* DancingNode::hookUp(DancingNode* node) {
-  assert(node != nullptr);
-  node->up = this->up;
-  node->down = this;
-  this->up->down = node;
-  this->up = node;
-  return node;
-}
-
-DancingNode* DancingNode::hookLeft(DancingNode* node) {
-  assert(node != nullptr);
-  node->right = this;
-  node->left = this->left;
-  this->left->right = node;
-  this->left = node;
-  return node;
-}
+    : IDancingLinksBodyNode(), left(this), right(this), row(row), column(column) {}
 
 void DancingNode::unlinkUD() {
   this->up->down = this->down;
@@ -37,18 +20,27 @@ void DancingNode::relinkUD() {
   return;
 }
 
+DancingNode* DancingNode::hookLeft(DancingNode* node) {
+  assert(node != nullptr);
+  node->right = this;
+  node->left = this->left;
+  this->left->right = node;
+  this->left = node;
+  return node;
+}
+
 void DancingNode::cover() {
   // この行が満たす選択肢について走査
   DancingNode* i = this;
   do {
-    for (DancingNode* j = i->down; j != i; j = j->down) {
-      if (j == i->column) [[unlikely]] {
+    for (IDancingLinksBodyNode* j = i->down; j != i; j = j->down) {
+      if (j == i->column) {
         // この選択肢を満たす行を覆う
         static_cast<ColumnNode*>(j)->unlinkLR();
         continue;
       }
       // 今見ている列(i->column)を満たす行を覆う
-      for (DancingNode* k = j->right; k != j; k = k->right) {
+      for (DancingNode* k = static_cast<DancingNode*>(j)->right; k != j; k = k->right) {
         k->unlinkUD();
         k->column->size--;
       }
@@ -62,14 +54,14 @@ void DancingNode::uncover() {
   // この行が満たす選択肢について走査、coverした順の逆順に戻さなければいけない
   DancingNode* i = this->left;
   do {
-    for (DancingNode* j = i->up; j != i; j = j->up) {
+    for (IDancingLinksBodyNode* j = i->up; j != i; j = j->up) {
       if (j == i->column) {
         // この選択肢を満たす行を元に戻す
         static_cast<ColumnNode*>(j)->relinkLR();
         continue;
       }
       // 今見ている列(i->column)を満たす行を元に戻す
-      for (DancingNode* k = j->left; k != j; k = k->left) {
+      for (DancingNode* k = static_cast<DancingNode*>(j)->left; k != j; k = k->left) {
         k->column->size++;
         k->relinkUD();
       }
