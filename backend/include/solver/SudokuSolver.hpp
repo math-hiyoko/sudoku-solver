@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/pool/object_pool.hpp>
 #include <vector>
 
 #include "solver/ColumnNode.hpp"

@@ -12,7 +12,7 @@ add_library(
   DancingNode.cpp ColumnNode.cpp RowNode.cpp HeaderNode.cpp
   IDancingLinksBodyNode.cpp IDancingLinksNode.cpp)
 
-target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDE_DIRS})
 target_compile_features(${target_name} PRIVATE cxx_std_20)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)

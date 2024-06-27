@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/pool/object_pool.hpp>
 #include <vector>
 
 #include "solver/ColumnNode.hpp"
@@ -25,6 +26,13 @@ class HeaderNode : public IDancingLinksNode {
    * @return 選択された列
    */
   ColumnNode *selectMinSizeColumn() const;
+
+  /**
+   * @brief このheaderと同じ構造を持つHeaderNodeを複製する
+   */
+  HeaderNode *clone(boost::object_pool<DancingLinks::DancingNode> &dancing_node_pool,
+                    boost::object_pool<DancingLinks::ColumnNode> &column_node_pool,
+                    boost::object_pool<DancingLinks::HeaderNode> &header_node_pool) const;
 
  public:
   HeaderNode();
