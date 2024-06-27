@@ -6,5 +6,5 @@
 #include "solver/DancingNode.hpp"
 
 namespace DancingLinks {
-RowNode::RowNode(int option_id) : option_id(option_id) {}
+RowNode::RowNode(const int option_id) : option_id(option_id) {}
 }  // namespace DancingLinks

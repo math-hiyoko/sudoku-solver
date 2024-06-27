@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "solver/ColumnNode.hpp"
+#include "solver/IDancingLinksNode.hpp"
+#include "solver/RowNode.hpp"
 
 namespace DancingLinks {
 /** @brief 行列被覆問題のヘッダー
@@ -10,7 +12,7 @@ namespace DancingLinks {
  * 現在の行列被覆問題に残っている列を管理する
  * このヘッダーに繋がるノードがないとき、制約を満たす選択肢が見つかったことを意味する
  */
-class HeaderNode : public ColumnNode {
+class HeaderNode : public IDancingLinksNode {
  private:
   /**
    * @brief このヘッダーが表す行列被覆問題が空かどうか判定する
@@ -40,7 +42,7 @@ class HeaderNode : public ColumnNode {
    * @param max_num_solutions 探索する解の数の上限
    */
   void knuths_algorithm(std::vector<RowNode *> &solution, int &num_solutios,
-                        bool &is_exact_num_solutions, const bool just_solution,
-                        const int max_num_solutions);
+                        bool &is_exact_num_solutions, const bool &just_solution,
+                        const int &max_num_solutions);
 };  // class HeaderNode
 }  // namespace DancingLinks
