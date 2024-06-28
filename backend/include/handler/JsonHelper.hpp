@@ -37,16 +37,6 @@ int json_to_sudokuboard(const boost::json::array &json, Sudoku::Board &board);
 int sudokuboard_to_json(const Sudoku::Board &board, boost::json::array &json);
 
 /**
- * @brief Sudoku::ConstraintからJSONに変換する
- *
- * @param constraints 変換元のSudoku::Constraint
- * @param json 変換後のJSON Array
- * @return int 正常に変換できたら0, それ以外は1
- */
-int constraints_to_json(const std::vector<Sudoku::Constraint> &constraints,
-                        boost::json::array &json);
-
-/**
  * @brief Sudoku::OptionからJSONに変換する
  *
  * @param options 変換元のSudoku::Option

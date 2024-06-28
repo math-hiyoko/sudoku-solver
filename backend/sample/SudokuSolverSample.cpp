@@ -22,27 +22,13 @@ int validateRange(const Sudoku::Board& board) {
 }
 
 int validateSatisfy(const Sudoku::Board& board) {
-  std::vector<Sudoku::Constraint> constraints;
-  int num_invalid = Sudoku::isSatisfy(board, constraints);
+  std::vector<Sudoku::Option> options;
+  int num_invalid = Sudoku::isSatisfy(board, options);
   if (num_invalid != 0) {
-    std::cerr << "Invalid constraints" << std::endl;
-    for (const Sudoku::Constraint constraint : constraints) {
-      switch (constraint.type) {
-        case Sudoku::ConstraintEnum::ROW:
-          std::cerr << "Row " << constraint.key1 << " has " << constraint.key2 << " more than once"
-                    << std::endl;
-          break;
-        case Sudoku::ConstraintEnum::COLUMN:
-          std::cerr << "Column " << constraint.key1 << " has " << constraint.key2
-                    << " more than once" << std::endl;
-          break;
-        case Sudoku::ConstraintEnum::BLOCK:
-          std::cerr << "Block " << constraint.key1 << " has " << constraint.key2
-                    << " more than once" << std::endl;
-          break;
-        default:
-          break;
-      }
+    std::cerr << "Invalid options" << std::endl;
+    for (const Sudoku::Option option : options) {
+      std::cerr << "Invalid value: " << option.number << " at (" << option.row << ", "
+                << option.column << ")" << std::endl;
     }
     return num_invalid;
   }

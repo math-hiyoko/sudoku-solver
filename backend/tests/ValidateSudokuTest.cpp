@@ -43,20 +43,21 @@ TEST(ValidateSolveTest, testisSatisfy) {
       {0, 0, 8, 5, 0, 0, 0, 1, 0},
       {0, 9, 0, 0, 0, 0, 4, 0, 0},
   }};
-  std::vector<Sudoku::Constraint> constraints;
-  int num_invalid = Sudoku::isSatisfy(input, constraints);
+  std::vector<Sudoku::Option> options;
+  int num_invalid = Sudoku::isSatisfy(input, options);
 
-  std::vector<Sudoku::Constraint> expected_constraints = {
-      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::ROW, .key1 = 2, .key2 = 9},
-      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::ROW, .key1 = 6, .key2 = 1},
-      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::COLUMN, .key1 = 2, .key2 = 3},
-      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::COLUMN, .key1 = 3, .key2 = 1},
-      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::BLOCK, .key1 = 0, .key2 = 3},
-      Sudoku::Constraint{.type = Sudoku::ConstraintEnum::BLOCK, .key1 = 1, .key2 = 9},
+  std::vector<Sudoku::Option> expected_options = {
+    Sudoku::Option{.row = 0, .column = 2, .number = 3},
+    Sudoku::Option{.row = 1, .column = 2, .number = 3},
+    Sudoku::Option{.row = 2, .column = 4, .number = 9},
+    Sudoku::Option{.row = 2, .column = 5, .number = 9},
+    Sudoku::Option{.row = 5, .column = 3, .number = 1},
+    Sudoku::Option{.row = 6, .column = 2, .number = 1},
+    Sudoku::Option{.row = 6, .column = 3, .number = 1},
   };
-  int expected_num_invalid = 6;
+  int expected_num_invalid = 7;
 
-  EXPECT_EQ(constraints, expected_constraints);
+  EXPECT_EQ(options, expected_options);
   EXPECT_EQ(num_invalid, expected_num_invalid);
 }
 #endif

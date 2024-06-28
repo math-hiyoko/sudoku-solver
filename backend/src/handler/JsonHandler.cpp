@@ -128,10 +128,10 @@ aws::lambda_runtime::invocation_response sudoku_handler(
   }
 
   // 数独の制約を満たしているか確認
-  std::vector<Sudoku::Constraint> invalid_constraints;
-  if (Sudoku::isSatisfy(input_board, invalid_constraints) != 0) {
-    boost::json::array invalid_constraints_json;
-    if (HandlerHelper::constraints_to_json(invalid_constraints, invalid_constraints_json) != 0) {
+  std::vector<Sudoku::Option> invalid_options;
+  if (Sudoku::isSatisfy(input_board, invalid_options) != 0) {
+    boost::json::array invalid_options_json;
+    if (HandlerHelper::options_to_json(invalid_options, invalid_options_json) != 0) {
       boost::json::object error_json = {
           {"error",
            {
@@ -147,7 +147,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
          {
              {"type", "ConstraintViolation"},
              {"message", "Input does not meet the required constraints."},
-             {"detail", invalid_constraints_json},
+             {"detail", invalid_options_json},
          }},
     };
     return error_response(400, error_json);
