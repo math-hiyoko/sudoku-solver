@@ -23,13 +23,15 @@ const Cell = styled.input`
   border: 1px solid black;
   box-sizing: border-box;
   font-size: 2em;
+  background-color: ${({ hasError }) => (hasError ? "lightcoral" : "white")};
+  color: ${({ hasError }) => (hasError ? "white" : "black")};
   ${({ index }) => (index % sudokuDim === sudokuDim - 1 ? `border-right: 2px solid black;` : '')}
   ${({ index }) => (index % sudokuDim === 0 ? `border-left: 2px solid black;` : '')}
   ${({ index }) => (Math.floor(index / gridSize) % sudokuDim === 0 ? `border-top: 2px solid black;` : '')}
   ${({ index }) => (Math.floor(index / gridSize) % sudokuDim === sudokuDim - 1 ? `border-bottom: 2px solid black;` : '')}
 `;
 
-const Grid = ({ board, setBoard, onCellClick }) => {
+const Grid = ({ board, setBoard, onCellClick, errorDetails }) => {
   return (
     <GridContainer>
       {board.map((cell, index) => (
@@ -40,6 +42,7 @@ const Grid = ({ board, setBoard, onCellClick }) => {
           onClick={() => onCellClick(index)}
           maxLength="1"
           readOnly
+          hasError={errorDetails.includes(index)}
         />
       ))}
     </GridContainer>
