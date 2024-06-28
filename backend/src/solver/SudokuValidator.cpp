@@ -1,6 +1,7 @@
 #include "solver/SudokuValidator.hpp"
 
 #include <array>
+#include <set>
 #include <vector>
 
 namespace Sudoku {
@@ -15,7 +16,8 @@ int isValidRange(const Board &board, std::vector<Option> &options) {
   return options.size();
 }  // isValidRange
 
-int isSatisfy(const Board &board, std::vector<Constraint> &constraints) {
+int isSatisfy(const Board &board, std::vector<Option> &options) {
+  std::set<Option> options_set;
   // 行についてのチェック
   for (int i = 0; i < SIZE; i++) {
     // check[v] は v+1 がi行目に出現する回数を表す
@@ -27,9 +29,12 @@ int isSatisfy(const Board &board, std::vector<Constraint> &constraints) {
       check[board[i][j] - 1]++;
     }
     // 出現回数が2以上のものがあれば制約を満たさない
-    for (int value = 1; value <= SIZE; value++) {
-      if (check[value - 1] > 1) {
-        constraints.push_back(Constraint{.type = ConstraintEnum::ROW, .key1 = i, .key2 = value});
+    for (int j = 0; j < SIZE; j++) {
+      if (board[i][j] == 0) {
+        continue;
+      }
+      if (check[board[i][j] - 1] > 1) {
+        options_set.insert(Option{.row = i, .column = j, .number = board[i][j]});
       }
     }
   }  // 行についてのチェック
@@ -45,9 +50,12 @@ int isSatisfy(const Board &board, std::vector<Constraint> &constraints) {
       check[board[i][j] - 1]++;
     }
     // 出現回数が2以上のものがあれば制約を満たさない
-    for (int value = 1; value <= SIZE; value++) {
-      if (check[value - 1] > 1) {
-        constraints.push_back(Constraint{.type = ConstraintEnum::COLUMN, .key1 = j, .key2 = value});
+    for (int i = 0; i < SIZE; i++) {
+      if (board[i][j] == 0) {
+        continue;
+      }
+      if (check[board[i][j] - 1] > 1) {
+        options_set.insert(Option{.row = i, .column = j, .number = board[i][j]});
       }
     }
   }  // 列についてのチェック
@@ -67,15 +75,22 @@ int isSatisfy(const Board &board, std::vector<Constraint> &constraints) {
         }
       }
       // 出現回数が2以上のものがあれば制約を満たさない
-      for (int value = 1; value <= SIZE; value++) {
-        if (check[value - 1] > 1) {
-          constraints.push_back(
-              Constraint{.type = ConstraintEnum::BLOCK, .key1 = i * DIM + j, .key2 = value});
+      for (int k = 0; k < DIM; k++) {
+        for (int l = 0; l < DIM; l++) {
+          if (board[i * DIM + k][j * DIM + l] == 0) {
+            continue;
+          }
+          if (check[board[i * DIM + k][j * DIM + l] - 1] > 1) {
+            options_set.insert(Option{.row = i * DIM + k, .column = j * DIM + l,
+                                      .number = board[i * DIM + k][j * DIM + l]});
+          }
         }
       }
     }
   }  // ブロックについてのチェック
 
-  return constraints.size();
+  options.assign(options_set.begin(), options_set.end());
+
+  return options.size();
 }  // isSatisfy
 }  // namespace Sudoku

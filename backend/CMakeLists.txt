@@ -110,7 +110,7 @@ endmacro()
 # .envファイルを読み込むための関数
 macro(load_env_file)
   # .envファイルのパスを取得
-  set(env_file_path "${PROJECT_SOURCE_DIR}/.env")
+  set(env_file_path "${PROJECT_SOURCE_DIR}/../.env")
   # .envファイルが存在するか確認
   if(EXISTS ${env_file_path})
     # .envファイルを読み込む
