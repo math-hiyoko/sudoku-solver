@@ -12,9 +12,7 @@ const FooterContainer = styled.footer`
 `;
 
 const Footer = () => (
-  <FooterContainer>
-    © 2024 KOKI Watanabe. All rights reserved.
-  </FooterContainer>
+  <FooterContainer>© 2024 KOKI Watanabe. All rights reserved.</FooterContainer>
 );
 
 export default Footer;

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Grid from "../components/Grid";
 import NumberInput from "../components/NumberInput";
 import Footer from "../components/Footer";
+import { validateBoard } from "../utils";
 
 const sudokuDim = parseInt(process.env.SUDOKU_DIM, 10) || 3;
 const gridSize = sudokuDim * sudokuDim;
@@ -51,12 +52,10 @@ const IndexPage = () => {
     setErrorDetails([]);
     setLoading(true);
 
-    const isValidInput = board.every(
-      (cell) => /^[1-9]$/.test(cell) || cell === "",
-    );
-
-    if (!isValidInput) {
-      setError("Please enter numbers between 1 and 9.");
+    const invalidCells = validateBoard(board);
+    if (invalidCells.length > 0) {
+      setError("Input validation error. Please check the highlighted cells.");
+      setErrorDetails(invalidCells);
       setLoading(false);
       return;
     }
@@ -65,16 +64,20 @@ const IndexPage = () => {
     for (let row = 0; row < gridSize; row++) {
       const start = row * gridSize;
       const end = start + gridSize;
-      board2D.push(board.slice(start, end).map(val => (val === "" ? 0 : parseInt(val, 10))));
+      board2D.push(
+        board
+          .slice(start, end)
+          .map((val) => (val === "" ? 0 : parseInt(val, 10))),
+      );
     }
-    
+
     try {
       const response = await fetch(
         "https://4cubkquqti.execute-api.ap-northeast-1.amazonaws.com/SolveSudoku",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ "board": board2D }),
+          body: JSON.stringify({ board: board2D }),
         },
       );
 
@@ -85,9 +88,12 @@ const IndexPage = () => {
       } else {
         const errorData = await response.json();
         console.error("Error solving sudoku:", errorData);
-        setError(errorData.error.message || "There was an error solving the puzzle. Please try again.");
+        setError(
+          errorData.error.message ||
+            "There was an error solving the puzzle. Please try again.",
+        );
         const detailedErrors = errorData.error.detail.map(
-          (detail) => detail.row * gridSize + detail.column
+          (detail) => detail.row * gridSize + detail.column,
         );
         setErrorDetails(detailedErrors);
       }
@@ -105,19 +111,22 @@ const IndexPage = () => {
 
   const handleCellClick = (index) => {
     const newBoard = [...board];
-    newBoard[index] = selectedNumber !== "delete" ? selectedNumber : '';
+    newBoard[index] = selectedNumber !== "delete" ? selectedNumber : "";
     setBoard(newBoard);
 
-    if (selectedNumber === "delete") {
-      setErrorDetails((prevDetails) =>
-        prevDetails.filter((detailIndex) => detailIndex !== index)
-      );
-    }
+    const invalidCells = validateBoard(newBoard);
+    setError(
+      invalidCells.length > 0
+        ? "Input validation error. Please check the highlighted cells."
+        : null,
+    );
+    setErrorDetails(invalidCells);
   };
 
   const handleClear = () => {
     setBoard(Array(gridSize * gridSize).fill(""));
     setErrorDetails([]);
+    setError(null);
   };
 
   return (
@@ -125,7 +134,12 @@ const IndexPage = () => {
       <Content>
         <h1>Sudoku Solver</h1>
         <NumberInput onSelect={handleNumberSelect} />
-        <Grid board={board} setBoard={setBoard} onCellClick={handleCellClick} errorDetails={errorDetails} />
+        <Grid
+          board={board}
+          setBoard={setBoard}
+          onCellClick={handleCellClick}
+          errorDetails={errorDetails}
+        />
         {error && <ErrorMessage>{error}</ErrorMessage>}
         {loading ? (
           <p>Loading...</p>
