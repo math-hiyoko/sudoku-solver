@@ -24,7 +24,7 @@ const Cell = styled.input`
   box-sizing: border-box;
   font-size: 2em;
   background-color: ${({ hasError }) => (hasError ? "lightcoral" : "white")};
-  color: ${({ hasError }) => (hasError ? "white" : "black")};
+  color: ${({ color }) => color || "black"};
   ${({ index }) =>
     index % sudokuDim === sudokuDim - 1 ? `border-right: 2px solid black;` : ""}
   ${({ index }) =>
@@ -39,18 +39,23 @@ const Cell = styled.input`
       : ""}
 `;
 
-const Grid = ({ board, setBoard, onCellClick, errorDetails }) => {
+const Grid = ({
+  board,
+  onCellClick = () => {},
+  errorDetails = [],
+  cellColors,
+}) => {
   return (
     <GridContainer>
       {board.map((cell, index) => (
         <Cell
           key={index}
-          value={cell}
+          value={cell !== undefined ? cell : ""}
           index={index}
           onClick={() => onCellClick(index)}
-          maxLength="1"
           readOnly
           hasError={errorDetails.includes(index)}
+          color={cellColors?.[index]}
         />
       ))}
     </GridContainer>

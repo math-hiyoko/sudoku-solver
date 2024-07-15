@@ -1,53 +1,33 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import { navigate } from "gatsby";
 import Grid from "../components/Grid";
 import NumberInput from "../components/NumberInput";
 import Footer from "../components/Footer";
-import { validateBoard } from "../utils";
+import { validateBoard } from "../utils/validateBoard";
+import {
+  Button,
+  Container,
+  Content,
+  ButtonContainer,
+  ErrorMessage,
+} from "../styles/CommonStyles";
 
 const sudokuDim = parseInt(process.env.SUDOKU_DIM, 10) || 3;
 const gridSize = sudokuDim * sudokuDim;
-const initialBoard = Array(gridSize * gridSize).fill("");
-
-const Container = styled.div`
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-`;
-
-const Content = styled.div`
-  flex: 1;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-`;
-
-const Button = styled.button`
-  padding: 10px 20px;
-  font-size: 1em;
-  margin: 5px;
-`;
-
-const ErrorMessage = styled.div`
-  color: red;
-  margin-top: 20px;
-`;
+const initialBoard = Array(gridSize * gridSize).fill(undefined);
 
 const IndexPage = () => {
   const [board, setBoard] = useState(initialBoard);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [errorDetails, setErrorDetails] = useState([]);
-  const [selectedNumber, setSelectedNumber] = useState(null);
+  const [selectedNumber, setSelectedNumber] = useState(undefined);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSolve = async () => {
+    if (isSubmitting) return; // すでに処理中の場合は何もしない
+    setIsSubmitting(true);
+
     setError(null);
     setErrorDetails([]);
     setLoading(true);
@@ -67,7 +47,7 @@ const IndexPage = () => {
       board2D.push(
         board
           .slice(start, end)
-          .map((val) => (val === "" ? 0 : parseInt(val, 10))),
+          .map((val) => (val === undefined ? 0 : parseInt(val, 10))),
       );
     }
 
@@ -83,14 +63,35 @@ const IndexPage = () => {
 
       if (response.ok) {
         const data = await response.json();
+        if (data.num_solutions === 0) {
+          console.error("No solution found");
+          setError("No solution found");
+          setLoading(false);
+          return;
+        }
+
         console.log("Solved Board:", data.solution);
-        setBoard(data.solution.flat());
+
+        navigate("/result", {
+          state: {
+            solution: data.solution,
+            numSolutions: data.num_solutions,
+            isExactNumSolutions: data.is_exact_num_solutions,
+            userBoard: board,
+          },
+        });
       } else {
         const errorData = await response.json();
         console.error("Error solving sudoku:", errorData);
+
+        const allowedErrorTypes = ["OutOfRangeError", "ConstraintViolation"];
+        if (!allowedErrorTypes.includes(errorData.error?.type)) {
+          throw new Error(errorData.error.message || "Unexpected error");
+        }
+
         setError(
           errorData.error.message ||
-            "There was an error solving the puzzle. Please try again.",
+            "Input validation error. Please check the highlighted cells.",
         );
         const detailedErrors = errorData.error.detail.map(
           (detail) => detail.row * gridSize + detail.column,
@@ -102,6 +103,7 @@ const IndexPage = () => {
       setError("There was an error solving the puzzle. Please try again.");
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -110,8 +112,10 @@ const IndexPage = () => {
   };
 
   const handleCellClick = (index) => {
+    if (selectedNumber === undefined) return;
+
     const newBoard = [...board];
-    newBoard[index] = selectedNumber !== "delete" ? selectedNumber : "";
+    newBoard[index] = selectedNumber !== "delete" ? selectedNumber : undefined;
     setBoard(newBoard);
 
     const invalidCells = validateBoard(newBoard);
@@ -124,10 +128,12 @@ const IndexPage = () => {
   };
 
   const handleClear = () => {
-    setBoard(Array(gridSize * gridSize).fill(""));
+    setBoard(Array(gridSize * gridSize).fill(undefined));
     setErrorDetails([]);
     setError(null);
   };
+
+  const cellColors = board.map((cell) => (cell !== undefined ? "black" : ""));
 
   return (
     <Container>
@@ -136,17 +142,21 @@ const IndexPage = () => {
         <NumberInput onSelect={handleNumberSelect} />
         <Grid
           board={board}
-          setBoard={setBoard}
           onCellClick={handleCellClick}
           errorDetails={errorDetails}
+          cellColors={cellColors}
         />
         {error && <ErrorMessage>{error}</ErrorMessage>}
         {loading ? (
           <p>Loading...</p>
         ) : (
           <ButtonContainer>
-            <Button onClick={handleSolve}>Solve</Button>
-            <Button onClick={handleClear}>Clear</Button>
+            <Button onClick={handleSolve} disabled={isSubmitting}>
+              Solve
+            </Button>
+            <Button onClick={handleClear} disabled={isSubmitting}>
+              Clear
+            </Button>
           </ButtonContainer>
         )}
       </Content>

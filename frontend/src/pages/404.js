@@ -1,21 +1,7 @@
 import React from "react";
 import { Link } from "gatsby";
-import styled from "styled-components";
 import Footer from "../components/Footer";
-
-const Container = styled.div`
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: center;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Content = styled.div`
-  flex: 1;
-`;
+import { Container, Content } from "../styles/CommonStyles";
 
 const NotFoundPage = () => {
   return (

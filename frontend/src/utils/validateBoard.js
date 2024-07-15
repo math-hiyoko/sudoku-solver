@@ -13,7 +13,7 @@ export const validateBoard = (board) => {
   for (let row = 0; row < gridSize; row++) {
     for (let col = 0; col < gridSize; col++) {
       const value = board[row * gridSize + col];
-      if (value !== "" && isNaN(value)) {
+      if (value !== undefined && !Number.isSafeInteger(value)) {
         invalidCells.add(row * gridSize + col);
       }
     }
@@ -27,7 +27,11 @@ export const validateBoard = (board) => {
   for (let row = 0; row < gridSize; row++) {
     for (let col = 0; col < gridSize; col++) {
       const value = board[row * gridSize + col];
-      if (value !== "" && (value < 1 || value > gridSize)) {
+      if (
+        value !== undefined &&
+        Number.isSafeInteger(value) &&
+        (value < 1 || value > gridSize)
+      ) {
         invalidCells.push(row * gridSize + col);
       }
     }
@@ -42,13 +46,17 @@ export const validateBoard = (board) => {
     const check = Array(gridSize).fill(0);
     for (let col = 0; col < gridSize; col++) {
       const value = board[row * gridSize + col];
-      if (value !== "") {
+      if (value !== undefined && Number.isSafeInteger(value)) {
         check[value - 1]++;
       }
     }
     for (let col = 0; col < gridSize; col++) {
       const value = board[row * gridSize + col];
-      if (value !== "" && check[value - 1] > 1) {
+      if (
+        value !== undefined &&
+        Number.isSafeInteger(value) &&
+        check[value - 1] > 1
+      ) {
         invalidCells.add(row * gridSize + col);
       }
     }
@@ -59,13 +67,17 @@ export const validateBoard = (board) => {
     const check = Array(gridSize).fill(0);
     for (let row = 0; row < gridSize; row++) {
       const value = board[row * gridSize + col];
-      if (value !== "") {
+      if (value !== undefined && Number.isSafeInteger(value)) {
         check[value - 1]++;
       }
     }
     for (let row = 0; row < gridSize; row++) {
       const value = board[row * gridSize + col];
-      if (value !== "" && check[value - 1] > 1) {
+      if (
+        value !== undefined &&
+        Number.isSafeInteger(value) &&
+        check[value - 1] > 1
+      ) {
         invalidCells.add(row * gridSize + col);
       }
     }
@@ -82,7 +94,7 @@ export const validateBoard = (board) => {
               (blockRow * sudokuDim + row) * gridSize +
                 (blockCol * sudokuDim + col)
             ];
-          if (value !== "") {
+          if (value !== undefined && Number.isSafeInteger(value)) {
             check[value - 1]++;
           }
         }
@@ -94,7 +106,11 @@ export const validateBoard = (board) => {
               (blockRow * sudokuDim + row) * gridSize +
                 (blockCol * sudokuDim + col)
             ];
-          if (value !== "" && check[value - 1] > 1) {
+          if (
+            value !== undefined &&
+            Number.isSafeInteger(value) &&
+            check[value - 1] > 1
+          ) {
             invalidCells.add(
               (blockRow * sudokuDim + row) * gridSize +
                 (blockCol * sudokuDim + col),
