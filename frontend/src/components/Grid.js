@@ -23,23 +23,39 @@ const Cell = styled.input`
   border: 1px solid black;
   box-sizing: border-box;
   font-size: 2em;
-  ${({ index }) => (index % sudokuDim === sudokuDim - 1 ? `border-right: 2px solid black;` : '')}
-  ${({ index }) => (index % sudokuDim === 0 ? `border-left: 2px solid black;` : '')}
-  ${({ index }) => (Math.floor(index / gridSize) % sudokuDim === 0 ? `border-top: 2px solid black;` : '')}
-  ${({ index }) => (Math.floor(index / gridSize) % sudokuDim === sudokuDim - 1 ? `border-bottom: 2px solid black;` : '')}
+  background-color: ${({ hasError }) => (hasError ? "lightcoral" : "white")};
+  color: ${({ color }) => color || "black"};
+  ${({ index }) =>
+    index % sudokuDim === sudokuDim - 1 ? `border-right: 2px solid black;` : ""}
+  ${({ index }) =>
+    index % sudokuDim === 0 ? `border-left: 2px solid black;` : ""}
+  ${({ index }) =>
+    Math.floor(index / gridSize) % sudokuDim === 0
+      ? `border-top: 2px solid black;`
+      : ""}
+  ${({ index }) =>
+    Math.floor(index / gridSize) % sudokuDim === sudokuDim - 1
+      ? `border-bottom: 2px solid black;`
+      : ""}
 `;
 
-const Grid = ({ board, setBoard, onCellClick }) => {
+const Grid = ({
+  board,
+  onCellClick = () => {},
+  errorDetails = [],
+  cellColors,
+}) => {
   return (
     <GridContainer>
       {board.map((cell, index) => (
         <Cell
           key={index}
-          value={cell}
+          value={cell !== undefined ? cell : ""}
           index={index}
           onClick={() => onCellClick(index)}
-          maxLength="1"
           readOnly
+          hasError={errorDetails.includes(index)}
+          color={cellColors?.[index]}
         />
       ))}
     </GridContainer>

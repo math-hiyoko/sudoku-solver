@@ -18,7 +18,8 @@ const NumberButton = styled.button`
   margin: 5px;
   cursor: pointer;
   background-color: ${({ isSelected }) => (isSelected ? "#ddd" : "white")};
-  border: ${({ isSelected }) => (isSelected ? "2px solid black" : "1px solid #ccc")};
+  border: ${({ isSelected }) =>
+    isSelected ? "2px solid black" : "1px solid #ccc"};
   box-sizing: border-box;
 
   &:hover {
