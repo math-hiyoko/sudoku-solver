@@ -26,7 +26,6 @@ const IndexPage = () => {
 
   const handleSolve = async () => {
     if (isSubmitting) return; // すでに処理中の場合は何もしない
-    setIsSubmitting(true);
 
     setError(null);
     setErrorDetails([]);
@@ -39,6 +38,8 @@ const IndexPage = () => {
       setLoading(false);
       return;
     }
+
+    setIsSubmitting(true);
 
     const board2D = [];
     for (let row = 0; row < gridSize; row++) {
@@ -151,7 +152,10 @@ const IndexPage = () => {
           <p>Loading...</p>
         ) : (
           <ButtonContainer>
-            <Button onClick={handleSolve} disabled={isSubmitting}>
+            <Button
+              onClick={handleSolve}
+              disabled={isSubmitting || errorDetails.length > 0}
+            >
               Solve
             </Button>
             <Button onClick={handleClear} disabled={isSubmitting}>
