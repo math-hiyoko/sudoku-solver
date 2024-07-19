@@ -45,30 +45,28 @@ HeaderNode *HeaderNode::clone(
   }
 
   // 全てのColumnNodeとDancingNodeを複製する
-  std::map<IDancingLinksBodyNode *, IDancingLinksBodyNode *> node_map;
+  std::map<DancingNode *, DancingNode *> node_map;
   for (IDancingLinksNode *i = this->right; i != this; i = i->right) {
     ColumnNode *const column_node = static_cast<ColumnNode *>(i);
     ColumnNode *const new_column_node = column_node_pool.construct();
-    node_map[column_node] = new_column_node;
     new_header->hookLeft(new_column_node);
     for (IDancingLinksBodyNode *j = column_node->down; j != column_node; j = j->down) {
       DancingNode *const dancing_node = static_cast<DancingNode *>(j);
-      DancingNode *const new_dancing_node = dancing_node_pool.construct(dancing_node->row, static_cast<ColumnNode *>(node_map[column_node]));
+      DancingNode *const new_dancing_node = dancing_node_pool.construct(dancing_node->row, new_column_node);
       node_map[dancing_node] = new_dancing_node;
-      column_node->hookUp(new_dancing_node);
-      column_node->size++;
+      new_column_node->hookUp(new_dancing_node);
+      new_column_node->size++;
     }
   }
 
   // DancingNodeの横方向のリンクを張り直す
   for (IDancingLinksBodyNode *j = static_cast<ColumnNode *>(this->right)->down; j != this->right; j = j->down) {
-    DancingNode *const new_row_front_node = static_cast<DancingNode *>(node_map[j]);
+    DancingNode *const new_row_front_node = node_map[static_cast<DancingNode *>(j)];
     for (IDancingLinksNode *k = j->right; k != j; k = k->right) {
-      DancingNode *const new_dancing_node = static_cast<DancingNode *>(node_map[static_cast<IDancingLinksBodyNode *>(k)]);
+      DancingNode *const new_dancing_node = node_map[static_cast<DancingNode *>(k)];
       new_row_front_node->hookLeft(new_dancing_node);
     }
   }
-
   return new_header;
 }
 
@@ -98,7 +96,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     auto [solution_prefix, header] = search_queue.front();
     search_queue.pop();
 
-    const ColumnNode *const next_column = this->selectMinSizeColumn();
+    const ColumnNode *const next_column = header->selectMinSizeColumn();
     for (IDancingLinksBodyNode *i = next_column->down; i != next_column; i = i->down) {
       DancingNode *const dancing_node = static_cast<DancingNode *>(i);
       dancing_node->cover();
@@ -166,7 +164,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
         dancing_node->cover();
         solution_buf.emplace_back(dancing_node);
 
-        if (this->isEmpty()) {
+        if (header->isEmpty()) {
           // headerが空 => 解が見つかった
           assert(solution_prefix.size() + solution_buf.size() == Sudoku::SIZE * Sudoku::SIZE);
           num_solutions++;
@@ -192,7 +190,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
 
       // 次の列を選択する
       const ColumnNode *const next_column = header->selectMinSizeColumn();
-      for (IDancingLinksBodyNode *i = next_column->down; i != next_column; i = i->down) {
+      for (IDancingLinksBodyNode *i = next_column->up; i != next_column; i = i->up) {
         search_stack.emplace(next_index, static_cast<DancingNode *>(i));
       }
     } while (!search_stack.empty());
