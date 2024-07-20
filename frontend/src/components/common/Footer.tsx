@@ -11,7 +11,7 @@ const FooterContainer = styled.footer`
   margin-top: auto; /* フッターを最下部に配置 */
 `;
 
-const Footer = () => (
+const Footer: React.FC = () => (
   <FooterContainer>© 2024 KOKI Watanabe. All rights reserved.</FooterContainer>
 );
 

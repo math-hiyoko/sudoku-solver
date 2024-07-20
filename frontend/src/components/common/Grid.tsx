@@ -1,13 +1,17 @@
 import React from "react";
 import styled from "styled-components";
+import config from "../../config";
 
-const sudokuDim = parseInt(process.env.SUDOKU_DIM, 10) || 3;
-const gridSize = sudokuDim * sudokuDim;
+interface CellProps {
+  hasError: boolean;
+  color?: string;
+  index: number;
+}
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(${gridSize}, 1fr);
-  grid-template-rows: repeat(${gridSize}, 1fr);
+  grid-template-columns: repeat(${config.gridSize}, 1fr);
+  grid-template-rows: repeat(${config.gridSize}, 1fr);
   border: 2px solid black;
   gap: 0;
   aspect-ratio: 1;
@@ -16,7 +20,7 @@ const GridContainer = styled.div`
   margin: 0 auto;
 `;
 
-const Cell = styled.input`
+const Cell = styled.input<CellProps>`
   width: 100%;
   height: 100%;
   text-align: center;
@@ -24,38 +28,48 @@ const Cell = styled.input`
   box-sizing: border-box;
   font-size: 2em;
   background-color: ${({ hasError }) => (hasError ? "lightcoral" : "white")};
-  color: ${({ color }) => color || "black"};
+  color: ${({ color }) => color ?? "black"};
   ${({ index }) =>
-    index % sudokuDim === sudokuDim - 1 ? `border-right: 2px solid black;` : ""}
+    index % config.sudokuDim === config.sudokuDim - 1
+      ? `border-right: 2px solid black;`
+      : ""}
   ${({ index }) =>
-    index % sudokuDim === 0 ? `border-left: 2px solid black;` : ""}
+    index % config.sudokuDim === 0 ? `border-left: 2px solid black;` : ""}
   ${({ index }) =>
-    Math.floor(index / gridSize) % sudokuDim === 0
+    Math.floor(index / config.gridSize) % config.sudokuDim === 0
       ? `border-top: 2px solid black;`
       : ""}
   ${({ index }) =>
-    Math.floor(index / gridSize) % sudokuDim === sudokuDim - 1
+    Math.floor(index / config.gridSize) % config.sudokuDim ===
+    config.sudokuDim - 1
       ? `border-bottom: 2px solid black;`
       : ""}
 `;
 
-const Grid = ({
+interface GridProps {
+  board: (number | undefined)[];
+  onCellClick?: (index: number) => void;
+  errorDetails?: number[];
+  cellColors?: string[];
+}
+
+const Grid: React.FC<GridProps> = ({
   board,
   onCellClick = () => {},
   errorDetails = [],
-  cellColors,
+  cellColors = [],
 }) => {
   return (
     <GridContainer>
       {board.map((cell, index) => (
         <Cell
           key={index}
-          value={cell !== undefined ? cell : ""}
+          value={cell !== undefined ? cell.toString() : ""}
           index={index}
           onClick={() => onCellClick(index)}
           readOnly
           hasError={errorDetails.includes(index)}
-          color={cellColors?.[index]}
+          color={cellColors[index]}
         />
       ))}
     </GridContainer>
