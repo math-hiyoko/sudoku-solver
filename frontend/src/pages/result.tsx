@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "gatsby";
 import Grid from "../components/common/Grid";
-import { Container } from "../styles/CommonStyles";
 import config from "../config";
 import Layout from "../components/Layout";
+import { Button, ButtonContainer } from "../styles/CommonStyles";
 
 interface LocationState {
   solution: number[][];
@@ -51,7 +51,11 @@ const ResultPage: React.FC<ResultPageProps> = ({ location }) => {
       <p>Number of Solutions: {numSolutions}</p>
       <p>Is Exact Number of Solutions: {isExactNumSolutions ? "Yes" : "No"}</p>
       <Grid board={board} cellColors={cellColors} />
-      <Link to="/">Back to Home</Link>
+      <ButtonContainer>
+        <Button>
+          <Link to="/">Back to Home</Link>
+        </Button>
+      </ButtonContainer>
     </Layout>
   );
 };

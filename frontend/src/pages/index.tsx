@@ -45,7 +45,10 @@ const IndexPage: React.FC = () => {
   };
 
   const handleClear = (): void => {
-    setBoard(Array(config.gridSize * config.gridSize).fill(undefined));
+    const clearedBoard: (number | undefined)[] = Array(
+      config.gridSize * config.gridSize,
+    ).fill(undefined);
+    setBoard(clearedBoard);
     setErrorDetails([]);
     setError(null);
   };

@@ -6,6 +6,7 @@ if (isNaN(sudokuDim) || sudokuDim <= 0) {
 const config = {
   sudokuDim,
   gridSize: sudokuDim * sudokuDim,
+  BOARD_STATE_KEY: "sudoku-board",
 };
 
 export default config;

@@ -1,23 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import validateBoard from "../utils/validateBoard";
 import fetchWithHandling from "../utils/fetchWithHandling";
 import { SolveSudokuResponse } from "../types";
+import { loadState, saveState } from "../utils/localStorage";
 import { navigate } from "gatsby";
 import config from "../config";
 
-const initialBoard: (number | undefined)[] = Array(
-  config.gridSize * config.gridSize,
-).fill(undefined);
-
 export default function useSudoku() {
+  const initialBoard: (number | undefined)[] = loadState(
+    config.BOARD_STATE_KEY,
+    Array(config.gridSize * config.gridSize).fill(undefined),
+  );
+
   const [board, setBoard] = useState<(number | undefined)[]>(initialBoard);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<null | string>(null);
   const [errorDetails, setErrorDetails] = useState<number[]>([]);
   const [selectedNumber, setSelectedNumber] = useState<
     number | "delete" | undefined
   >(undefined);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  useEffect(() => {
+    saveState(config.BOARD_STATE_KEY, board);
+  }, [board]);
 
   const handleSolve = async () => {
     if (isSubmitting) return;
