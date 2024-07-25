@@ -45,7 +45,6 @@ HeaderNode *HeaderNode::clone(
   }
 
   // 全てのColumnNodeとDancingNodeを複製する
-  std::map<DancingNode *, DancingNode *> node_map;
   std::map<RowNode *, DancingNode *> row_map;
   for (IDancingLinksNode *i = this->right; i != this; i = i->right) {
     ColumnNode *const column_node = static_cast<ColumnNode *>(i);
@@ -54,7 +53,6 @@ HeaderNode *HeaderNode::clone(
     for (IDancingLinksBodyNode *j = column_node->down; j != column_node; j = j->down) {
       DancingNode *const dancing_node = static_cast<DancingNode *>(j);
       DancingNode *const new_dancing_node = dancing_node_pool.construct(dancing_node->row, new_column_node);
-      node_map[dancing_node] = new_dancing_node;
       new_column_node->hookUp(new_dancing_node);
       new_column_node->size++;
       // DancingNodeの横方向のリンクを張り直す
