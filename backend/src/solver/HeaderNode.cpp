@@ -135,7 +135,7 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
     search_queue.pop();
   }
 
-#pragma omp parallel for shared(num_solutions, is_exact_num_solutions, search_branches, solution)
+#pragma omp parallel for schedule(dynamic) shared(num_solutions, is_exact_num_solutions, search_branches, solution)
   for (int i = 0; i < search_branches.size(); i++) {
     if (num_solutions >= max_num_solutions_) [[unlikely]] {
       is_exact_num_solutions = false;
