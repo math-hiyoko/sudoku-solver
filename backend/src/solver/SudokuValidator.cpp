@@ -81,7 +81,8 @@ int isSatisfy(const Board &board, std::vector<Option> &options) {
             continue;
           }
           if (check[board[i * DIM + k][j * DIM + l] - 1] > 1) {
-            options_set.insert(Option{.row = i * DIM + k, .column = j * DIM + l,
+            options_set.insert(Option{.row = i * DIM + k,
+                                      .column = j * DIM + l,
                                       .number = board[i * DIM + k][j * DIM + l]});
           }
         }

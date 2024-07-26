@@ -36,9 +36,9 @@ ColumnNode *HeaderNode::selectMinSizeColumn() const {
 }
 
 HeaderNode *HeaderNode::clone(
-  boost::object_pool<DancingLinks::DancingNode> &dancing_node_pool,
-  boost::object_pool<DancingLinks::ColumnNode> &column_node_pool,
-  boost::object_pool<DancingLinks::HeaderNode> &header_node_pool) const {
+    boost::object_pool<DancingLinks::DancingNode> &dancing_node_pool,
+    boost::object_pool<DancingLinks::ColumnNode> &column_node_pool,
+    boost::object_pool<DancingLinks::HeaderNode> &header_node_pool) const {
   HeaderNode *new_header = header_node_pool.construct();
   if (this->right == this) [[unlikely]] {
     return new_header;
@@ -52,7 +52,8 @@ HeaderNode *HeaderNode::clone(
     new_header->hookLeft(new_column_node);
     for (IDancingLinksBodyNode *j = column_node->down; j != column_node; j = j->down) {
       DancingNode *const dancing_node = static_cast<DancingNode *>(j);
-      DancingNode *const new_dancing_node = dancing_node_pool.construct(dancing_node->row, new_column_node);
+      DancingNode *const new_dancing_node =
+          dancing_node_pool.construct(dancing_node->row, new_column_node);
       new_column_node->hookUp(new_dancing_node);
       new_column_node->size++;
       // DancingNodeの横方向のリンクを張り直す
@@ -81,7 +82,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     HeaderNode *header;
 
     SearchBranch(const std::vector<RowNode *> &sol_prefix, HeaderNode *hdr)
-      : solution_prefix(sol_prefix), header(hdr) {}
+        : solution_prefix(sol_prefix), header(hdr) {}
 
     SearchBranch() = default;
   };
@@ -103,17 +104,18 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
       if (header->isEmpty()) {
         // 解が見つかった
         num_solutions++;
-        if (solution.empty()) [[ unlikely ]] {
-          std::transform(solution_prefix.begin(), solution_prefix.end(), std::back_inserter(solution),
-                         [](RowNode *node) { return node; });
+        if (solution.empty()) [[unlikely]] {
+          std::transform(solution_prefix.begin(), solution_prefix.end(),
+                         std::back_inserter(solution), [](RowNode *node) { return node; });
         }
-        if (max_num_solutions_ == 1) [[ unlikely ]] {
+        if (max_num_solutions_ == 1) [[unlikely]] {
           is_exact_num_solutions = false;
           return;
         }
       } else {
         std::vector<RowNode *> new_solution_prefix(solution_prefix);
-        search_queue.emplace(new_solution_prefix, header->clone(dancing_node_pool, column_node_pool, header_node_pool));
+        search_queue.emplace(new_solution_prefix,
+                             header->clone(dancing_node_pool, column_node_pool, header_node_pool));
       }
       dancing_node->uncover();
       solution_prefix.pop_back();
@@ -125,8 +127,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     const int index;          // solution_buf中の何番目の要素になるか
     DancingNode *const node;  // 選択したノード
 
-    NodeState(const int idx, DancingNode *const nd)
-      : index(idx), node(nd) {}
+    NodeState(const int idx, DancingNode *const nd) : index(idx), node(nd) {}
   };
 
   std::vector<SearchBranch> search_branches;
@@ -135,7 +136,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     search_queue.pop();
   }
 
-  #pragma omp parallel for shared(num_solutions, is_exact_num_solutions, search_branches, solution)
+#pragma omp parallel for shared(num_solutions, is_exact_num_solutions, search_branches, solution)
   for (int i = 0; i < search_branches.size(); i++) {
     if (num_solutions >= max_num_solutions_) [[unlikely]] {
       is_exact_num_solutions = false;
@@ -149,7 +150,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     std::vector<DancingNode *> solution_buf;
     // この探索で一回でも解けたことがあるか
     bool already_solved_once = false;
-    
+
     do {
       int next_index = 0;  // 次がsolution_buf中の何番目の要素になるか
 
@@ -175,18 +176,19 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
           // headerが空 => 解が見つかった
           assert(solution_prefix.size() + solution_buf.size() == Sudoku::SIZE * Sudoku::SIZE);
 
-          #pragma omp atomic
+#pragma omp atomic
           num_solutions++;
 
           // ループ内ですでに解を見つけたのならここは見なくていい
           if (!already_solved_once) [[unlikely]] {
-            #pragma omp critical
+#pragma omp critical
             {
               if (solution.empty()) [[unlikely]] {
-                std::transform(solution_prefix.begin(), solution_prefix.end(), std::back_inserter(solution),
-                              [](RowNode *node) { return node; });
-                std::transform(solution_buf.begin(), solution_buf.end(), std::back_inserter(solution),
-                              [](DancingNode *node) { return node->row; });
+                std::transform(solution_prefix.begin(), solution_prefix.end(),
+                               std::back_inserter(solution), [](RowNode *node) { return node; });
+                std::transform(solution_buf.begin(), solution_buf.end(),
+                               std::back_inserter(solution),
+                               [](DancingNode *node) { return node->row; });
               }
             }
           }

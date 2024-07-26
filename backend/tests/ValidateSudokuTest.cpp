@@ -47,13 +47,13 @@ TEST(ValidateSolveTest, testisSatisfy) {
   int num_invalid = Sudoku::isSatisfy(input, options);
 
   std::vector<Sudoku::Option> expected_options = {
-    Sudoku::Option{.row = 0, .column = 2, .number = 3},
-    Sudoku::Option{.row = 1, .column = 2, .number = 3},
-    Sudoku::Option{.row = 2, .column = 4, .number = 9},
-    Sudoku::Option{.row = 2, .column = 5, .number = 9},
-    Sudoku::Option{.row = 5, .column = 3, .number = 1},
-    Sudoku::Option{.row = 6, .column = 2, .number = 1},
-    Sudoku::Option{.row = 6, .column = 3, .number = 1},
+      Sudoku::Option{.row = 0, .column = 2, .number = 3},
+      Sudoku::Option{.row = 1, .column = 2, .number = 3},
+      Sudoku::Option{.row = 2, .column = 4, .number = 9},
+      Sudoku::Option{.row = 2, .column = 5, .number = 9},
+      Sudoku::Option{.row = 5, .column = 3, .number = 1},
+      Sudoku::Option{.row = 6, .column = 2, .number = 1},
+      Sudoku::Option{.row = 6, .column = 3, .number = 1},
   };
   int expected_num_invalid = 7;
 
