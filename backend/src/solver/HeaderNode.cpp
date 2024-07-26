@@ -137,7 +137,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
   for (int i = 0; i < search_branches.size(); i++) {
     if ((just_solution && num_solutions > 0) || (num_solutions >= max_num_solutions)) [[unlikely]] {
       is_exact_num_solutions = false;
-      break;
+      continue;
     }
 
     const auto [solution_prefix, header] = search_branches[i];
