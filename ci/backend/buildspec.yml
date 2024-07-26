@@ -14,6 +14,9 @@ phases:
                        libomp \
                        boost-devel \
                        boost-json
+      - echo $OMP_NUM_THREADS
+      - nproc
+      - grep -c ^processor /proc/cpuinfo
 
   pre_build:
     commands:
