@@ -135,7 +135,8 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     search_queue.pop();
   }
 
-  #pragma omp parallel for shared(num_solutions, is_exact_num_solutions, search_branches, solution)
+  bool already_solved_once = false;
+  #pragma omp parallel for shared(num_solutions, is_exact_num_solutions, search_branches, solution) private(already_solved_once)
   for (int i = 0; i < search_branches.size(); i++) {
     if (num_solutions >= max_num_solutions_) [[unlikely]] {
       is_exact_num_solutions = false;
@@ -176,13 +177,15 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
           #pragma omp atomic
           num_solutions++;
 
-          #pragma omp critical
-          {
-            if (solution.empty()) [[unlikely]] {
-              std::transform(solution_prefix.begin(), solution_prefix.end(), std::back_inserter(solution),
-                            [](RowNode *node) { return node; });
-              std::transform(solution_buf.begin(), solution_buf.end(), std::back_inserter(solution),
-                            [](DancingNode *node) { return node->row; });
+          if (!already_solved_once) [[unlikely]] {
+            #pragma omp critical
+            {
+              if (solution.empty()) [[unlikely]] {
+                std::transform(solution_prefix.begin(), solution_prefix.end(), std::back_inserter(solution),
+                              [](RowNode *node) { return node; });
+                std::transform(solution_buf.begin(), solution_buf.end(), std::back_inserter(solution),
+                              [](DancingNode *node) { return node->row; });
+              }
             }
           }
 
