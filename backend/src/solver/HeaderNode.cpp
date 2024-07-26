@@ -70,7 +70,7 @@ HeaderNode *HeaderNode::clone(
 void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_solutions,
                                   bool &is_exact_num_solutions, const bool &just_solution,
                                   const int &max_num_solutions) {
-  const int NUM_BRANCH = 12;
+  const int NUM_BRANCH = 6;
   const int max_num_solutions_ = just_solution ? 1 : max_num_solutions;
 
   num_solutions = 0;
@@ -135,8 +135,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     search_queue.pop();
   }
 
-  bool already_solved_once = false;
-  #pragma omp parallel for shared(num_solutions, is_exact_num_solutions, search_branches, solution) private(already_solved_once)
+  #pragma omp parallel for shared(num_solutions, is_exact_num_solutions, search_branches, solution)
   for (int i = 0; i < search_branches.size(); i++) {
     if (num_solutions >= max_num_solutions_) [[unlikely]] {
       is_exact_num_solutions = false;
@@ -148,6 +147,8 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     std::stack<NodeState> search_stack;
     // 解の候補を保存するためのバッファ
     std::vector<DancingNode *> solution_buf;
+    // この探索で一回でも解けたことがあるか
+    bool already_solved_once = false;
     
     do {
       int next_index = 0;  // 次がsolution_buf中の何番目の要素になるか
