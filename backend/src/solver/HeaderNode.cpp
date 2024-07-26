@@ -91,7 +91,7 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
 
   std::queue<SearchBranch> search_queue;
   search_queue.emplace(std::vector<RowNode *>(), this);
-  while (!search_queue.empty() && search_queue.size() < NUM_BRANCH) {
+  while (!search_queue.empty() && search_queue.size() < Sudoku::NUM_BRANCH) {
     auto [solution_prefix, header] = search_queue.front();
     search_queue.pop();
 
