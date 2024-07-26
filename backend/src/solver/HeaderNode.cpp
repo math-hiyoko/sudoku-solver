@@ -178,6 +178,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
           #pragma omp atomic
           num_solutions++;
 
+          // ループ内ですでに解を見つけたのならここは見なくていい
           if (!already_solved_once) [[unlikely]] {
             #pragma omp critical
             {
