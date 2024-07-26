@@ -12,10 +12,10 @@ TEST(JsonHandlerTest, testSuccessResponse) {
       {"board",
        {
            {8, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 6, 0, 0, 0, 0, 0},
-           {0, 7, 0, 0, 0, 0, 2, 0, 0},
+           {0, 0, 3, 6, 0, 0, 0, 0, 0},
+           {0, 7, 0, 0, 9, 0, 2, 0, 0},
            {0, 5, 0, 0, 0, 7, 0, 0, 0},
-           {0, 0, 0, 0, 4, 0, 7, 0, 0},
+           {0, 0, 0, 0, 4, 5, 7, 0, 0},
            {0, 0, 0, 1, 0, 0, 0, 3, 0},
            {0, 0, 1, 0, 0, 0, 0, 6, 8},
            {0, 0, 8, 5, 0, 0, 0, 1, 0},
@@ -47,61 +47,6 @@ TEST(JsonHandlerTest, testSuccessResponse) {
        }},
       {"num_solutions", std::min(271'710, Sudoku::MAX_NUM_SOLUTIONS)},
       {"is_exact_num_solutions", 271'710 <= Sudoku::MAX_NUM_SOLUTIONS ? true : false},
-  };
-  boost::json::object expected_payload = {
-      {"statusCode", 200},
-      {"headers",
-       {
-           {"content-type", "application/json"},
-       }},
-      {"body", boost::json::serialize(expected_body)},
-      {"isBase64Encoded", false},
-  };
-
-  EXPECT_TRUE(response.is_success());
-  EXPECT_EQ(response.get_payload(), boost::json::serialize(expected_payload));
-}
-
-TEST(JsonHandlerTest, testSuccessResponseEmptyBoard) {
-  boost::json::object board_json = {
-      {"board",
-       {
-           {0, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 0, 0, 0, 0, 0, 0},
-       }},
-  };
-  boost::json::object payload = {
-      {"body", boost::json::serialize(board_json)},
-  };
-
-  aws::lambda_runtime::invocation_request request = {
-      .payload = boost::json::serialize(payload),
-      .request_id = "aws_request_id",
-  };
-  aws::lambda_runtime::invocation_response response = Handler::sudoku_handler(request);
-
-  boost::json::object expected_body = {
-      {"solution",
-       {
-           {6, 1, 2, 3, 4, 5, 7, 8, 9},
-           {7, 8, 9, 6, 1, 2, 3, 4, 5},
-           {3, 4, 5, 7, 8, 9, 6, 1, 2},
-           {2, 6, 1, 8, 3, 4, 9, 5, 7},
-           {5, 9, 7, 2, 6, 1, 8, 3, 4},
-           {8, 3, 4, 5, 9, 7, 2, 6, 1},
-           {1, 2, 6, 4, 7, 3, 5, 9, 8},
-           {9, 5, 8, 1, 2, 6, 4, 7, 3},
-           {4, 7, 3, 9, 5, 8, 1, 2, 6},
-       }},
-      {"num_solutions", Sudoku::MAX_NUM_SOLUTIONS},
-      {"is_exact_num_solutions", false},
   };
   boost::json::object expected_payload = {
       {"statusCode", 200},

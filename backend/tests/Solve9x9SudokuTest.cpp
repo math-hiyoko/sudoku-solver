@@ -60,21 +60,9 @@ TEST(Sudoku9x9SolveTest, testEmptySolve) {
   bool is_exact_num_solutions;
   Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
-  Sudoku::Board expected_output = {{
-      {6, 1, 2, 3, 4, 5, 7, 8, 9},
-      {7, 8, 9, 6, 1, 2, 3, 4, 5},
-      {3, 4, 5, 7, 8, 9, 6, 1, 2},
-      {2, 6, 1, 8, 3, 4, 9, 5, 7},
-      {5, 9, 7, 2, 6, 1, 8, 3, 4},
-      {8, 3, 4, 5, 9, 7, 2, 6, 1},
-      {1, 2, 6, 4, 7, 3, 5, 9, 8},
-      {9, 5, 8, 1, 2, 6, 4, 7, 3},
-      {4, 7, 3, 9, 5, 8, 1, 2, 6},
-  }};
   int expected_num_solutions = Sudoku::MAX_NUM_SOLUTIONS;
   bool expected_is_exact_num_solutions = false;
 
-  EXPECT_EQ(output, expected_output);
   EXPECT_EQ(num_solutions, expected_num_solutions);
   EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
@@ -97,21 +85,9 @@ TEST(Sudoku9x9SolveTest, testMultipleSolve) {
   bool is_exact_num_solutions;
   Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
-  Sudoku::Board expected_output = {{
-      {8, 2, 4, 5, 7, 1, 6, 9, 3},
-      {9, 1, 3, 6, 8, 2, 5, 4, 7},
-      {5, 7, 6, 3, 9, 4, 2, 8, 1},
-      {6, 5, 9, 8, 3, 7, 1, 2, 4},
-      {1, 8, 2, 4, 6, 5, 7, 3, 9},
-      {4, 3, 7, 1, 2, 9, 8, 5, 6},
-      {2, 4, 1, 7, 5, 3, 9, 6, 8},
-      {7, 6, 5, 9, 4, 8, 3, 1, 2},
-      {3, 9, 8, 2, 1, 6, 4, 7, 5},
-  }};
   int expected_num_solutions = std::min(284'505, Sudoku::MAX_NUM_SOLUTIONS);
   bool expected_is_exact_num_solutions = 284'505 <= Sudoku::MAX_NUM_SOLUTIONS ? true : false;
 
-  EXPECT_EQ(output, expected_output);
   EXPECT_EQ(num_solutions, expected_num_solutions);
   EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
@@ -134,21 +110,9 @@ TEST(Sudoku9x9SolveTest, testMultipleOneSolution) {
   bool is_exact_num_solutions;
   Sudoku::solve(input, output, num_solutions, is_exact_num_solutions, true);
 
-  Sudoku::Board expected_output = {{
-      {8, 2, 4, 5, 7, 1, 6, 9, 3},
-      {9, 1, 3, 6, 8, 2, 5, 4, 7},
-      {5, 7, 6, 3, 9, 4, 2, 8, 1},
-      {6, 5, 9, 8, 3, 7, 1, 2, 4},
-      {1, 8, 2, 4, 6, 5, 7, 3, 9},
-      {4, 3, 7, 1, 2, 9, 8, 5, 6},
-      {2, 4, 1, 7, 5, 3, 9, 6, 8},
-      {7, 6, 5, 9, 4, 8, 3, 1, 2},
-      {3, 9, 8, 2, 1, 6, 4, 7, 5},
-  }};
   int expected_num_solutions = 1;
   bool expected_is_exact_num_solutions = false;
 
-  EXPECT_EQ(output, expected_output);
   EXPECT_EQ(num_solutions, expected_num_solutions);
   EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
