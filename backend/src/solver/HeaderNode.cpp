@@ -71,7 +71,6 @@ HeaderNode *HeaderNode::clone(
 void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
                                   bool &is_exact_num_solutions, const bool &just_solution,
                                   const int &max_num_solutions) {
-  const int NUM_BRANCH = 24;
   const int max_num_solutions_ = just_solution ? 1 : max_num_solutions;
 
   num_solutions = 0;

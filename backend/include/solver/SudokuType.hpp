@@ -24,6 +24,16 @@ constexpr static int DIM = 3;
 #endif
 
 /**
+ * 数独の解の個数の上限
+ * 解がこの個数より多くなったら計算を打ち切る
+ */
+#ifdef SUDOKU_NUM_BRANCH
+constexpr static int NUM_BRANCH = SUDOKU_NUM_BRANCH;
+#else
+constexpr static int NUM_BRANCH = 6;
+#endif
+
+/**
  * 数独の一辺のマスの数
  */
 constexpr static int SIZE = DIM * DIM;
