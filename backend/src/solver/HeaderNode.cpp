@@ -180,6 +180,8 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
 
           // ループ内ですでに解を見つけたのならここは見なくていい
           if (!already_solved_once) [[unlikely]] {
+            already_solved_once = true;
+            // 解を保存
 #pragma omp critical
             {
               if (solution.empty()) [[unlikely]] {
