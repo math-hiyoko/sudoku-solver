@@ -146,9 +146,9 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
 }  // makeNodesFromBoard
 
 /**
- * @brief knuths_algorithmによってえられたDancingNodeから数独の盤面を復元する
+ * @brief solveによってえられたDancingNodeから数独の盤面を復元する
  *
- * @param solution knuths_algorithmによってえられたRowNode
+ * @param solution solveによってえられたRowNode
  * @param board 復元した数独の盤面
  */
 void makeBoardFromSolution(const std::vector<DancingLinks::RowNode*>& solution,
@@ -179,7 +179,7 @@ void solve(const Board& board, Board& solution, int& num_solutions, bool& is_exa
   num_solutions = 0;
   std::vector<DancingLinks::RowNode*> solution_nodes;
   solution_nodes.reserve(SIZE * SIZE);
-  header->knuths_algorithm(solution_nodes, num_solutions, is_exact_num_solutions, just_solution,
+  header->solve(solution_nodes, num_solutions, is_exact_num_solutions, just_solution,
                            max_num_solutions);
 
   // 解が存在する場合、解を復元する

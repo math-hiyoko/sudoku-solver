@@ -68,7 +68,7 @@ HeaderNode *HeaderNode::clone(
   return new_header;
 }
 
-void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_solutions,
+void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
                                   bool &is_exact_num_solutions, const bool &just_solution,
                                   const int &max_num_solutions) {
   const int NUM_BRANCH = 6;
@@ -220,5 +220,5 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
   }
 
   return;
-}  // knuths_algorithm
+}  // solve
 }  // namespace DancingLinks
