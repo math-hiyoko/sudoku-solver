@@ -171,15 +171,15 @@ TEST(JsonHandlerTest, testConstraintViolationResponse) {
   boost::json::object board_json = {
       {"board",
        {
-           {8, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 6, 0, 0, 0, 0, 0},
-           {0, 7, 0, 6, 0, 0, 2, 0, 0},
-           {0, 5, 0, 0, 0, 7, 0, 0, 0},
-           {0, 0, 0, 0, 4, 0, 7, 0, 0},
-           {0, 0, 0, 1, 0, 0, 0, 3, 0},
-           {0, 0, 1, 1, 0, 0, 0, 6, 8},
-           {0, 0, 8, 5, 0, 0, 0, 1, 0},
-           {0, 9, 0, 0, 0, 0, 4, 0, 0},
+            {8, 0, 3, 0, 0, 0, 0, 0, 0},
+            {0, 0, 3, 6, 0, 0, 0, 0, 0},
+            {0, 7, 0, 0, 9, 9, 2, 0, 0},
+            {0, 5, 0, 0, 0, 7, 0, 0, 0},
+            {0, 0, 0, 0, 4, 5, 7, 0, 0},
+            {0, 0, 0, 1, 0, 0, 0, 3, 0},
+            {0, 0, 1, 1, 0, 0, 0, 6, 8},
+            {0, 0, 8, 5, 0, 0, 0, 1, 0},
+            {0, 9, 0, 0, 0, 0, 4, 0, 0},
        }},
   };
   boost::json::object payload = {
@@ -200,24 +200,39 @@ TEST(JsonHandlerTest, testConstraintViolationResponse) {
            {"detail",
             {
                 {
-                    {"index", 6},
+                    {"row", 0},
+                    {"column", 2},
+                    {"number", 3},
+                },
+                {
+                    {"row", 1},
+                    {"column", 2},
+                    {"number", 3},
+                },
+                {
+                    {"row", 2},
+                    {"column", 4},
+                    {"number", 9},
+                },
+                {
+                    {"row", 2},
+                    {"column", 5},
+                    {"number", 9},
+                },
+                {
+                    {"row", 5},
+                    {"column", 3},
                     {"number", 1},
-                    {"type", "row"},
                 },
                 {
-                    {"index", 3},
+                    {"row", 6},
+                    {"column", 2},
                     {"number", 1},
-                    {"type", "column"},
                 },
                 {
-                    {"index", 3},
-                    {"number", 6},
-                    {"type", "column"},
-                },
-                {
-                    {"index", 1},
-                    {"number", 6},
-                    {"type", "block"},
+                    {"row", 6},
+                    {"column", 3},
+                    {"number", 1},
                 },
             }},
        }},

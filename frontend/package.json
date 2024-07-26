@@ -1,0 +1,28 @@
+{
+  "name": "sudoku-solver-frontend",
+  "private": true,
+  "description": "Frontend for Sudoku Solver",
+  "dependencies": {
+    "ajv": "^8.16.0",
+    "devcert": "^1.2.2",
+    "dotenv": "^16.4.5",
+    "gatsby": "^5.13.6",
+    "gatsby-plugin-env-variables": "^2.3.0",
+    "gatsby-plugin-styled-components": "^6.13.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "styled-components": "^6.1.11"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.2"
+  },
+  "scripts": {
+    "build": "gatsby build",
+    "develop": "gatsby develop",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
+    "start": "gatsby develop",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean",
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+  }
+}

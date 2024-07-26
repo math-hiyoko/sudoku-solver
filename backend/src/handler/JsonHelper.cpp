@@ -62,31 +62,6 @@ int sudokuboard_to_json(const Sudoku::Board &board, boost::json::array &json) {
   return 0;
 }
 
-int constraints_to_json(const std::vector<Sudoku::Constraint> &constraints,
-                        boost::json::array &json) {
-  for (const Sudoku::Constraint &constraint : constraints) {
-    boost::json::object constraint_json{
-        {"index", constraint.key1},
-        {"number", constraint.key2},
-    };
-    switch (constraint.type) {
-      case Sudoku::ConstraintEnum::ROW:
-        constraint_json["type"] = "row";
-        break;
-      case Sudoku::ConstraintEnum::COLUMN:
-        constraint_json["type"] = "column";
-        break;
-      case Sudoku::ConstraintEnum::BLOCK:
-        constraint_json["type"] = "block";
-        break;
-      default:
-        return 1;
-    }
-    json.push_back(constraint_json);
-  }
-  return 0;
-}
-
 int options_to_json(const std::vector<Sudoku::Option> &options, boost::json::array &json) {
   for (const Sudoku::Option &option : options) {
     json.push_back(boost::json::object{
