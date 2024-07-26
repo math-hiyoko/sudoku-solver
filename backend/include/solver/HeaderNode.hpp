@@ -51,6 +51,6 @@ class HeaderNode : public IDancingLinksNode {
    */
   void knuths_algorithm(std::vector<RowNode *> &solution, int &num_solutios,
                         bool &is_exact_num_solutions, const bool &just_solution,
-                        const int &max_num_solutions);
+                        int max_num_solutions);
 };  // class HeaderNode
 }  // namespace DancingLinks
