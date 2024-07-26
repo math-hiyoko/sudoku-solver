@@ -205,6 +205,11 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     } while (!search_stack.empty());
   }
 
+  if (num_solutions > max_num_solutions) {
+    num_solutions = max_num_solutions;
+    is_exact_num_solutions = false;
+  }
+
   return;
 }  // knuths_algorithm
 }  // namespace DancingLinks
