@@ -69,8 +69,12 @@ HeaderNode *HeaderNode::clone(
 
 void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_solutions,
                                   bool &is_exact_num_solutions, const bool &just_solution,
-                                  const int &max_num_solutions) {
+                                  int max_num_solutions) {
   const int NUM_BRANCH = 20;
+  if (just_solution) {
+    max_num_solutions = 1;
+  }
+  
   num_solutions = 0;
   is_exact_num_solutions = true;
 
