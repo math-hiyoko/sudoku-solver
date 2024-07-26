@@ -11,6 +11,7 @@ phases:
       - |
         yum -y install cmake \
                        gcc \
+                       libomp \
                        boost-devel \
                        boost-json
 

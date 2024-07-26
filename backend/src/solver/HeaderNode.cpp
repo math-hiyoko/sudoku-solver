@@ -94,7 +94,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     search_queue.pop();
 
     const ColumnNode *const next_column = header->selectMinSizeColumn();
-    for (IDancingLinksBodyNode *i = next_column->down; i != next_column; i = i->down) {
+    for (IDancingLinksBodyNode *i = next_column->up; i != next_column; i = i->up) {
       DancingNode *const dancing_node = static_cast<DancingNode *>(i);
       dancing_node->cover();
       solution_prefix.emplace_back(dancing_node->row);
@@ -133,7 +133,13 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
     search_queue.pop();
   }
 
+  #pragma omp parallel for shared(num_solutions, is_exact_num_solutions, search_branches, solution) private(i)
   for (int i = 0; i < search_branches.size(); i++) {
+    if ((just_solution && num_solutions > 0) || (num_solutions >= max_num_solutions)) [[unlikely]] {
+      is_exact_num_solutions = false;
+      break;
+    }
+
     const auto [solution_prefix, header] = search_branches[i];
     // 探索中の状態を保存するスタック
     std::stack<NodeState> search_stack;
@@ -164,12 +170,18 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
         if (header->isEmpty()) {
           // headerが空 => 解が見つかった
           assert(solution_prefix.size() + solution_buf.size() == Sudoku::SIZE * Sudoku::SIZE);
+
+          #pragma omp atomic
           num_solutions++;
-          if (solution.empty()) [[unlikely]] {
-            std::transform(solution_prefix.begin(), solution_prefix.end(), std::back_inserter(solution),
-                           [](RowNode *node) { return node; });
-            std::transform(solution_buf.begin(), solution_buf.end(), std::back_inserter(solution),
-                           [](DancingNode *node) { return node->row; });
+
+          #pragma omp critical
+          {
+            if (solution.empty()) [[unlikely]] {
+              std::transform(solution_prefix.begin(), solution_prefix.end(), std::back_inserter(solution),
+                            [](RowNode *node) { return node; });
+              std::transform(solution_buf.begin(), solution_buf.end(), std::back_inserter(solution),
+                            [](DancingNode *node) { return node->row; });
+            }
           }
 
           // dancing_nodeを選択したという設定を元に戻す
@@ -177,7 +189,7 @@ void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_sol
           solution_buf.pop_back();
 
           if (just_solution || num_solutions >= max_num_solutions) [[unlikely]] {
-            is_exact_num_solutions &= search_stack.empty();
+            is_exact_num_solutions = false;
             break;
           }
 
