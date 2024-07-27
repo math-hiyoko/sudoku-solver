@@ -3,24 +3,17 @@
   "private": true,
   "description": "Frontend for Sudoku Solver",
   "dependencies": {
-    "@types/node": "^20.14.11",
     "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "ajv": "^8.16.0",
-    "devcert": "^1.2.2",
     "dotenv": "^16.4.5",
-    "gatsby": "^5.13.6",
+    "gatsby": "^5.13.7",
     "gatsby-plugin-env-variables": "^2.3.0",
     "gatsby-plugin-styled-components": "^6.13.1",
     "gatsby-plugin-typescript": "^5.13.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.24.0",
-    "styled-components": "^6.1.11",
-    "typescript": "^5.5.3"
+    "styled-components": "^6.1.12"
   },
   "devDependencies": {
-    "prettier": "^3.3.2"
+    "prettier": "^3.3.3"
   },
   "scripts": {
     "build": "gatsby build",
