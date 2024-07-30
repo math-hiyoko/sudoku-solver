@@ -198,11 +198,6 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
           dancing_node->uncover();
           solution_buf.pop_back();
 
-          if (num_solutions > max_num_solutions_) [[unlikely]] {
-            is_exact_num_solutions = false;
-            break;
-          }
-
           continue;
         }
       }
