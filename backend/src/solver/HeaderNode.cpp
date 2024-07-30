@@ -137,11 +137,6 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
 
 #pragma omp parallel for schedule(dynamic) shared(num_solutions, is_exact_num_solutions, search_branches, solution)
   for (int i = 0; i < search_branches.size(); i++) {
-    if (num_solutions >= max_num_solutions_) [[unlikely]] {
-      is_exact_num_solutions = false;
-      continue;
-    }
-
     const auto [solution_prefix, header] = search_branches[i];
     // 探索中の状態を保存するスタック
     std::stack<NodeState> search_stack;
@@ -151,6 +146,11 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
     bool already_solved_once = false;
 
     do {
+      if (num_solutions > max_num_solutions_) [[unlikely]] {
+        is_exact_num_solutions = false;
+        break;
+      }
+
       int next_index = 0;  // 次がsolution_buf中の何番目の要素になるか
 
       if (!search_stack.empty()) [[likely]] {
@@ -198,7 +198,7 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
           dancing_node->uncover();
           solution_buf.pop_back();
 
-          if (num_solutions >= max_num_solutions_) [[unlikely]] {
+          if (num_solutions > max_num_solutions_) [[unlikely]] {
             is_exact_num_solutions = false;
             break;
           }
