@@ -17,7 +17,17 @@
   },
   "overrides": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "babel-eslint": "@babel/eslint-parser",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "@babel/plugin-transform-nullish-coalescing-operator",
+    "@babel/plugin-proposal-optional-chaining": "@babel/plugin-transform-optional-chaining",
+    "@babel/plugin-proposal-class-properties": "@babel/plugin-transform-class-properties",
+    "@babel/plugin-proposal-object-rest-spread": "@babel/plugin-transform-object-rest-spread",
+    "@babel/plugin-proposal-numeric-separator": "@babel/plugin-transform-numeric-separator",
+    "rimraf": "^4.0.0",
+    "glob": "^9.0.0",
+    "@humanwhocodes/config-array": "@eslint/config-array",
+    "@humanwhocodes/object-schema": "@eslint/object-schema"
   },
   "scripts": {
     "build": "gatsby build",
