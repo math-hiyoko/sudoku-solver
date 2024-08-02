@@ -13,21 +13,15 @@
     "styled-components": "^6.1.12"
   },
   "devDependencies": {
-    "prettier": "^3.3.3"
-  },
-  "overrides": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "babel-eslint": "@babel/eslint-parser",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "@babel/plugin-transform-nullish-coalescing-operator",
-    "@babel/plugin-proposal-optional-chaining": "@babel/plugin-transform-optional-chaining",
-    "@babel/plugin-proposal-class-properties": "@babel/plugin-transform-class-properties",
-    "@babel/plugin-proposal-object-rest-spread": "@babel/plugin-transform-object-rest-spread",
-    "@babel/plugin-proposal-numeric-separator": "@babel/plugin-transform-numeric-separator",
-    "rimraf": "^4.0.0",
-    "glob": "^9.0.0",
-    "@humanwhocodes/config-array": "@eslint/config-array",
-    "@humanwhocodes/object-schema": "@eslint/object-schema"
+    "@testing-library/jest-dom": "^6.4.8",
+    "@testing-library/react": "^16.0.0",
+    "@types/jest": "^29.5.12",
+    "@types/testing-library__jest-dom": "^6.0.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "prettier": "^3.3.3",
+    "ts-jest": "^29.2.4"
   },
   "scripts": {
     "build": "gatsby build",
@@ -36,6 +30,6 @@
     "start": "gatsby develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+    "test": "jest"
   }
 }
