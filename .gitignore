@@ -45,3 +45,4 @@ frontend/package-lock.json
 frontend/public/
 frontend/node_modules/
 frontend/.chache/
+frontend/unittest_reports/

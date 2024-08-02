@@ -7,5 +7,11 @@ module.exports = {
     ".+\\.(css|styl|less|sass|scss)$": "identity-obj-proxy",
     ".+\\.(jpg|jpeg|png|gif|webp|svg)$": `<rootDir>/__mocks__/file-mock.js`,
   },
-  testEnvironment: "jest-environment-jsdom",
+  reporters: [
+    "default",
+    ["jest-junit", {
+      outputDirectory: "unittest_reports",
+      outputName: "junit.xml",
+    }],
+  ],
 };
