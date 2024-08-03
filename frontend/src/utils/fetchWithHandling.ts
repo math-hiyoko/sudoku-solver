@@ -5,7 +5,7 @@ export default async function fetchWithHandling<T>(
   const response: Response = await fetch(url, options);
   if (!response.ok) {
     const errorData = await response.json();
-    const allowedErrorTypes = ["OutOfRangeError", "ConstraintViolation"];
+    const allowedErrorTypes: string[] = ["OutOfRangeError", "ConstraintViolation"];
     throw new Error(
       (allowedErrorTypes.includes(errorData.error?.type)
         ? errorData.error?.message

@@ -76,7 +76,7 @@ export default function useSudoku() {
           userBoard: board,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error solving sudoku:", error);
       setError(error.message);
     } finally {
