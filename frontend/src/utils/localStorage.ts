@@ -2,6 +2,10 @@ export const loadState = (
   key: string,
   defaultValue: (number | undefined)[],
 ): (number | undefined)[] => {
+  if (typeof window === "undefined") {
+    return defaultValue;
+  }
+
   try {
     const serializedState: string | null = localStorage.getItem(key);
     if (serializedState === null) {
@@ -16,6 +20,10 @@ export const loadState = (
 };
 
 export const saveState = (key: string, state: (number | undefined)[]): void => {
+  if (typeof window === "undefined") {
+    return;
+  }
+  
   try {
     const serializedState = JSON.stringify(
       state.map((value) => (value === undefined ? null : value)),
