@@ -27,7 +27,7 @@ describe("Grid Component", () => {
         cellColors={[]}
       />,
     );
-    const cells = screen.getAllByRole('textbox');
+    const cells = screen.getAllByRole("textbox");
     fireEvent.click(cells[0]);
     expect(mockOnClick).toHaveBeenCalledWith(0);
   });
@@ -40,7 +40,7 @@ describe("Grid Component", () => {
         cellColors={[]}
       />,
     );
-    const cells = screen.getAllByRole('textbox');
+    const cells = screen.getAllByRole("textbox");
     expect(cells[1]).toHaveStyle("background-color: lightcoral");
     expect(cells[3]).toHaveStyle("background-color: lightcoral");
   });
