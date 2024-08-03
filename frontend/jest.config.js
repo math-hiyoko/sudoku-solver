@@ -9,9 +9,12 @@ module.exports = {
   },
   reporters: [
     "default",
-    ["jest-junit", {
-      outputDirectory: "unittest_reports",
-      outputName: "junit.xml",
-    }],
+    [
+      "jest-junit",
+      {
+        outputDirectory: "unittest_reports",
+        outputName: "junit.xml",
+      },
+    ],
   ],
 };

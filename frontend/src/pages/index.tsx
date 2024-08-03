@@ -73,6 +73,7 @@ const IndexPage: React.FC = () => {
       ) : (
         <ButtonContainer>
           <Button
+            data-testid="solve-button"
             onClick={handleSolve}
             disabled={isSubmitting || errorDetails.length > 0}
           >

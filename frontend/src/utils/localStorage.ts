@@ -23,7 +23,7 @@ export const saveState = (key: string, state: (number | undefined)[]): void => {
   if (typeof window === "undefined") {
     return;
   }
-  
+
   try {
     const serializedState = JSON.stringify(
       state.map((value) => (value === undefined ? null : value)),
