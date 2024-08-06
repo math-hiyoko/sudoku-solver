@@ -33,7 +33,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR/frontend
       - echo "Running Tests..."
       - npm run test
-      - less unittest_reports/junit.xml
+      - cat unittest_reports/junit.xml
       - echo "Building the application..."
       - npm run build
 
