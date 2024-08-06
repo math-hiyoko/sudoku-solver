@@ -43,6 +43,12 @@ reports:
     discard-paths: yes
     file-format: JUNITXML
 
+artifacts:
+  files:
+    - "**/*"
+  base-directory: frontend/public
+  discard-paths: no
+
 cache:
   paths:
     - frontend/node_modules/**/*
