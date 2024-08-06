@@ -32,22 +32,17 @@ phases:
     commands:
       - cd $CODEBUILD_SRC_DIR/frontend
       - echo "Running Tests..."
-      - npm run test
+      - npm run test -- --coverage
       - echo "Building the application..."
       - npm run build
 
 reports:
   unittest_reports:
-    files: "*.xml"
-    base-directory: frontend/unittest_reports
+    files: 
+      - frontend/unittest_reports/juint.xml
+      - frontend/coverage/clover.xml
     discard-paths: yes
     file-format: JUNITXML
-
-artifacts:
-  files:
-    - "**/*"
-  base-directory: frontend/public
-  discard-paths: no
 
 cache:
   paths:
