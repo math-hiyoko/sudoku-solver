@@ -9,6 +9,7 @@ phases:
       nodejs: 20
     commands:
       - echo Installing source NPM dependencies...
+      - cd $CODEBUILD_SRC_DIR/frontend
       - npm install
 
   pre_build:
