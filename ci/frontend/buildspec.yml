@@ -33,19 +33,20 @@ phases:
       - cd $CODEBUILD_SRC_DIR/frontend
       - echo "Running Tests..."
       - npm run test
+      - less unittest_reports/junit.xml
       - echo "Building the application..."
       - npm run build
 
 reports:
   unittest_reports:
-    base-directory: frontend/unittest_reports
     files: "*.xml"
+    base-directory: frontend/unittest_reports
     discard-paths: yes
     file-format: JUNITXML
 
 artifacts:
   files:
-    - '**/*'
+    - "**/*"
   base-directory: frontend/public
   discard-paths: no
 
