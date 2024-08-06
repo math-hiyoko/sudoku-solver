@@ -38,11 +38,16 @@ phases:
 
 reports:
   unittest_reports:
-    files: 
-      - frontend/unittest_reports/juint.xml
-      - frontend/coverage/clover.xml
+    files: "*.xml"
+    base-directory: frontend/unittest_reports
     discard-paths: yes
     file-format: JUNITXML
+
+artifacts:
+  files:
+    - "**/*"
+  base-directory: frontend/public
+  discard-paths: no
 
 cache:
   paths:
