@@ -80,3 +80,7 @@ artifacts:
   files: backend/build/src/handler/$FUCTION_NAME.zip
   name: $ARTIFACT_NAME
   discard-paths: yes
+
+cache:
+  paths:
+    - backend/extern/aws-lambda-cpp/build
