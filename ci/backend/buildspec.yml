@@ -83,4 +83,4 @@ artifacts:
 
 cache:
   paths:
-    - backend/extern/aws-lambda-cpp/build
+    - backend/extern/aws-lambda-cpp/**/*
