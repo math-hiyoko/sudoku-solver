@@ -52,4 +52,4 @@ artifacts:
 cache:
   paths:
     - frontend/node_modules/**/*
-    - .cache/**/*
+    - frontend/.cache/**/*
