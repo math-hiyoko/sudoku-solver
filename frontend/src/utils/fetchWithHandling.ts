@@ -1,8 +1,10 @@
+import fetch, { RequestInit } from 'node-fetch';
+
 export default async function fetchWithHandling<T>(
   url: string,
   options: RequestInit,
 ): Promise<T> {
-  const response: Response = await fetch(url, options);
+  const response: fetch.Response = await fetch(url, options);
   if (!response.ok) {
     const errorData = await response.json();
     const allowedErrorTypes: string[] = [
