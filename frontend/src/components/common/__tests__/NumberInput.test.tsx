@@ -21,4 +21,13 @@ describe("NumberInput Component", () => {
     fireEvent.click(getByText("削除"));
     expect(mockOnSelect).toHaveBeenCalledWith("delete");
   });
+
+  test("clears selection when clicking the same number", () => {
+    const mockOnSelect = jest.fn();
+    const { getByText } = render(<NumberInput onSelect={mockOnSelect} />);
+    const numberButton = getByText("1");
+    fireEvent.click(numberButton);
+    fireEvent.click(numberButton);
+    expect(mockOnSelect).toHaveBeenCalledWith(undefined);
+  });
 });

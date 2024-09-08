@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import config from "../../config";
+import { commonInputStyles, borderStyles } from '../../styles/CommonStyles';
 
 interface CellProps {
   hasError: boolean;
@@ -23,27 +24,10 @@ const GridContainer = styled.div`
 const Cell = styled.input<CellProps>`
   width: 100%;
   height: 100%;
-  text-align: center;
-  border: 1px solid black;
-  box-sizing: border-box;
-  font-size: 2em;
-  background-color: ${({ hasError }) => (hasError ? "lightcoral" : "white")};
-  color: ${({ color }) => color ?? "black"};
-  ${({ index }) =>
-    index % config.sudokuDim === config.sudokuDim - 1
-      ? `border-right: 2px solid black;`
-      : ""}
-  ${({ index }) =>
-    index % config.sudokuDim === 0 ? `border-left: 2px solid black;` : ""}
-  ${({ index }) =>
-    Math.floor(index / config.gridSize) % config.sudokuDim === 0
-      ? `border-top: 2px solid black;`
-      : ""}
-  ${({ index }) =>
-    Math.floor(index / config.gridSize) % config.sudokuDim ===
-    config.sudokuDim - 1
-      ? `border-bottom: 2px solid black;`
-      : ""}
+  background-color: ${({ hasError }) => (hasError ? 'lightcoral' : 'white')};
+  color: ${({ color }) => color ?? 'black'};
+  ${commonInputStyles}
+  ${({ index }) => borderStyles({ index })}  // ここでpropsを渡す
 `;
 
 interface GridProps {

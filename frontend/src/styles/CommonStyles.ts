@@ -1,4 +1,23 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import config from "../config";
+
+export const commonInputStyles = css`
+  text-align: center;
+  border: 1px solid black;
+  box-sizing: border-box;
+  font-size: 2em;
+`;
+
+type BorderStyleProps = {
+  index: number;
+};
+
+export const borderStyles = ({ index }: BorderStyleProps) => css`
+  ${index % config.sudokuDim === config.sudokuDim - 1 ? 'border-right: 2px solid black;' : ''}
+  ${index % config.sudokuDim === 0 ? 'border-left: 2px solid black;' : ''}
+  ${Math.floor(index / config.gridSize) % config.sudokuDim === 0 ? 'border-top: 2px solid black;' : ''}
+  ${Math.floor(index / config.gridSize) % config.sudokuDim === config.sudokuDim - 1 ? 'border-bottom: 2px solid black;' : ''}
+`;
 
 export const Button = styled.button`
   padding: 10px 20px;
