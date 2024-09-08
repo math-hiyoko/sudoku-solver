@@ -21,7 +21,9 @@ const GridContainer = styled.div`
   margin: 0 auto;
 `;
 
-const Cell = styled.input<CellProps>`
+const Cell = styled.input.withConfig({
+  shouldForwardProp: (prop) => !['hasError', 'index'].includes(prop),
+})<CellProps>`
   width: 100%;
   height: 100%;
   background-color: ${({ hasError }) => (hasError ? 'lightcoral' : 'white')};

@@ -13,7 +13,9 @@ const NumberInputContainer = styled.div`
   flex-wrap: wrap; /* 数字ボタンが一列に収まらない場合に折り返す */
 `;
 
-const NumberButton = styled.button<ButtonProps>`
+const NumberButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['isSelected'].includes(prop),
+})<ButtonProps>`
   width: 40px;
   height: 40px;
   font-size: 1.5em;
