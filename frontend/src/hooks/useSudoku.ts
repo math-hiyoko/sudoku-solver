@@ -62,10 +62,7 @@ export default function useSudoku() {
       );
 
       if (data.num_solutions === 0) {
-        setError("No solution found");
-        setLoading(false);
-        setIsSubmitting(false);
-        return;
+        throw new Error("No solution found");
       }
 
       navigate("/result", {

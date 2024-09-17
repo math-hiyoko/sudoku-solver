@@ -74,7 +74,9 @@ const IndexPage: React.FC = () => {
         <ButtonContainer>
           <Button
             data-testid="solve-button"
-            onClick={handleSolve}
+            onClick={async () => {
+              await handleSolve();
+            }}
             disabled={isSubmitting || errorDetails.length > 0}
           >
             Solve
