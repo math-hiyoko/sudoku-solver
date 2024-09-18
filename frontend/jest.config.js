@@ -5,7 +5,6 @@ module.exports = {
   testPathIgnorePatterns: ["node_modules", ".cache", "public"],
   moduleNameMapper: {
     ".+\\.(css|styl|less|sass|scss)$": "identity-obj-proxy",
-    ".+\\.(jpg|jpeg|png|gif|webp|svg)$": `<rootDir>/__mocks__/file-mock.js`,
   },
   reporters: [
     "default",
