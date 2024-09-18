@@ -45,9 +45,9 @@ reports:
     file-format: JUNITXML
 
 artifacts:
-  files:
-    - "**/*"
+  files: "**/*"
   base-directory: frontend/public
+  name: $ARTIFACT_NAME
   discard-paths: no
 
 cache:
