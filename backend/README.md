@@ -24,7 +24,7 @@ $ make && make install
 $ cd ../../..
 # SudokuSolberのビルド
 $ mkdir build && cd build
-$ cmake .. -DCMAKE_PREFIX_PATH=..
+$ cmake .. -DCMAKE_PREFIX_PATH=.
 $ make
 $ ctest  # testsディレクトリ内のテストを行う
 $ make format-all  # clang-formatが使えるとき有効、全てのC++ファイルのフォーマットをする
