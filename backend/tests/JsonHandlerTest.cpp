@@ -6,7 +6,7 @@
 #include "handler/JsonHandler.hpp"
 #include "solver/SudokuType.hpp"
 
-#if defined(SUDOKU_DIM) && SUDOKU_DIM == 3
+#if defined(SUDOKU_LEVEL) && SUDOKU_LEVEL == 3
 TEST(JsonHandlerTest, testSuccessResponse) {
   boost::json::object board_json = {
       {"board",

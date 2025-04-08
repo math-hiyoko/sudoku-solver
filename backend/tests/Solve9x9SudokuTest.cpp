@@ -4,7 +4,7 @@
 #include "solver/SudokuType.hpp"
 
 // 9x9の数独の解を求めるテスト
-#if defined(SUDOKU_DIM) && SUDOKU_DIM == 3
+#if defined(SUDOKU_LEVEL) && SUDOKU_LEVEL == 3
 TEST(Sudoku9x9SolveTest, testRegularSolve) {
   const Sudoku::Board input = {{
       {8, 0, 0, 0, 0, 0, 0, 0, 0},

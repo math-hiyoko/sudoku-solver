@@ -5,7 +5,7 @@
 #include "solver/SudokuType.hpp"
 #include "solver/SudokuValidator.hpp"
 
-#if defined(SUDOKU_DIM) && SUDOKU_DIM == 3
+#if defined(SUDOKU_LEVEL) && SUDOKU_LEVEL == 3
 TEST(ValidateSolveTest, testValidrange) {
   const Sudoku::Board input = {{
       {8, 0, 0, 0, 0, -1, 0, 0, 0},

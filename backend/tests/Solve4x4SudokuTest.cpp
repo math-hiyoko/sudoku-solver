@@ -4,7 +4,7 @@
 #include "solver/SudokuType.hpp"
 
 // 4x4の数独の解を求めるテスト
-#if defined(SUDOKU_DIM) && SUDOKU_DIM == 2
+#if defined(SUDOKU_LEVEL) && SUDOKU_LEVEL == 2
 TEST(Sudoku4x4SolveTest, testRegularSolve) {
   const Sudoku::Board input = {{
       {1, 0, 0, 0},

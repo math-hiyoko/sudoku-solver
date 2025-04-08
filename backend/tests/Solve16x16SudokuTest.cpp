@@ -4,7 +4,7 @@
 #include "solver/SudokuType.hpp"
 
 // 16x16の数独の解を求めるテスト
-#if defined(SUDOKU_DIM) && SUDOKU_DIM == 4
+#if defined(SUDOKU_LEVEL) && SUDOKU_LEVEL == 4
 TEST(Sudoku16x16SolveTest, testRegularSolve) {
   const Sudoku::Board input = {{
       {16, 15, 14, 13, 12, 11, 10, 0, 8, 7, 6, 5, 4, 3, 2, 1},

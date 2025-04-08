@@ -61,29 +61,29 @@ int isSatisfy(const Board &board, std::vector<Option> &options) {
   }  // 列についてのチェック
 
   // ブロックについてのチェック
-  for (int i = 0; i < DIM; i++) {
-    for (int j = 0; j < DIM; j++) {
+  for (int i = 0; i < LEVEL; i++) {
+    for (int j = 0; j < LEVEL; j++) {
       // check[v] は v+1 が(i, j)ブロックに出現する回数を表す
       std::array<int, SIZE> check{};
       // (i, j)ブロック内の各マスについてチェック
-      for (int k = 0; k < DIM; k++) {
-        for (int l = 0; l < DIM; l++) {
-          if (board[i * DIM + k][j * DIM + l] == 0) {
+      for (int k = 0; k < LEVEL; k++) {
+        for (int l = 0; l < LEVEL; l++) {
+          if (board[i * LEVEL + k][j * LEVEL + l] == 0) {
             continue;
           }
-          check[board[i * DIM + k][j * DIM + l] - 1]++;
+          check[board[i * LEVEL + k][j * LEVEL + l] - 1]++;
         }
       }
       // 出現回数が2以上のものがあれば制約を満たさない
-      for (int k = 0; k < DIM; k++) {
-        for (int l = 0; l < DIM; l++) {
-          if (board[i * DIM + k][j * DIM + l] == 0) {
+      for (int k = 0; k < LEVEL; k++) {
+        for (int l = 0; l < LEVEL; l++) {
+          if (board[i * LEVEL + k][j * LEVEL + l] == 0) {
             continue;
           }
-          if (check[board[i * DIM + k][j * DIM + l] - 1] > 1) {
-            options_set.insert(Option{.row = i * DIM + k,
-                                      .column = j * DIM + l,
-                                      .number = board[i * DIM + k][j * DIM + l]});
+          if (check[board[i * LEVEL + k][j * LEVEL + l] - 1] > 1) {
+            options_set.insert(Option{.row = i * LEVEL + k,
+                                      .column = j * LEVEL + l,
+                                      .number = board[i * LEVEL + k][j * LEVEL + l]});
           }
         }
       }

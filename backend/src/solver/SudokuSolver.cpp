@@ -42,7 +42,7 @@ consteval Sudoku::ExactCoverMatrix makeFullMatrix() {
         };  // 列columnにnumber+1が入ること
         matrix[idx][3] =
             Sudoku::Constraint{.type = Sudoku::ConstraintEnum::BLOCK,
-                               .key1 = row / Sudoku::DIM * Sudoku::DIM + column / Sudoku::DIM,
+                               .key1 = row / Sudoku::LEVEL * Sudoku::LEVEL + column / Sudoku::LEVEL,
                                .key2 = number};  // ブロックにnumber+1が入ること
       }
     }
@@ -96,10 +96,10 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
             unfeasible[row][n_column][board[row][column] - 1] = true;
           }
         }
-        for (int n_row = row / Sudoku::DIM * Sudoku::DIM;
-             n_row < (row / Sudoku::DIM + 1) * Sudoku::DIM; n_row++) {
-          for (int n_column = column / Sudoku::DIM * Sudoku::DIM;
-               n_column < (column / Sudoku::DIM + 1) * Sudoku::DIM; n_column++) {
+        for (int n_row = row / Sudoku::LEVEL * Sudoku::LEVEL;
+             n_row < (row / Sudoku::LEVEL + 1) * Sudoku::LEVEL; n_row++) {
+          for (int n_column = column / Sudoku::LEVEL * Sudoku::LEVEL;
+               n_column < (column / Sudoku::LEVEL + 1) * Sudoku::LEVEL; n_column++) {
             // 同じブロックにnumber+1が入らない
             if (n_row != row && n_column != column) [[likely]] {
               unfeasible[n_row][n_column][board[row][column] - 1] = true;
