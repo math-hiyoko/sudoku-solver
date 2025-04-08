@@ -69,8 +69,8 @@ HeaderNode *HeaderNode::clone(
 }
 
 void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
-                                  bool &is_exact_num_solutions, const bool &just_solution,
-                                  const int &max_num_solutions) {
+                       bool &is_exact_num_solutions, const bool &just_solution,
+                       const int &max_num_solutions) {
   const int max_num_solutions_ = just_solution ? 1 : max_num_solutions;
 
   num_solutions = 0;
@@ -135,7 +135,8 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
     search_queue.pop();
   }
 
-#pragma omp parallel for schedule(dynamic) shared(num_solutions, is_exact_num_solutions, search_branches, solution)
+#pragma omp parallel for schedule(dynamic) \
+    shared(num_solutions, is_exact_num_solutions, search_branches, solution)
   for (int i = 0; i < search_branches.size(); i++) {
     const auto [solution_prefix, header] = search_branches[i];
     // 探索中の状態を保存するスタック

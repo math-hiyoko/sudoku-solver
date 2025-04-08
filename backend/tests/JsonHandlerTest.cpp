@@ -11,15 +11,15 @@ TEST(JsonHandlerTest, testSuccessResponse) {
   boost::json::object board_json = {
       {"board",
        {
-           {8, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 3, 6, 0, 0, 0, 0, 0},
-           {0, 7, 0, 0, 9, 0, 2, 0, 0},
-           {0, 5, 0, 0, 0, 7, 0, 0, 0},
-           {0, 0, 0, 0, 4, 5, 7, 0, 0},
-           {0, 0, 0, 1, 0, 0, 0, 3, 0},
-           {0, 0, 1, 0, 0, 0, 0, 6, 8},
-           {0, 0, 8, 5, 0, 0, 0, 1, 0},
-           {0, 9, 0, 0, 0, 0, 4, 0, 0},
+           {8, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
+           {nullptr, nullptr, 3, 6, nullptr, nullptr, nullptr, nullptr, nullptr},
+           {nullptr, 7, nullptr, nullptr, 9, nullptr, 2, nullptr, nullptr},
+           {nullptr, 5, nullptr, nullptr, nullptr, 7, nullptr, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, nullptr, 4, 5, 7, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, 1, nullptr, nullptr, nullptr, 3, nullptr},
+           {nullptr, nullptr, 1, nullptr, nullptr, nullptr, nullptr, 6, 8},
+           {nullptr, nullptr, 8, 5, nullptr, nullptr, nullptr, 1, nullptr},
+           {nullptr, 9, nullptr, nullptr, nullptr, nullptr, 4, nullptr, nullptr},
        }},
   };
   boost::json::object payload = {
@@ -66,15 +66,15 @@ TEST(JsonHandlerTest, testIncorrectInputResponse) {
   boost::json::object board_json = {
       {"board",
        {
-           {8, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 6, 0, 0, 0, 0, 0},
-           {0, 7, 0, 0, 0, 0, 2, 0, 0},
-           {0, 5, 0, 0, 0, 7, 0, 0, 0},
-           {0, 0, 0, 0, 4, 0, 7, 0, 0},
-           {0, 0, 0, 1, 0, 0, 0, 3, 0},
-           {0, 0, 1, 0, 0, 0, 0, 6, 8},
-           {0, 0, 8, 5, 0, 0, 0, 1, 0},
-           {0, 9, 0, 0, 0, 0, 4, 0},
+           {8, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, 6, nullptr, nullptr, nullptr, nullptr, nullptr},
+           {nullptr, 7, nullptr, nullptr, nullptr, nullptr, 2, nullptr, nullptr},
+           {nullptr, 5, nullptr, nullptr, nullptr, 7, nullptr, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, nullptr, 4, nullptr, 7, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, 1, nullptr, nullptr, nullptr, 3, nullptr},
+           {nullptr, nullptr, 1, nullptr, nullptr, nullptr, nullptr, 6, 8},
+           {nullptr, nullptr, 8, 5, nullptr, nullptr, nullptr, 1, nullptr},
+           {nullptr, 9, nullptr, nullptr, nullptr, nullptr, 4, nullptr},
        }},
   };
   boost::json::object payload = {
@@ -112,15 +112,15 @@ TEST(JsonHandlerTest, testOutOfRangeResponse) {
   boost::json::object board_json = {
       {"board",
        {
-           {8, 0, 0, 0, 0, 0, 0, 0, 0},
-           {0, 0, 0, 6, 0, 0, 0, 0, 0},
-           {0, 7, 0, 0, 0, 0, 2, 0, 0},
-           {0, 5, 0, 0, 0, 7, 0, 0, 0},
-           {0, 0, 0, 0, 4, 0, 7, 0, 0},
-           {0, 0, 0, 1, 0, 0, 0, 3, 0},
-           {0, 0, 1, 0, 0, 0, 0, 6, 8},
-           {0, 0, 8, 5, 0, 0, 0, 1, 0},
-           {0, 9, 0, 0, 0, 0, 4, 10, -1},
+           {8, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, 6, nullptr, nullptr, nullptr, nullptr, nullptr},
+           {nullptr, 7, nullptr, nullptr, nullptr, nullptr, 2, nullptr, nullptr},
+           {nullptr, 5, nullptr, nullptr, nullptr, 7, nullptr, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, nullptr, 4, nullptr, 7, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, 1, nullptr, nullptr, nullptr, 3, nullptr},
+           {nullptr, nullptr, 1, nullptr, nullptr, nullptr, nullptr, 6, 8},
+           {nullptr, nullptr, 8, 5, nullptr, nullptr, nullptr, 1, nullptr},
+           {nullptr, 9, nullptr, nullptr, nullptr, nullptr, 4, 10, -1},
        }},
   };
   boost::json::object payload = {
@@ -171,15 +171,15 @@ TEST(JsonHandlerTest, testConstraintViolationResponse) {
   boost::json::object board_json = {
       {"board",
        {
-           {8, 0, 3, 0, 0, 0, 0, 0, 0},
-           {0, 0, 3, 6, 0, 0, 0, 0, 0},
-           {0, 7, 0, 0, 9, 9, 2, 0, 0},
-           {0, 5, 0, 0, 0, 7, 0, 0, 0},
-           {0, 0, 0, 0, 4, 5, 7, 0, 0},
-           {0, 0, 0, 1, 0, 0, 0, 3, 0},
-           {0, 0, 1, 1, 0, 0, 0, 6, 8},
-           {0, 0, 8, 5, 0, 0, 0, 1, 0},
-           {0, 9, 0, 0, 0, 0, 4, 0, 0},
+           {8, nullptr, 3, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr},
+           {nullptr, nullptr, 3, 6, nullptr, nullptr, nullptr, nullptr, nullptr},
+           {nullptr, 7, nullptr, nullptr, 9, 9, 2, nullptr, nullptr},
+           {nullptr, 5, nullptr, nullptr, nullptr, 7, nullptr, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, nullptr, 4, 5, 7, nullptr, nullptr},
+           {nullptr, nullptr, nullptr, 1, nullptr, nullptr, nullptr, 3, nullptr},
+           {nullptr, nullptr, 1, 1, nullptr, nullptr, nullptr, 6, 8},
+           {nullptr, nullptr, 8, 5, nullptr, nullptr, nullptr, 1, nullptr},
+           {nullptr, 9, nullptr, nullptr, nullptr, nullptr, 4, nullptr, nullptr},
        }},
   };
   boost::json::object payload = {

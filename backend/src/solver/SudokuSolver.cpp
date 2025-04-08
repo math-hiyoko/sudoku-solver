@@ -180,7 +180,7 @@ void solve(const Board& board, Board& solution, int& num_solutions, bool& is_exa
   std::vector<DancingLinks::RowNode*> solution_nodes;
   solution_nodes.reserve(SIZE * SIZE);
   header->solve(solution_nodes, num_solutions, is_exact_num_solutions, just_solution,
-                           max_num_solutions);
+                max_num_solutions);
 
   // 解が存在する場合、解を復元する
   makeBoardFromSolution(solution_nodes, solution);
