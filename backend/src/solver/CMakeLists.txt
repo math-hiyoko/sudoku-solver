@@ -15,7 +15,8 @@ add_library(
 target_compile_features(${target_name} PRIVATE cxx_std_20)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
-target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include ${Boost_INCLUDE_DIRS})
+target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
+                                                  ${Boost_INCLUDE_DIRS})
 target_link_libraries(${target_name} INTERFACE OpenMP::OpenMP_CXX)
 foreach(env_var IN LISTS env_vars)
   target_compile_definitions(${target_name} PRIVATE ${env_var})
