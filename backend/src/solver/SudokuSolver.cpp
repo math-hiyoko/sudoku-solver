@@ -2,6 +2,7 @@
 
 #include <array>
 #include <boost/pool/object_pool.hpp>
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -42,7 +43,7 @@ consteval Sudoku::ExactCoverMatrix makeFullMatrix() {
         };  // 列columnにnumber+1が入ること
         matrix[idx][3] =
             Sudoku::Constraint{.type = Sudoku::ConstraintEnum::BLOCK,
-                               .key1 = row / Sudoku::DIM * Sudoku::DIM + column / Sudoku::DIM,
+                               .key1 = row / Sudoku::LEVEL * Sudoku::LEVEL + column / Sudoku::LEVEL,
                                .key2 = number};  // ブロックにnumber+1が入ること
       }
     }
@@ -96,10 +97,10 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
             unfeasible[row][n_column][board[row][column] - 1] = true;
           }
         }
-        for (int n_row = row / Sudoku::DIM * Sudoku::DIM;
-             n_row < (row / Sudoku::DIM + 1) * Sudoku::DIM; n_row++) {
-          for (int n_column = column / Sudoku::DIM * Sudoku::DIM;
-               n_column < (column / Sudoku::DIM + 1) * Sudoku::DIM; n_column++) {
+        for (int n_row = row / Sudoku::LEVEL * Sudoku::LEVEL;
+             n_row < (row / Sudoku::LEVEL + 1) * Sudoku::LEVEL; n_row++) {
+          for (int n_column = column / Sudoku::LEVEL * Sudoku::LEVEL;
+               n_column < (column / Sudoku::LEVEL + 1) * Sudoku::LEVEL; n_column++) {
             // 同じブロックにnumber+1が入らない
             if (n_row != row && n_column != column) [[likely]] {
               unfeasible[n_row][n_column][board[row][column] - 1] = true;
@@ -146,9 +147,9 @@ void makeNodesFromBoard(const Sudoku::Board& board, DancingLinks::HeaderNode* he
 }  // makeNodesFromBoard
 
 /**
- * @brief knuths_algorithmによってえられたDancingNodeから数独の盤面を復元する
+ * @brief solveによってえられたDancingNodeから数独の盤面を復元する
  *
- * @param solution knuths_algorithmによってえられたRowNode
+ * @param solution solveによってえられたRowNode
  * @param board 復元した数独の盤面
  */
 void makeBoardFromSolution(const std::vector<DancingLinks::RowNode*>& solution,
@@ -164,8 +165,9 @@ void makeBoardFromSolution(const std::vector<DancingLinks::RowNode*>& solution,
 }  // namespace
 
 namespace Sudoku {
-void solve(const Board& board, Board& solution, int& num_solutions, bool& is_exact_num_solutions,
-           const bool just_solution, const int max_num_solutions) {
+void solve(const Board& board, std::vector<Board>& solutions, int& num_solutions,
+           bool& is_exact_num_solutions, const bool just_solution, const int max_num_solutions,
+           const int max_solutions) {
   // 行列被覆問題を表すheaderを生成
   // DancingNodeは行あたり4つ、ColumnNodeは列あたり1つ生成される
   boost::object_pool<DancingLinks::DancingNode> dancing_node_pool(
@@ -177,13 +179,17 @@ void solve(const Board& board, Board& solution, int& num_solutions, bool& is_exa
 
   // 行列被覆問題を解く
   num_solutions = 0;
-  std::vector<DancingLinks::RowNode*> solution_nodes;
-  solution_nodes.reserve(SIZE * SIZE);
-  header->knuths_algorithm(solution_nodes, num_solutions, is_exact_num_solutions, just_solution,
-                           max_num_solutions);
+  std::vector<std::vector<DancingLinks::RowNode*>> solution_nodes;
+  solution_nodes.reserve(max_solutions);
+  header->solve(solution_nodes, num_solutions, is_exact_num_solutions, just_solution,
+                max_num_solutions, max_solutions);
 
   // 解が存在する場合、解を復元する
-  makeBoardFromSolution(solution_nodes, solution);
+  for (std::vector<DancingLinks::RowNode*>& solution_node : solution_nodes) {
+    solutions.emplace_back();
+    Board& solution = solutions.back();
+    makeBoardFromSolution(solution_node, solution);
+  }
 
   return;
 }  // solve

@@ -41,11 +41,15 @@ int json_to_sudokuboard(const boost::json::array &json, Sudoku::Board &board) {
     }
     for (int j = 0; j < Sudoku::SIZE; j++) {
       const boost::json::value &number = inner_json.as_array().at(j);
-      // 整数でなければいけない
-      if (!number.is_int64()) {
+      if (number.is_int64()) {
+        board[i][j] = number.as_int64();
+      } else if (number.is_null()) {
+        // null(空欄)は0として扱う
+        board[i][j] = 0;
+      } else {
+        // 整数もしくはnullでなければいけない
         return 1;
       }
-      board[i][j] = number.as_int64();
     }
   }
   return 0;

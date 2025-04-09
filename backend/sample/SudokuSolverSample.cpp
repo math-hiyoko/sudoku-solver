@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -61,10 +62,10 @@ int main() {
     return 1;
   }
 
-  Sudoku::Board solution;
+  std::vector<Sudoku::Board> solutions;
   int num_solutions;
   bool is_exact_num_solutions;
-  Sudoku::solve(board, solution, num_solutions, is_exact_num_solutions);
+  Sudoku::solve(board, solutions, num_solutions, is_exact_num_solutions);
   if (num_solutions == 0) {
     std::cout << "No solution" << std::endl;
     return 0;
@@ -77,14 +78,22 @@ int main() {
   } else {
     std::cout << "No less than " << num_solutions << " solutions exist" << std::endl;
   }
-  for (int i = 0; i < Sudoku::SIZE; i++) {
-    for (int j = 0; j < Sudoku::SIZE; j++) {
-      std::cout << solution[i][j];
-      if (j != Sudoku::SIZE - 1) {
-        std::cout << " ";
+
+  solutions.resize(std::min(3, static_cast<int>(solutions.size())));
+  for (Sudoku::Board& solution : solutions) {
+    std::cout << "Solution:" << std::endl;
+    for (int i = 0; i < Sudoku::SIZE; i++) {
+      for (int j = 0; j < Sudoku::SIZE; j++) {
+        std::cout << solution[i][j];
+        if (j != Sudoku::SIZE - 1) {
+          std::cout << (j % Sudoku::LEVEL == Sudoku::LEVEL - 1 ? " | " : " ");
+        }
       }
+      if (i != Sudoku::SIZE - 1 && i % Sudoku::LEVEL == Sudoku::LEVEL - 1) {
+        std::cout << std::endl << std::string(Sudoku::SIZE * 2 + Sudoku::LEVEL, '-');
+      }
+      std::cout << std::endl;
     }
-    std::cout << std::endl;
   }
 
   return 0;

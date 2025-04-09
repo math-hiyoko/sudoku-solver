@@ -9,24 +9,36 @@ namespace Sudoku {
  */
 #ifdef SUDOKU_MAX_NUM_SOLUTIONS
 constexpr static int MAX_NUM_SOLUTIONS = SUDOKU_MAX_NUM_SOLUTIONS;
-#else
-constexpr static int MAX_NUM_SOLUTIONS = 100'000'000;
+#endif
+
+/**
+ * 数独の解を表示するの個数の上限
+ * 解がこの個数より多くなったらそれ以降解を保存しない
+ */
+#ifdef SUDOKU_MAX_SOLUTIONS
+constexpr static int MAX_SOLUTIONS = SUDOKU_MAX_SOLUTIONS;
 #endif
 
 /**
  * 数独の問題としての次元、3なら9x9の数独、4なら16x16の数独
  * ここの数字を変えるだけで、任意の次元の数独に対応できるように作っている
  */
-#ifdef SUDOKU_DIM
-constexpr static int DIM = SUDOKU_DIM;
-#else
-constexpr static int DIM = 3;
+#ifdef SUDOKU_LEVEL
+constexpr static int LEVEL = SUDOKU_LEVEL;
+#endif
+
+/**
+ * 数独の解の個数の上限
+ * 解がこの個数より多くなったら計算を打ち切る
+ */
+#ifdef SUDOKU_NUM_BRANCHES
+constexpr static int NUM_BRANCHES = SUDOKU_NUM_BRANCHES;
 #endif
 
 /**
  * 数独の一辺のマスの数
  */
-constexpr static int SIZE = DIM * DIM;
+constexpr static int SIZE = LEVEL * LEVEL;
 
 /**
  * @brief 数独の盤面を表す型
