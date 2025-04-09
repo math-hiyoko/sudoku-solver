@@ -24,11 +24,11 @@ phases:
         if [ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" ]; then
           export CMAKE_BUILD_TYPE="Release"
           export GIT_REVISION=$(git rev-list HEAD --count)
-          export ARTIFACT_NAME="${CMAKE_BUILD_TYPE}/${FUCTION_NAME}-${CMAKE_BUILD_TYPE}-${VERSION}-${GIT_REVISION}"
+          export ARTIFACT_NAME="${CMAKE_BUILD_TYPE}/${VERSION}-${GIT_REVISION}"
         else
           export CMAKE_BUILD_TYPE="Debug"
           export DATE=$(date +%Y%m%d%H%M%S)
-          export ARTIFACT_NAME="${CMAKE_BUILD_TYPE}/${FUCTION_NAME}-${CMAKE_BUILD_TYPE}-${VERSION}-${DATE}"
+          export ARTIFACT_NAME="${CMAKE_BUILD_TYPE}/${VERSION}-${DATE}"
         fi
       - echo "CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
       - echo "VERSION=$VERSION"
