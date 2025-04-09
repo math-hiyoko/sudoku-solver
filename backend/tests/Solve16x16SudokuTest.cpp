@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 
+#include <vector>
+
 #include "solver/SudokuSolver.hpp"
 #include "solver/SudokuType.hpp"
+#include "solver/SudokuValidator.hpp"
 
 // 16x16の数独の解を求めるテスト
 #if defined(SUDOKU_LEVEL) && SUDOKU_LEVEL == 4
@@ -24,13 +27,12 @@ TEST(Sudoku16x16SolveTest, testRegularSolve) {
       {2, 0, 0, 6, 9, 13, 8, 11, 16, 1, 5, 3, 15, 7, 12, 10},
       {15, 12, 7, 0, 5, 4, 14, 1, 10, 8, 2, 6, 0, 0, 3, 9},
   }};
-
-  Sudoku::Board output;
+  std::vector<Sudoku::Board> output;
   int num_solutions;
   bool is_exact_num_solutions;
   Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
-  Sudoku::Board expected_output = {{
+  std::vector<Sudoku::Board> expected_output = {{{
       {16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
       {4, 6, 2, 8, 7, 5, 1, 3, 9, 10, 11, 12, 13, 14, 15, 16},
       {5, 7, 3, 1, 8, 2, 4, 6, 13, 14, 15, 16, 9, 10, 11, 12},
@@ -47,12 +49,14 @@ TEST(Sudoku16x16SolveTest, testRegularSolve) {
       {13, 16, 5, 3, 15, 10, 12, 2, 4, 11, 9, 7, 14, 8, 1, 6},
       {2, 14, 4, 6, 9, 13, 8, 11, 16, 1, 5, 3, 15, 7, 12, 10},
       {15, 12, 7, 11, 5, 4, 14, 1, 10, 8, 2, 6, 16, 13, 3, 9},
-  }};
+  }}};
   int expected_num_solutions = 1;
+  int expected_solutions = 1;
   bool expected_is_exact_num_solutions = true;
 
   EXPECT_EQ(output, expected_output);
   EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(output.size(), expected_solutions);
   EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
 }
 
@@ -75,17 +79,23 @@ TEST(Sudoku16x16SolveTest, testEmptySolve) {
       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   }};
-
-  Sudoku::Board output;
+  std::vector<Sudoku::Board> output;
   int num_solutions;
   bool is_exact_num_solutions;
   Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
   int expected_num_solutions = Sudoku::MAX_NUM_SOLUTIONS;
+  int expected_solutions = Sudoku::MAX_SOLUTIONS;
   bool expected_is_exact_num_solutions = false;
 
   EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(output.size(), expected_solutions);
   EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
+  for (const Sudoku::Board& solution : output) {
+    bool is_correct;
+    EXPECT_EQ(Sudoku::isCorrect(solution, is_correct), 0);
+    EXPECT_TRUE(is_correct);
+  }
 }
 
 TEST(Sudoku16x16SolveTest, testMultipleOneSolution) {
@@ -108,15 +118,22 @@ TEST(Sudoku16x16SolveTest, testMultipleOneSolution) {
       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   }};
 
-  Sudoku::Board output;
+  std::vector<Sudoku::Board> output;
   int num_solutions;
   bool is_exact_num_solutions;
   Sudoku::solve(input, output, num_solutions, is_exact_num_solutions, true);
 
   int expected_num_solutions = 1;
+  int expected_solutions = 1;
   bool expected_is_exact_num_solutions = false;
 
   EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(output.size(), expected_solutions);
   EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
+  for (const Sudoku::Board& solution : output) {
+    bool is_correct;
+    EXPECT_EQ(Sudoku::isCorrect(solution, is_correct), 0);
+    EXPECT_TRUE(is_correct);
+  }
 }
 #endif

@@ -2,6 +2,7 @@
 
 #include <array>
 #include <boost/pool/object_pool.hpp>
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -164,8 +165,9 @@ void makeBoardFromSolution(const std::vector<DancingLinks::RowNode*>& solution,
 }  // namespace
 
 namespace Sudoku {
-void solve(const Board& board, Board& solution, int& num_solutions, bool& is_exact_num_solutions,
-           const bool just_solution, const int max_num_solutions) {
+void solve(const Board& board, std::vector<Board>& solutions, int& num_solutions,
+           bool& is_exact_num_solutions, const bool just_solution, const int max_num_solutions,
+           const int max_solutions) {
   // 行列被覆問題を表すheaderを生成
   // DancingNodeは行あたり4つ、ColumnNodeは列あたり1つ生成される
   boost::object_pool<DancingLinks::DancingNode> dancing_node_pool(
@@ -177,13 +179,17 @@ void solve(const Board& board, Board& solution, int& num_solutions, bool& is_exa
 
   // 行列被覆問題を解く
   num_solutions = 0;
-  std::vector<DancingLinks::RowNode*> solution_nodes;
-  solution_nodes.reserve(SIZE * SIZE);
+  std::vector<std::vector<DancingLinks::RowNode*>> solution_nodes;
+  solution_nodes.reserve(max_solutions);
   header->solve(solution_nodes, num_solutions, is_exact_num_solutions, just_solution,
-                max_num_solutions);
+                max_num_solutions, max_solutions);
 
   // 解が存在する場合、解を復元する
-  makeBoardFromSolution(solution_nodes, solution);
+  for (std::vector<DancingLinks::RowNode*>& solution_node : solution_nodes) {
+    solutions.emplace_back();
+    Board& solution = solutions.back();
+    makeBoardFromSolution(solution_node, solution);
+  }
 
   return;
 }  // solve

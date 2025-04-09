@@ -68,10 +68,11 @@ HeaderNode *HeaderNode::clone(
   return new_header;
 }
 
-void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
+void HeaderNode::solve(std::vector<std::vector<RowNode *>> &solutions, int &num_solutions,
                        bool &is_exact_num_solutions, const bool &just_solution,
-                       const int &max_num_solutions) {
+                       const int &max_num_solutions, const int &max_solutions) {
   const int max_num_solutions_ = just_solution ? 1 : max_num_solutions;
+  const int max_solutions_ = just_solution ? 1 : max_solutions;
 
   num_solutions = 0;
   is_exact_num_solutions = true;
@@ -91,6 +92,7 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
 
   std::queue<SearchBranch> search_queue;
   search_queue.emplace(std::vector<RowNode *>(), this);
+  // まずは並列処理のために、ある程度の分岐が発生するまで探索を行う
   while (!search_queue.empty() && search_queue.size() < Sudoku::NUM_BRANCHES) {
     auto [solution_prefix, header] = search_queue.front();
     search_queue.pop();
@@ -103,7 +105,9 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
       if (header->isEmpty()) {
         // 解が見つかった
         num_solutions++;
-        if (solution.empty()) [[unlikely]] {
+        if (solutions.size() < max_solutions_) [[likely]] {
+          solutions.emplace_back();
+          std::vector<RowNode *> &solution = solutions.back();
           std::transform(solution_prefix.begin(), solution_prefix.end(),
                          std::back_inserter(solution), [](RowNode *node) { return node; });
         }
@@ -136,15 +140,15 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
   }
 
 #pragma omp parallel for schedule(dynamic) \
-    shared(num_solutions, is_exact_num_solutions, search_branches, solution)
+    shared(num_solutions, is_exact_num_solutions, search_branches, solutions)
   for (int i = 0; i < search_branches.size(); i++) {
     const auto [solution_prefix, header] = search_branches[i];
     // 探索中の状態を保存するスタック
     std::stack<NodeState> search_stack;
     // 解の候補を保存するためのバッファ
     std::vector<DancingNode *> solution_buf;
-    // この探索で一回でも解けたことがあるか
-    bool already_solved_once = false;
+    // すでにmax_solutions個の解があることを確認したか
+    bool solved_max_solutions = false;
 
     do {
       if (num_solutions > max_num_solutions_) [[unlikely]] {
@@ -179,18 +183,22 @@ void HeaderNode::solve(std::vector<RowNode *> &solution, int &num_solutions,
 #pragma omp atomic
           num_solutions++;
 
-          // ループ内ですでに解を見つけたのならここは見なくていい
-          if (!already_solved_once) [[unlikely]] {
-            already_solved_once = true;
-            // 解を保存
+          // 既にmax_solutions個の解があることを確認していればここは見なくていい
+          if (!solved_max_solutions) [[unlikely]] {
 #pragma omp critical
             {
-              if (solution.empty()) [[unlikely]] {
+              if (solutions.size() < max_solutions_) {
+                // 解を保存
+                solutions.emplace_back();
+                std::vector<RowNode *> &solution = solutions.back();
                 std::transform(solution_prefix.begin(), solution_prefix.end(),
                                std::back_inserter(solution), [](RowNode *node) { return node; });
                 std::transform(solution_buf.begin(), solution_buf.end(),
                                std::back_inserter(solution),
                                [](DancingNode *node) { return node->row; });
+              } else {
+                // すでにmax_solutions個の解がある
+                solved_max_solutions = true;
               }
             }
           }

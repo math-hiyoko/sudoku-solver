@@ -12,6 +12,14 @@ constexpr static int MAX_NUM_SOLUTIONS = SUDOKU_MAX_NUM_SOLUTIONS;
 #endif
 
 /**
+ * 数独の解を表示するの個数の上限
+ * 解がこの個数より多くなったらそれ以降解を保存しない
+ */
+#ifdef SUDOKU_MAX_SOLUTIONS
+constexpr static int MAX_SOLUTIONS = SUDOKU_MAX_SOLUTIONS;
+#endif
+
+/**
  * 数独の問題としての次元、3なら9x9の数独、4なら16x16の数独
  * ここの数字を変えるだけで、任意の次元の数独に対応できるように作っている
  */

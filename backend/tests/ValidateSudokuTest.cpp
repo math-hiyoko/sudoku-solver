@@ -60,4 +60,24 @@ TEST(ValidateSolveTest, testisSatisfy) {
   EXPECT_EQ(options, expected_options);
   EXPECT_EQ(num_invalid, expected_num_invalid);
 }
+
+TEST(ValidateSolveTest, testisCorrect) {
+  const Sudoku::Board input = {{
+      {8, 1, 2, 7, 5, 3, 6, 4, 9},
+      {9, 4, 3, 6, 8, 2, 1, 7, 5},
+      {6, 7, 5, 4, 9, 1, 2, 8, 3},
+      {1, 5, 4, 2, 3, 7, 8, 9, 6},
+      {3, 6, 9, 8, 4, 5, 7, 2, 1},
+      {2, 8, 7, 1, 6, 9, 5, 3, 4},
+      {5, 2, 1, 9, 7, 4, 3, 6, 8},
+      {4, 3, 8, 5, 2, 6, 9, 1, 7},
+      {7, 9, 6, 3, 1, 8, 4, 5, 2},
+  }};
+  bool is_correct;
+  int num_invalid = Sudoku::isCorrect(input, is_correct);
+  bool expected_is_correct = true;
+  int expected_num_invalid = 0;
+  EXPECT_EQ(is_correct, expected_is_correct);
+  EXPECT_EQ(num_invalid, expected_num_invalid);
+}
 #endif

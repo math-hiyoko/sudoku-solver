@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 
+#include <vector>
+
 #include "solver/SudokuSolver.hpp"
 #include "solver/SudokuType.hpp"
+#include "solver/SudokuValidator.hpp"
 
 // 4x4の数独の解を求めるテスト
 #if defined(SUDOKU_LEVEL) && SUDOKU_LEVEL == 2
@@ -12,18 +15,17 @@ TEST(Sudoku4x4SolveTest, testRegularSolve) {
       {0, 0, 0, 4},
       {0, 0, 0, 0},
   }};
-
-  Sudoku::Board output;
+  std::vector<Sudoku::Board> output;
   int num_solutions;
   bool is_exact_num_solutions;
   Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
-  Sudoku::Board expected_output = {{
+  std::vector<Sudoku::Board> expected_output = {{{
       {1, 3, 4, 2},
       {4, 2, 3, 1},
       {3, 1, 2, 4},
       {2, 4, 1, 3},
-  }};
+  }}};
   int expected_num_solutions = 1;
   bool expected_is_exact_num_solutions = true;
 
@@ -39,17 +41,24 @@ TEST(Sudoku4x4SolveTest, testEmptySolve) {
       {0, 0, 0, 0},
       {0, 0, 0, 0},
   }};
-
-  Sudoku::Board output;
+  std::vector<Sudoku::Board> output;
   int num_solutions;
   bool is_exact_num_solutions;
   Sudoku::solve(input, output, num_solutions, is_exact_num_solutions);
 
+  // 288は4x4の数独の解の数
   int expected_num_solutions = std::min(288, Sudoku::MAX_NUM_SOLUTIONS);
+  int expected_solutions = std::min(288, Sudoku::MAX_SOLUTIONS);
   bool expected_is_exact_num_solutions = 288 <= Sudoku::MAX_NUM_SOLUTIONS ? true : false;
 
   EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(output.size(), expected_solutions);
   EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
+  for (const Sudoku::Board& solution : output) {
+    bool is_correct;
+    EXPECT_EQ(Sudoku::isCorrect(solution, is_correct), 0);
+    EXPECT_TRUE(is_correct);
+  }
 }
 
 TEST(Sudoku4x4SolveTest, testMultipleOneSolution) {
@@ -60,15 +69,22 @@ TEST(Sudoku4x4SolveTest, testMultipleOneSolution) {
       {0, 0, 0, 0},
   }};
 
-  Sudoku::Board output;
+  std::vector<Sudoku::Board> output;
   int num_solutions;
   bool is_exact_num_solutions;
   Sudoku::solve(input, output, num_solutions, is_exact_num_solutions, true);
 
   int expected_num_solutions = 1;
+  int expected_solutions = 1;
   bool expected_is_exact_num_solutions = false;
 
   EXPECT_EQ(num_solutions, expected_num_solutions);
+  EXPECT_EQ(output.size(), expected_solutions);
   EXPECT_EQ(is_exact_num_solutions, expected_is_exact_num_solutions);
+  for (const Sudoku::Board& solution : output) {
+    bool is_correct;
+    EXPECT_EQ(Sudoku::isCorrect(solution, is_correct), 0);
+    EXPECT_TRUE(is_correct);
+  }
 }
 #endif

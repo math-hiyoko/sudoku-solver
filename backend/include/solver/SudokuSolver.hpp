@@ -19,6 +19,8 @@ namespace Sudoku {
  * @param just_solution 解の数が要らない場合はtrue
  * @param max_num_solutions 探索する解の数の上限
  */
-void solve(const Board& board, Board& solution, int& num_solutions, bool& is_exact_num_solutions,
-           const bool just_solution = false, const int max_num_solutions = MAX_NUM_SOLUTIONS);
+void solve(const Board& board, std::vector<Board>& solutions, int& num_solutions,
+           bool& is_exact_num_solutions, const bool just_solution = false,
+           const int max_num_solutions = MAX_NUM_SOLUTIONS,
+           const int max_solutions = MAX_SOLUTIONS);
 }  // namespace Sudoku
