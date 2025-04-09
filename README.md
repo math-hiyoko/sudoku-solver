@@ -11,3 +11,4 @@ AWS Lambdaを使ったサーバーレス\
 - GCC 10.1+ / Clang 11+
 - cmake 3.21+
 - boost 1.75+
+- OpenMP 4.5+

@@ -44,6 +44,9 @@ macro(find_and_report_packages)
         FATAL_ERROR
           "${lib_name} not found. Please install the library and try again.")
     endif()
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
   endforeach()
 endmacro()
 

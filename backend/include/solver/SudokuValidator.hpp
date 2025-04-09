@@ -19,7 +19,16 @@ int isValidRange(const Board& board, std::vector<Option>& options);
  *
  * @param board 数独の盤面
  * @param options 入力した盤面が満たさなかった制約
- * @return 製薬を満たす場合は0, そうでなければ0以外
+ * @return 制約を満たす場合は0, そうでなければ0以外
  */
 int isSatisfy(const Board& board, std::vector<Option>& options);
+
+/**
+ * @brief 現在の盤面が正解か判定する
+ *
+ * @param board 数独の盤面
+ * @param is_correct 正解ならtrue, そうでなければfalse
+ * @return 数独の制約を満たす場合は0, そうでなければ0以外
+ */
+int isCorrect(const Board& board, bool& is_correct);
 }  // namespace Sudoku

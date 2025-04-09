@@ -154,26 +154,31 @@ aws::lambda_runtime::invocation_response sudoku_handler(
   }
 
   // 数独を解く
-  Sudoku::Board solution_board;
+  std::vector<Sudoku::Board> solution_boards;
   int num_solutions;
   bool is_exact_num_solutions;
-  Sudoku::solve(input_board, solution_board, num_solutions, is_exact_num_solutions);
+  Sudoku::solve(input_board, solution_boards, num_solutions, is_exact_num_solutions);
 
   // 数独の解答を JSON に変換
-  boost::json::array solution_json;
-  if (HandlerHelper::sudokuboard_to_json(solution_board, solution_json) != 0) {
-    boost::json::object error_json = {
-        {"error",
-         {
-             {"type", "InternalServerError"},
-             {"message", "An unexpected error occurred."},
-         }},
-    };
-    return error_response(500, error_json);
+  boost::json::array solutions_json;
+  for (const auto &solution_board : solution_boards) {
+    boost::json::array board_json;
+    if (HandlerHelper::sudokuboard_to_json(solution_board, board_json) != 0) {
+      boost::json::object error_json = {
+          {"error",
+           {
+               {"type", "InternalServerError"},
+               {"message", "An unexpected error occurred."},
+           }},
+      };
+      return error_response(500, error_json);
+    }
+    boost::json::object solution_json = {{"solution", board_json}};
+    solutions_json.push_back(solution_json);
   }
 
   // レスポンスを返す
-  boost::json::object response_json = {{"solution", solution_json},
+  boost::json::object response_json = {{"solutions", solutions_json},
                                        {"num_solutions", num_solutions},
                                        {"is_exact_num_solutions", is_exact_num_solutions}};
 

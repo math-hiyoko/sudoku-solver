@@ -10,7 +10,8 @@ add_executable(${target_name} SudokuSolverSample.cpp)
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
                                                   ${Boost_INCLUDE_DIRS})
 target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)
-target_link_libraries(${target_name} PRIVATE DancingLinks SudokuSolver)
+target_link_libraries(${target_name} PRIVATE OpenMP::OpenMP_CXX DancingLinks
+                                             SudokuSolver)
 target_compile_features(${target_name} PRIVATE cxx_std_20)
 target_compile_options(${target_name} PRIVATE -O3 -flto -fstrict-aliasing)
 foreach(env_var IN LISTS env_vars)

@@ -1,14 +1,18 @@
 #include "solver/HeaderNode.hpp"
 
 #include <algorithm>
+#include <boost/pool/object_pool.hpp>
 #include <cassert>
 #include <iterator>
 #include <limits>
+#include <map>
+#include <queue>
 #include <stack>
 #include <vector>
 
 #include "solver/ColumnNode.hpp"
 #include "solver/DancingNode.hpp"
+#include "solver/IDancingLinksBodyNode.hpp"
 #include "solver/IDancingLinksNode.hpp"
 #include "solver/RowNode.hpp"
 #include "solver/SudokuType.hpp"
@@ -31,75 +35,195 @@ ColumnNode *HeaderNode::selectMinSizeColumn() const {
   return ret;
 }
 
-void HeaderNode::knuths_algorithm(std::vector<RowNode *> &solution, int &num_solutions,
-                                  bool &is_exact_num_solutions, const bool &just_solution,
-                                  const int &max_num_solutions) {
+HeaderNode *HeaderNode::clone(
+    boost::object_pool<DancingLinks::DancingNode> &dancing_node_pool,
+    boost::object_pool<DancingLinks::ColumnNode> &column_node_pool,
+    boost::object_pool<DancingLinks::HeaderNode> &header_node_pool) const {
+  HeaderNode *new_header = header_node_pool.construct();
+  if (this->right == this) [[unlikely]] {
+    return new_header;
+  }
+
+  // 全てのColumnNodeとDancingNodeを複製する
+  std::map<RowNode *, DancingNode *> row_map;
+  for (IDancingLinksNode *i = this->right; i != this; i = i->right) {
+    ColumnNode *const column_node = static_cast<ColumnNode *>(i);
+    ColumnNode *const new_column_node = column_node_pool.construct();
+    new_header->hookLeft(new_column_node);
+    for (IDancingLinksBodyNode *j = column_node->down; j != column_node; j = j->down) {
+      DancingNode *const dancing_node = static_cast<DancingNode *>(j);
+      DancingNode *const new_dancing_node =
+          dancing_node_pool.construct(dancing_node->row, new_column_node);
+      new_column_node->hookUp(new_dancing_node);
+      new_column_node->size++;
+      // DancingNodeの横方向のリンクを張り直す
+      if (row_map.contains(new_dancing_node->row)) {
+        row_map[new_dancing_node->row]->hookLeft(new_dancing_node);
+      } else {
+        row_map[new_dancing_node->row] = new_dancing_node;
+      }
+    }
+  }
+
+  return new_header;
+}
+
+void HeaderNode::solve(std::vector<std::vector<RowNode *>> &solutions, int &num_solutions,
+                       bool &is_exact_num_solutions, const bool &just_solution,
+                       const int &max_num_solutions, const int &max_solutions) {
+  const int max_num_solutions_ = just_solution ? 1 : max_num_solutions;
+  const int max_solutions_ = just_solution ? 1 : max_solutions;
+
   num_solutions = 0;
   is_exact_num_solutions = true;
+
+  struct SearchBranch {
+    std::vector<RowNode *> solution_prefix;
+    HeaderNode *header;
+
+    SearchBranch(const std::vector<RowNode *> &sol_prefix, HeaderNode *hdr)
+        : solution_prefix(sol_prefix), header(hdr) {}
+
+    SearchBranch() = default;
+  };
+  boost::object_pool<DancingLinks::DancingNode> dancing_node_pool;
+  boost::object_pool<DancingLinks::ColumnNode> column_node_pool;
+  boost::object_pool<DancingLinks::HeaderNode> header_node_pool;
+
+  std::queue<SearchBranch> search_queue;
+  search_queue.emplace(std::vector<RowNode *>(), this);
+  // まずは並列処理のために、ある程度の分岐が発生するまで探索を行う
+  while (!search_queue.empty() && search_queue.size() < Sudoku::NUM_BRANCHES) {
+    auto [solution_prefix, header] = search_queue.front();
+    search_queue.pop();
+
+    const ColumnNode *const next_column = header->selectMinSizeColumn();
+    for (IDancingLinksBodyNode *i = next_column->up; i != next_column; i = i->up) {
+      DancingNode *const dancing_node = static_cast<DancingNode *>(i);
+      dancing_node->cover();
+      solution_prefix.emplace_back(dancing_node->row);
+      if (header->isEmpty()) {
+        // 解が見つかった
+        num_solutions++;
+        if (solutions.size() < max_solutions_) [[likely]] {
+          solutions.emplace_back();
+          std::vector<RowNode *> &solution = solutions.back();
+          std::transform(solution_prefix.begin(), solution_prefix.end(),
+                         std::back_inserter(solution), [](RowNode *node) { return node; });
+        }
+        if (max_num_solutions_ == 1) [[unlikely]] {
+          is_exact_num_solutions = false;
+          return;
+        }
+      } else {
+        std::vector<RowNode *> new_solution_prefix(solution_prefix);
+        search_queue.emplace(new_solution_prefix,
+                             header->clone(dancing_node_pool, column_node_pool, header_node_pool));
+      }
+      dancing_node->uncover();
+      solution_prefix.pop_back();
+    }
+  }
 
   // 探索中の状態を保存するための構造体
   struct NodeState {
     const int index;          // solution_buf中の何番目の要素になるか
     DancingNode *const node;  // 選択したノード
 
-    NodeState(const int index, DancingNode *const node) : index(index), node(node) {}
+    NodeState(const int idx, DancingNode *const nd) : index(idx), node(nd) {}
   };
 
-  // 探索中の状態を保存するスタック
-  std::stack<NodeState> search_stack;
-  // 解の候補を保存するためのバッファ
-  std::vector<DancingNode *> solution_buf;
+  std::vector<SearchBranch> search_branches;
+  while (!search_queue.empty()) {
+    search_branches.push_back(search_queue.front());
+    search_queue.pop();
+  }
 
-  do {
-    int next_index = 0;  // 次がsolution_buf中の何番目の要素になるか
+#pragma omp parallel for schedule(dynamic) \
+    shared(num_solutions, is_exact_num_solutions, search_branches, solutions)
+  for (int i = 0; i < search_branches.size(); i++) {
+    const auto [solution_prefix, header] = search_branches[i];
+    // 探索中の状態を保存するスタック
+    std::stack<NodeState> search_stack;
+    // 解の候補を保存するためのバッファ
+    std::vector<DancingNode *> solution_buf;
+    // すでにmax_solutions個の解があることを確認したか
+    bool solved_max_solutions = false;
 
-    if (!search_stack.empty()) [[likely]] {
-      const NodeState state = search_stack.top();
-      search_stack.pop();
-
-      next_index = state.index + 1;
-
-      // stateをindex番目の要素にするために、indexより後ろの要素の反映を元に戻す
-      // coverした順に戻さないといけない
-      for (int i = solution_buf.size() - 1; i >= state.index; i--) {
-        // solution_buf[i]を選択したという設定を元に戻す
-        solution_buf[i]->uncover();
+    do {
+      if (num_solutions > max_num_solutions_) [[unlikely]] {
+        is_exact_num_solutions = false;
+        break;
       }
-      solution_buf.resize(state.index);
 
-      // state.nodeを選択したことにして反映を行う
-      state.node->cover();
-      solution_buf.emplace_back(state.node);
+      int next_index = 0;  // 次がsolution_buf中の何番目の要素になるか
 
-      if (this->isEmpty()) {
-        // headerが空 => 解が見つかった
-        assert(solution_buf.size() == Sudoku::SIZE * Sudoku::SIZE);
-        num_solutions++;
-        if (solution.empty()) [[unlikely]] {
-          std::transform(solution_buf.begin(), solution_buf.end(), std::back_inserter(solution),
-                         [](DancingNode *node) { return node->row; });
+      if (!search_stack.empty()) [[likely]] {
+        auto [index, dancing_node] = search_stack.top();
+        search_stack.pop();
+
+        next_index = index + 1;
+
+        // stateをindex番目の要素にするために、indexより後ろの要素の反映を元に戻す
+        // coverした順に戻さないといけない
+        for (int i = solution_buf.size() - 1; i >= index; i--) {
+          // solution_buf[i]を選択したという設定を元に戻す
+          solution_buf[i]->uncover();
         }
+        solution_buf.resize(index);
 
-        // state.nodeを選択したという設定を元に戻す
-        state.node->uncover();
-        solution_buf.pop_back();
+        // dancing_nodeを選択したことにして反映を行う
+        dancing_node->cover();
+        solution_buf.emplace_back(dancing_node);
 
-        if (just_solution || num_solutions >= max_num_solutions) [[unlikely]] {
-          is_exact_num_solutions = search_stack.empty();
-          break;
+        if (header->isEmpty()) {
+          // headerが空 => 解が見つかった
+          assert(solution_prefix.size() + solution_buf.size() == Sudoku::SIZE * Sudoku::SIZE);
+
+#pragma omp atomic
+          num_solutions++;
+
+          // 既にmax_solutions個の解があることを確認していればここは見なくていい
+          if (!solved_max_solutions) [[unlikely]] {
+#pragma omp critical
+            {
+              if (solutions.size() < max_solutions_) {
+                // 解を保存
+                solutions.emplace_back();
+                std::vector<RowNode *> &solution = solutions.back();
+                std::transform(solution_prefix.begin(), solution_prefix.end(),
+                               std::back_inserter(solution), [](RowNode *node) { return node; });
+                std::transform(solution_buf.begin(), solution_buf.end(),
+                               std::back_inserter(solution),
+                               [](DancingNode *node) { return node->row; });
+              } else {
+                // すでにmax_solutions個の解がある
+                solved_max_solutions = true;
+              }
+            }
+          }
+
+          // dancing_nodeを選択したという設定を元に戻す
+          dancing_node->uncover();
+          solution_buf.pop_back();
+
+          continue;
         }
-
-        continue;
       }
-    }
 
-    // 次の列を選択する
-    const ColumnNode *const next_column = this->selectMinSizeColumn();
-    for (IDancingLinksBodyNode *i = next_column->down; i != next_column; i = i->down) {
-      search_stack.emplace(next_index, static_cast<DancingNode *>(i));
-    }
-  } while (!search_stack.empty());
+      // 次の列を選択する
+      const ColumnNode *const next_column = header->selectMinSizeColumn();
+      for (IDancingLinksBodyNode *i = next_column->up; i != next_column; i = i->up) {
+        search_stack.emplace(next_index, static_cast<DancingNode *>(i));
+      }
+    } while (!search_stack.empty());
+  }
+
+  if (num_solutions > max_num_solutions_) {
+    num_solutions = max_num_solutions_;
+    is_exact_num_solutions = false;
+  }
 
   return;
-}  // knuths_algorithm
+}  // solve
 }  // namespace DancingLinks

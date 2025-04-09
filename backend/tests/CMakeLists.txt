@@ -20,6 +20,7 @@ target_link_libraries(
   gtest_main
   AWS::aws-lambda-runtime
   Boost::json
+  OpenMP::OpenMP_CXX
   DancingLinks
   SudokuSolver
   HandlerTools)

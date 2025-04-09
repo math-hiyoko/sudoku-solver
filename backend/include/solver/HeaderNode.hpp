@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/pool/object_pool.hpp>
 #include <vector>
 
 #include "solver/ColumnNode.hpp"
@@ -26,6 +27,13 @@ class HeaderNode : public IDancingLinksNode {
    */
   ColumnNode *selectMinSizeColumn() const;
 
+  /**
+   * @brief このheaderと同じ構造を持つHeaderNodeを複製する
+   */
+  HeaderNode *clone(boost::object_pool<DancingLinks::DancingNode> &dancing_node_pool,
+                    boost::object_pool<DancingLinks::ColumnNode> &column_node_pool,
+                    boost::object_pool<DancingLinks::HeaderNode> &header_node_pool) const;
+
  public:
   HeaderNode();
 
@@ -35,14 +43,15 @@ class HeaderNode : public IDancingLinksNode {
    * 行列被覆問題はKnuthsAlgorithmというアルゴリズムで解くことができる
    * 制約を満たせる行が最も少ない列を選び、その列に対する選択肢を決め打ちして探索する
    *
-   * @param solution 解を表すリストを格納
+   * @param solutions 解を表すリストを格納
    * @param num_solutions 解の数
    * @param is_exact_num_solutions 解の数が正確かどうかを返す
    * @param just_solution 解の数が要らない場合はtrue
    * @param max_num_solutions 探索する解の数の上限
+   * @param max_solutions 保存する解の数の上限
    */
-  void knuths_algorithm(std::vector<RowNode *> &solution, int &num_solutios,
-                        bool &is_exact_num_solutions, const bool &just_solution,
-                        const int &max_num_solutions);
+  void solve(std::vector<std::vector<RowNode *>> &solutions, int &num_solutios,
+             bool &is_exact_num_solutions, const bool &just_solution, const int &max_num_solutions,
+             const int &max_solutions);
 };  // class HeaderNode
 }  // namespace DancingLinks
