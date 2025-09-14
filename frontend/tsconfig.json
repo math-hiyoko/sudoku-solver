@@ -1,25 +1,21 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "esnext",
-    "lib": ["dom", "es6", "dom.iterable", "scripthost"],
+    "target": "ES2020",
+    "lib": ["DOM", "DOM.Iterable", "ES6"],
     "allowJs": true,
-    "jsx": "react-jsx",
-    "types": ["jest", "@testing-library/jest-dom"],
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "skipLibCheck": true,
-    "isolatedModules": true,
     "resolveJsonModule": true,
+    "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": "./",
-    "paths": {
-      "*": ["node_modules/*", "src/types/*"]
-    }
+    "jsx": "react-jsx"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", ".cache", "public"]
+  "include": [
+    "src/**/*",
+    "gatsby-config.js"
+  ]
 }
