@@ -17,4 +17,26 @@ module.exports = {
     }]
   },
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
+
+  // JUnit XML reporter configuration
+  reporters: [
+    'default',
+    ['jest-junit', {
+      outputDirectory: './test-results',
+      outputName: 'junit.xml',
+      suiteName: 'Frontend Unit Tests',
+      classNameTemplate: '{classname}',
+      titleTemplate: '{title}',
+      ancestorSeparator: ' › ',
+      usePathForSuiteName: true,
+    }]
+  ],
+
+  // Coverage configuration
+  collectCoverage: false,
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/*.test.{js,jsx,ts,tsx}',
+  ],
 }

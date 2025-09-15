@@ -40,10 +40,15 @@ phases:
 
 reports:
   unittest_reports:
-    files: "*.xml"
-    base-directory: frontend/unittest_reports
+    files: "junit.xml"
+    base-directory: frontend/test-results
     discard-paths: yes
     file-format: JUNITXML
+  coverage-report:
+    files: "lcov-report/index.html"
+    base-directory: frontend/coverage
+    discard-paths: yes
+    file-format: HTML
 
 artifacts:
   files: "**/*"
