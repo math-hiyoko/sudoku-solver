@@ -41,6 +41,7 @@ build/
 lib/
 bin/
 aws/
+frontend/coverage/
 frontend/package-lock.json
 frontend/public/
 frontend/node_modules/

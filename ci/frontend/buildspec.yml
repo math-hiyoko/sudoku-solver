@@ -1,0 +1,57 @@
+version: 0.2
+
+env:
+  git-credential-helper: yes
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo Installing source NPM dependencies...
+      - cd $CODEBUILD_SRC_DIR/frontend
+      - npm install
+
+  pre_build:
+    commands:
+      - echo "Setting up the environment..."
+      - cd $CODEBUILD_SRC_DIR
+      - export PACKAGE_NAME="SudokuSolverFrontend"
+      - export VERSION=$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)
+      - |
+        if [ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" ]; then
+          export GIT_REVISION=$(git rev-list HEAD --count)
+          export ARTIFACT_NAME="${PACKAGE_NAME}-Release-${VERSION}-${GIT_REVISION}"
+        else
+          export DATE=$(date +%Y%m%d%H%M%S)
+          export ARTIFACT_NAME="${PACKAGE_NAME}-Debug-${VERSION}-${DATE}"
+        fi
+      - echo "VERSION=$VERSION"
+      - echo "ARTIFACT_NAME=$ARTIFACT_NAME"
+
+  build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR/frontend
+      - echo "Running Tests..."
+      - npm run test -- --coverage
+      - npm run lint:check
+      - echo "Building the application..."
+      - npm run build
+
+reports:
+  unittest_reports:
+    files: "*.xml"
+    base-directory: frontend/unittest_reports
+    discard-paths: yes
+    file-format: JUNITXML
+
+artifacts:
+  files: "**/*"
+  base-directory: frontend/public
+  name: $ARTIFACT_NAME
+  discard-paths: no
+
+cache:
+  paths:
+    - frontend/node_modules/**/*
+    - frontend/.cache/**/*
