@@ -28,7 +28,7 @@ module.exports = {
       classNameTemplate: '{classname}',
       titleTemplate: '{title}',
       ancestorSeparator: ' › ',
-      usePathForSuiteName: true,
+      usePathForSuiteName: false,
     }]
   ],
 
