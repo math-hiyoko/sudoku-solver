@@ -39,16 +39,16 @@ phases:
       - npm run build
 
 reports:
-  unittest_reports:
+  unittest-reports:
     files: "junit.xml"
     base-directory: frontend/test-results
     discard-paths: yes
     file-format: JUNITXML
   coverage-report:
-    files: "lcov-report/index.html"
+    files: "clover.xml"
     base-directory: frontend/coverage
     discard-paths: yes
-    file-format: HTML
+    file-format: CLOVERXML
 
 artifacts:
   files: "**/*"
