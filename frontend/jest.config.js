@@ -33,7 +33,7 @@ module.exports = {
   ],
 
   // Coverage configuration
-  collectCoverage: false,
+  collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
