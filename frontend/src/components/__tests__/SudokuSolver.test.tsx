@@ -134,7 +134,127 @@ describe('SudokuSolver', () => {
     fireEvent.click(solveButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/エラー: Network error/)).toBeInTheDocument()
+      expect(screen.getByText('🌐 ネットワークエラー')).toBeInTheDocument()
+      expect(screen.getByText('Network error')).toBeInTheDocument()
+    })
+  })
+
+  it('shows InvalidInput error with proper formatting', async () => {
+    const errorResponse = {
+      error: {
+        type: 'InvalidInput',
+        message: 'Array size is incorrect or Invalid input type.'
+      }
+    }
+
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve(errorResponse)
+    })
+
+    render(<SudokuSolver />)
+
+    const solveButton = screen.getByText('解く')
+    fireEvent.click(solveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('📝 入力エラー')).toBeInTheDocument()
+      expect(screen.getByText('Array size is incorrect or Invalid input type.')).toBeInTheDocument()
+    })
+  })
+
+  it('shows OutOfRangeError with detailed error positions', async () => {
+    const errorResponse = {
+      error: {
+        type: 'OutOfRangeError',
+        message: 'Input validation error: some numbers are out of the allowed range.',
+        detail: [
+          { row: 8, column: 7, number: 10 },
+          { row: 8, column: 8, number: -1 }
+        ]
+      }
+    }
+
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve(errorResponse)
+    })
+
+    render(<SudokuSolver />)
+
+    const solveButton = screen.getByText('解く')
+    fireEvent.click(solveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('🔢 数値範囲エラー')).toBeInTheDocument()
+      expect(screen.getByText('Input validation error: some numbers are out of the allowed range.')).toBeInTheDocument()
+      expect(screen.getByText('問題のある位置:')).toBeInTheDocument()
+      expect(screen.getByText('行 9, 列 8: 値 10')).toBeInTheDocument()
+      expect(screen.getByText('行 9, 列 9: 値 -1')).toBeInTheDocument()
+      expect(screen.getByText('💡 数独の値は1〜9の数字のみ有効です')).toBeInTheDocument()
+    })
+  })
+
+  it('shows ConstraintViolation error with detailed positions', async () => {
+    const errorResponse = {
+      error: {
+        type: 'ConstraintViolation',
+        message: 'Input does not meet the required constraints.',
+        detail: [
+          { row: 4, column: 8, number: 1 },
+          { row: 7, column: 8, number: 1 },
+          { row: 8, column: 0, number: 1 },
+          { row: 8, column: 7, number: 1 },
+          { row: 8, column: 8, number: 1 }
+        ]
+      }
+    }
+
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve(errorResponse)
+    })
+
+    render(<SudokuSolver />)
+
+    const solveButton = screen.getByText('解く')
+    fireEvent.click(solveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
+      expect(screen.getByText('Input does not meet the required constraints.')).toBeInTheDocument()
+      expect(screen.getByText('問題のある位置:')).toBeInTheDocument()
+      expect(screen.getByText('行 5, 列 9: 値 1')).toBeInTheDocument()
+      expect(screen.getByText('行 8, 列 9: 値 1')).toBeInTheDocument()
+      expect(screen.getByText('行 9, 列 1: 値 1')).toBeInTheDocument()
+      expect(screen.getByText('行 9, 列 8: 値 1')).toBeInTheDocument()
+      expect(screen.getByText('行 9, 列 9: 値 1')).toBeInTheDocument()
+      expect(screen.getByText('💡 数独のルールに違反しています（同じ行・列・ブロックに同じ数字は配置できません）')).toBeInTheDocument()
+    })
+  })
+
+  it('shows InternalServerError with proper formatting', async () => {
+    const errorResponse = {
+      error: {
+        type: 'InternalServerError',
+        message: 'An internal server error occurred while processing your request.'
+      }
+    }
+
+    mockFetch.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve(errorResponse)
+    })
+
+    render(<SudokuSolver />)
+
+    const solveButton = screen.getByText('解く')
+    fireEvent.click(solveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('🔧 サーバーエラー')).toBeInTheDocument()
+      expect(screen.getByText('An internal server error occurred while processing your request.')).toBeInTheDocument()
+      expect(screen.getByText('💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください')).toBeInTheDocument()
     })
   })
 

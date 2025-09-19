@@ -15,10 +15,6 @@ const config: GatsbyConfig = {
     title: `数独ソルバー`,
     siteUrl: `https://www.yourdomain.tld`,
   },
-  // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
-  // If you use VSCode you can also use the GraphQL plugin
-  // Learn more at: https://gatsby.dev/graphql-typegen
-  graphqlTypegen: true,
   plugins: [],
   flags: {
     // Disable potentially problematic features for Node v23 compatibility
@@ -26,7 +22,11 @@ const config: GatsbyConfig = {
     FAST_DEV: false,
     PRESERVE_FILE_DOWNLOAD_CACHE: false,
     PARALLEL_SOURCING: false,
-  }
+  },
+  // Disable date type inference that causes GraphQL schema issues
+  mapping: {},
+  // Enable GraphQL type generation for type safety
+  graphqlTypegen: true
 }
 
 export default config

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import SudokuBoard from './SudokuBoard'
-import { SudokuBoard as SudokuBoardType, SudokuApiResponse } from '../types/sudoku'
+import { SudokuBoard as SudokuBoardType, SudokuApiResponse, SudokuApiErrorResponse } from '../types/sudoku'
 
 const SudokuSolver: React.FC = () => {
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
@@ -19,6 +19,8 @@ const SudokuSolver: React.FC = () => {
   const [isExactCount, setIsExactCount] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
+  const [errorDetails, setErrorDetails] = useState<{ row: number; column: number; number: number }[]>([])
+  const [errorType, setErrorType] = useState<string>('')
 
   const handleCellChange = (row: number, col: number, value: number | null) => {
     const newBoard = inputBoard.map((r, rowIndex) =>
@@ -35,11 +37,15 @@ const SudokuSolver: React.FC = () => {
     setNumSolutions(0)
     setIsExactCount(false)
     setError('')
+    setErrorDetails([])
+    setErrorType('')
   }
 
   const solveSudoku = async () => {
     setLoading(true)
     setError('')
+    setErrorDetails([])
+    setErrorType('')
     setSolutions([])
     setNumSolutions(0)
     setIsExactCount(false)
@@ -53,20 +59,28 @@ const SudokuSolver: React.FC = () => {
         body: JSON.stringify({ board: inputBoard }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const errorData: SudokuApiErrorResponse = data
+        setErrorType(errorData.error.type)
+        setError(errorData.error.message)
+        if (errorData.error.detail) {
+          setErrorDetails(errorData.error.detail)
+        }
+        return
       }
 
-      const data: SudokuApiResponse = await response.json()
+      const successData: SudokuApiResponse = data
+      setNumSolutions(successData.num_solutions)
+      setIsExactCount(successData.is_exact_num_solutions)
 
-      setNumSolutions(data.num_solutions)
-      setIsExactCount(data.is_exact_num_solutions)
-
-      const displaySolutions = data.solutions.slice(0, SUDOKU_MAX_SOLUTIONS)
+      const displaySolutions = successData.solutions.slice(0, SUDOKU_MAX_SOLUTIONS)
       setSolutions(displaySolutions.map(sol => sol.solution))
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while solving the Sudoku')
+      setError(err instanceof Error ? err.message : 'ネットワークエラーが発生しました')
+      setErrorType('NetworkError')
     } finally {
       setLoading(false)
     }
@@ -136,12 +150,43 @@ const SudokuSolver: React.FC = () => {
         <div className="error-message" style={{
           backgroundColor: '#f8d7da',
           color: '#721c24',
-          padding: '10px',
+          padding: '15px',
           borderRadius: '5px',
-          textAlign: 'center',
           marginBottom: '20px',
+          border: '1px solid #f5c6cb',
         }}>
-          エラー: {error}
+          <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>
+            {errorType === 'InvalidInput' && '📝 入力エラー'}
+            {errorType === 'OutOfRangeError' && '🔢 数値範囲エラー'}
+            {errorType === 'ConstraintViolation' && '⚠️ 制約違反エラー'}
+            {errorType === 'InternalServerError' && '🔧 サーバーエラー'}
+            {errorType === 'NetworkError' && '🌐 ネットワークエラー'}
+            {!errorType && 'エラー'}
+          </div>
+          <div style={{ marginBottom: errorDetails.length > 0 ? '10px' : '0' }}>
+            {error}
+          </div>
+          {errorDetails.length > 0 && (
+            <div>
+              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>問題のある位置:</div>
+              <div style={{ fontSize: '14px' }}>
+                {errorDetails.map((detail, index) => (
+                  <div key={index} style={{ marginBottom: '2px' }}>
+                    行 {detail.row + 1}, 列 {detail.column + 1}: 値 {detail.number}
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
+                {errorType === 'OutOfRangeError' && '💡 数独の値は1〜9の数字のみ有効です'}
+                {errorType === 'ConstraintViolation' && '💡 数独のルールに違反しています（同じ行・列・ブロックに同じ数字は配置できません）'}
+              </div>
+            </div>
+          )}
+          {errorType === 'InternalServerError' && (
+            <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
+              💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください
+            </div>
+          )}
         </div>
       )}
 

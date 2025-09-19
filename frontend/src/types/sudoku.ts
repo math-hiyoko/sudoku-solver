@@ -15,3 +15,19 @@ export interface SudokuApiResponse {
 export interface SudokuApiRequest {
   board: SudokuBoard;
 }
+
+export interface SudokuErrorDetail {
+  row: number;
+  column: number;
+  number: number;
+}
+
+export interface SudokuApiError {
+  type: 'InvalidInput' | 'OutOfRangeError' | 'ConstraintViolation' | 'InternalServerError';
+  message: string;
+  detail?: SudokuErrorDetail[];
+}
+
+export interface SudokuApiErrorResponse {
+  error: SudokuApiError;
+}
