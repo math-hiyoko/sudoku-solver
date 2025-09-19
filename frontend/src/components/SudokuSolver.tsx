@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import SudokuBoard from './SudokuBoard'
 import { SudokuBoard as SudokuBoardType, SudokuApiResponse, SudokuApiErrorResponse } from '../types/sudoku'
+import { validateSudokuConstraints, validateNumberRange, validateBoardSize } from '../utils/sudokuValidation'
 
 const SudokuSolver: React.FC = () => {
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
@@ -29,6 +30,9 @@ const SudokuSolver: React.FC = () => {
       )
     )
     setInputBoard(newBoard)
+
+    // リアルタイム検証を実行
+    performRealTimeValidation(newBoard)
   }
 
   const clearBoard = () => {
@@ -49,6 +53,13 @@ const SudokuSolver: React.FC = () => {
     setSolutions([])
     setNumSolutions(0)
     setIsExactCount(false)
+
+    // クライアント側での事前検証
+    const clientSideValidation = performClientSideValidation()
+    if (!clientSideValidation.isValid) {
+      setLoading(false)
+      return
+    }
 
     try {
       const response = await fetch('https://4cubkquqti.execute-api.ap-northeast-1.amazonaws.com/solve-sudoku', {
@@ -86,6 +97,78 @@ const SudokuSolver: React.FC = () => {
     }
   }
 
+  const performClientSideValidation = () => {
+    // 盤面サイズの検証
+    if (!validateBoardSize(inputBoard)) {
+      setErrorType('InvalidInput')
+      setError('盤面のサイズが正しくありません。')
+      return { isValid: false }
+    }
+
+    // 数値範囲の検証
+    const outOfRangeErrors = []
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        const value = inputBoard[row][col]
+        if (value !== null && !validateNumberRange(value, boardSize)) {
+          outOfRangeErrors.push({ row, column: col, number: value })
+        }
+      }
+    }
+
+    if (outOfRangeErrors.length > 0) {
+      setErrorType('OutOfRangeError')
+      setError('入力された数値が有効な範囲外です。')
+      setErrorDetails(outOfRangeErrors)
+      return { isValid: false }
+    }
+
+    // 制約違反の検証
+    const constraintValidation = validateSudokuConstraints(inputBoard)
+    if (!constraintValidation.isValid) {
+      setErrorType('ConstraintViolation')
+      setError('数独のルールに違反している箇所があります。')
+      setErrorDetails(constraintValidation.errors)
+      return { isValid: false }
+    }
+
+    return { isValid: true }
+  }
+
+  const performRealTimeValidation = (board: SudokuBoardType) => {
+    // エラー状態をクリア
+    setError('')
+    setErrorDetails([])
+    setErrorType('')
+
+    // 数値範囲の検証（NaNや無効な値は除外）
+    const outOfRangeErrors = []
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        const value = board[row][col]
+        if (value !== null && !isNaN(value) && !validateNumberRange(value, boardSize)) {
+          outOfRangeErrors.push({ row, column: col, number: value })
+        }
+      }
+    }
+
+    if (outOfRangeErrors.length > 0) {
+      setErrorType('OutOfRangeError')
+      setError('入力された数値が有効な範囲外です。')
+      setErrorDetails(outOfRangeErrors)
+      return
+    }
+
+    // 制約違反の検証
+    const constraintValidation = validateSudokuConstraints(board)
+    if (!constraintValidation.isValid) {
+      setErrorType('ConstraintViolation')
+      setError('数独のルールに違反している箇所があります。')
+      setErrorDetails(constraintValidation.errors)
+      return
+    }
+  }
+
   const formatSolutionCount = () => {
     if (numSolutions === 0) return '0'
     if (numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS) {
@@ -106,6 +189,7 @@ const SudokuSolver: React.FC = () => {
           title="問題を入力してください"
           isInput={true}
           onChange={handleCellChange}
+          invalidCells={errorDetails}
         />
 
         <div style={{ marginTop: '20px' }}>

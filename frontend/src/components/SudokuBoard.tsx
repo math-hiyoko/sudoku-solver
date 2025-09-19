@@ -6,13 +6,15 @@ interface SudokuBoardProps {
   title?: string
   isInput?: boolean
   onChange?: (row: number, col: number, value: number | null) => void
+  invalidCells?: { row: number; column: number }[]
 }
 
 const SudokuBoard: React.FC<SudokuBoardProps> = ({
   board,
   title,
   isInput = false,
-  onChange
+  onChange,
+  invalidCells = []
 }) => {
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
   const boardSize = SUDOKU_LEVEL * SUDOKU_LEVEL
@@ -27,21 +29,24 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   }
 
   const getCellStyle = (row: number, col: number) => {
+    const isInvalid = invalidCells.some(cell => cell.row === row && cell.column === col)
+
     const baseStyle = {
       width: '40px',
       height: '40px',
       border: '1px solid #ccc',
       textAlign: 'center' as const,
       fontSize: '16px',
-      backgroundColor: isInput ? '#fff' : '#f9f9f9',
+      backgroundColor: isInvalid ? '#ffe6e6' : (isInput ? '#fff' : '#f9f9f9'),
     }
 
     const borderStyle = {
       ...baseStyle,
-      borderRight: (col + 1) % SUDOKU_LEVEL === 0 ? '3px solid #333' : baseStyle.border,
-      borderBottom: (row + 1) % SUDOKU_LEVEL === 0 ? '3px solid #333' : baseStyle.border,
-      borderTop: row === 0 ? '3px solid #333' : baseStyle.border,
-      borderLeft: col === 0 ? '3px solid #333' : baseStyle.border,
+      borderRight: (col + 1) % SUDOKU_LEVEL === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
+      borderBottom: (row + 1) % SUDOKU_LEVEL === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
+      borderTop: row === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
+      borderLeft: col === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
+      color: isInvalid ? '#cc0000' : '#333',
     }
 
     return borderStyle

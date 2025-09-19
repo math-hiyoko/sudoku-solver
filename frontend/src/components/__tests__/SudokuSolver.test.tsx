@@ -258,6 +258,27 @@ describe('SudokuSolver', () => {
     })
   })
 
+  it('shows client-side constraint violation before calling API', async () => {
+    render(<SudokuSolver />)
+
+    // Set up constraint violation: same number in same row
+    const inputs = screen.getAllByRole('textbox')
+    fireEvent.change(inputs[0], { target: { value: '1' } }) // First cell
+    fireEvent.change(inputs[1], { target: { value: '1' } }) // Second cell in same row
+
+    const solveButton = screen.getByText('解く')
+    fireEvent.click(solveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
+      expect(screen.getByText('数独のルールに違反している箇所があります。')).toBeInTheDocument()
+      expect(screen.getByText('問題のある位置:')).toBeInTheDocument()
+    })
+
+    // Should not call the API due to client-side validation
+    expect(mockFetch).not.toHaveBeenCalled()
+  })
+
   it('formats large solution counts correctly', async () => {
     const largeCountResponse = {
       ...mockApiResponse,
@@ -277,6 +298,71 @@ describe('SudokuSolver', () => {
 
     await waitFor(() => {
       expect(screen.getByText('解の個数: 1,000,000+ (概算)')).toBeInTheDocument()
+    })
+  })
+
+  it('shows real-time validation errors during cell input', async () => {
+    render(<SudokuSolver />)
+
+    const inputs = screen.getAllByRole('textbox')
+
+    // Input constraint violation: same number in same row
+    fireEvent.change(inputs[0], { target: { value: '1' } })
+
+    // No error should be shown yet (only one cell)
+    expect(screen.queryByText('⚠️ 制約違反エラー')).not.toBeInTheDocument()
+
+    // Add second cell with same value in same row
+    fireEvent.change(inputs[1], { target: { value: '1' } })
+
+    // Error should appear immediately without clicking solve
+    await waitFor(() => {
+      expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
+      expect(screen.getByText('数独のルールに違反している箇所があります。')).toBeInTheDocument()
+    })
+
+    // API should not have been called
+    expect(mockFetch).not.toHaveBeenCalled()
+  })
+
+  it('shows real-time validation errors for out-of-range values', async () => {
+    render(<SudokuSolver />)
+
+    const inputs = screen.getAllByRole('textbox')
+
+    // Input out-of-range value
+    fireEvent.change(inputs[0], { target: { value: '0' } })
+
+    // Error should appear immediately
+    await waitFor(() => {
+      expect(screen.getByText('🔢 数値範囲エラー')).toBeInTheDocument()
+      expect(screen.getByText('入力された数値が有効な範囲外です。')).toBeInTheDocument()
+    })
+
+    // API should not have been called
+    expect(mockFetch).not.toHaveBeenCalled()
+  })
+
+  it('clears real-time validation errors when invalid input is removed', async () => {
+    render(<SudokuSolver />)
+
+    const inputs = screen.getAllByRole('textbox')
+
+    // Input constraint violation
+    fireEvent.change(inputs[0], { target: { value: '1' } })
+    fireEvent.change(inputs[1], { target: { value: '1' } })
+
+    // Error should appear
+    await waitFor(() => {
+      expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
+    })
+
+    // Clear one of the conflicting values
+    fireEvent.change(inputs[1], { target: { value: '' } })
+
+    // Error should disappear
+    await waitFor(() => {
+      expect(screen.queryByText('⚠️ 制約違反エラー')).not.toBeInTheDocument()
     })
   })
 })
