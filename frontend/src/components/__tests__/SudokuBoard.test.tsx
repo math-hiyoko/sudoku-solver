@@ -116,4 +116,87 @@ describe('SudokuBoard', () => {
     render(<SudokuBoard board={emptyBoard} />)
     expect(screen.queryByRole('heading')).not.toBeInTheDocument()
   })
+
+  it('highlights new values in blue when originalBoard is provided', () => {
+    const partialBoard = [
+      [5, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null]
+    ]
+
+    render(
+      <SudokuBoard
+        board={solvedBoard}
+        originalBoard={partialBoard}
+      />
+    )
+
+    const cells = document.querySelectorAll('.sudoku-cell')
+    const firstCell = cells[0] as HTMLElement
+    const secondCell = cells[1] as HTMLElement
+
+    // First cell (5) was in original, should be black
+    expect(firstCell.style.color).toBe('rgb(51, 51, 51)')
+    // Second cell (3) was not in original, should be blue
+    expect(secondCell.style.color).toBe('rgb(0, 102, 204)')
+  })
+
+  it('applies invalid cell styling correctly', () => {
+    const invalidCells = [{ row: 0, column: 1 }]
+
+    render(
+      <SudokuBoard
+        board={solvedBoard}
+        invalidCells={invalidCells}
+      />
+    )
+
+    const cells = document.querySelectorAll('.sudoku-cell')
+    const invalidCell = cells[1] as HTMLElement
+    const validCell = cells[0] as HTMLElement
+
+    // Invalid cell should have red color and background
+    expect(invalidCell.style.color).toBe('rgb(204, 0, 0)')
+    expect(invalidCell.style.backgroundColor).toBe('rgb(255, 230, 230)')
+
+    // Valid cell should have normal styling
+    expect(validCell.style.color).toBe('rgb(51, 51, 51)')
+    expect(validCell.style.backgroundColor).toBe('rgb(249, 249, 249)')
+  })
+
+  it('treats NaN values in originalBoard as new values for blue highlighting', () => {
+    const boardWithNaN: (number | null)[][] = [
+      [5, NaN, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null]
+    ]
+
+    render(
+      <SudokuBoard
+        board={solvedBoard}
+        originalBoard={boardWithNaN}
+      />
+    )
+
+    const cells = document.querySelectorAll('.sudoku-cell')
+    const firstCell = cells[0] as HTMLElement
+    const secondCell = cells[1] as HTMLElement
+
+    // First cell (5) was in original, should be black
+    expect(firstCell.style.color).toBe('rgb(51, 51, 51)')
+    // Second cell (3) had NaN in original, should be blue (treated as new value)
+    expect(secondCell.style.color).toBe('rgb(0, 102, 204)')
+  })
 })

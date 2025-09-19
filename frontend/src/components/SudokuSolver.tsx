@@ -22,6 +22,7 @@ const SudokuSolver: React.FC = () => {
   const [error, setError] = useState<string>('')
   const [errorDetails, setErrorDetails] = useState<{ row: number; column: number; number: number }[]>([])
   const [errorType, setErrorType] = useState<string>('')
+  const [solvedFromBoard, setSolvedFromBoard] = useState<SudokuBoardType | null>(null)
 
   const handleCellChange = (row: number, col: number, value: number | null) => {
     const newBoard = inputBoard.map((r, rowIndex) =>
@@ -43,6 +44,7 @@ const SudokuSolver: React.FC = () => {
     setError('')
     setErrorDetails([])
     setErrorType('')
+    setSolvedFromBoard(null)
   }
 
   const solveSudoku = async () => {
@@ -86,6 +88,11 @@ const SudokuSolver: React.FC = () => {
       setNumSolutions(successData.num_solutions)
       setIsExactCount(successData.is_exact_num_solutions)
 
+      // 解の表示用に元の入力盤面を保存（NaN値はnullに変換）
+      setSolvedFromBoard(inputBoard.map(row =>
+        row.map(cell => (cell === null || isNaN(cell)) ? null : cell)
+      ))
+
       const displaySolutions = successData.solutions.slice(0, SUDOKU_MAX_SOLUTIONS)
       setSolutions(displaySolutions.map(sol => sol.solution))
 
@@ -105,12 +112,12 @@ const SudokuSolver: React.FC = () => {
       return { isValid: false }
     }
 
-    // 数値範囲の検証
+    // 数値範囲の検証（NaNや無効な値は除外）
     const outOfRangeErrors = []
     for (let row = 0; row < boardSize; row++) {
       for (let col = 0; col < boardSize; col++) {
         const value = inputBoard[row][col]
-        if (value !== null && !validateNumberRange(value, boardSize)) {
+        if (value !== null && !isNaN(value) && !validateNumberRange(value, boardSize)) {
           outOfRangeErrors.push({ row, column: col, number: value })
         }
       }
@@ -274,13 +281,17 @@ const SudokuSolver: React.FC = () => {
         </div>
       )}
 
-      {numSolutions > 0 && (
+      {(numSolutions > 0 || (numSolutions === 0 && !loading && !error)) && (
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h2 style={{ color: '#333' }}>
             解の個数: {formatSolutionCount()}
             {!isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && ' (概算)'}
           </h2>
-          {solutions.length > 0 && (
+          {numSolutions === 0 ? (
+            <p style={{ color: '#666', fontStyle: 'italic' }}>
+              この問題には解がありません。入力を確認してください。
+            </p>
+          ) : solutions.length > 0 && (
             <p style={{ color: '#666' }}>
               以下に{Math.min(solutions.length, SUDOKU_MAX_SOLUTIONS)}個の解を表示しています
             </p>
@@ -299,6 +310,7 @@ const SudokuSolver: React.FC = () => {
             key={index}
             board={solution}
             title={`解 ${index + 1}`}
+            originalBoard={solvedFromBoard || undefined}
           />
         ))}
       </div>

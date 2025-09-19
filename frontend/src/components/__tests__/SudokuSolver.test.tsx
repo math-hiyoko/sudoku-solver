@@ -301,6 +301,32 @@ describe('SudokuSolver', () => {
     })
   })
 
+  it('shows appropriate message when no solutions exist', async () => {
+    const noSolutionResponse = {
+      solutions: [],
+      num_solutions: 0,
+      is_exact_num_solutions: true
+    }
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(noSolutionResponse)
+    })
+
+    render(<SudokuSolver />)
+
+    const solveButton = screen.getByText('解く')
+    fireEvent.click(solveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('解の個数: 0')).toBeInTheDocument()
+      expect(screen.getByText('この問題には解がありません。入力を確認してください。')).toBeInTheDocument()
+    })
+
+    // Should not show any solution boards
+    expect(screen.queryByText('解 1')).not.toBeInTheDocument()
+  })
+
   it('shows real-time validation errors during cell input', async () => {
     render(<SudokuSolver />)
 

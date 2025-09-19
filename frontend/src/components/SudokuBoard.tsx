@@ -7,6 +7,7 @@ interface SudokuBoardProps {
   isInput?: boolean
   onChange?: (row: number, col: number, value: number | null) => void
   invalidCells?: { row: number; column: number }[]
+  originalBoard?: SudokuBoardType
 }
 
 const SudokuBoard: React.FC<SudokuBoardProps> = ({
@@ -14,7 +15,8 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   title,
   isInput = false,
   onChange,
-  invalidCells = []
+  invalidCells = [],
+  originalBoard
 }) => {
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
   const boardSize = SUDOKU_LEVEL * SUDOKU_LEVEL
@@ -30,14 +32,25 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
 
   const getCellStyle = (row: number, col: number) => {
     const isInvalid = invalidCells.some(cell => cell.row === row && cell.column === col)
+    const isNewValue = originalBoard && !isInput &&
+      (originalBoard[row][col] === null || originalBoard[row][col] === undefined || isNaN(originalBoard[row][col])) &&
+      board[row][col] !== null
 
     const baseStyle = {
       width: '40px',
       height: '40px',
       border: '1px solid #ccc',
-      textAlign: 'center' as const,
       fontSize: '16px',
       backgroundColor: isInvalid ? '#ffe6e6' : (isInput ? '#fff' : '#f9f9f9'),
+      // 入力フィールドの場合はtextAlign、表示用divの場合はflexレイアウトを使用
+      ...(isInput ? {
+        textAlign: 'center' as const,
+        boxSizing: 'border-box' as const,
+      } : {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }),
     }
 
     const borderStyle = {
@@ -46,7 +59,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
       borderBottom: (row + 1) % SUDOKU_LEVEL === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
       borderTop: row === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
       borderLeft: col === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
-      color: isInvalid ? '#cc0000' : '#333',
+      color: isInvalid ? '#cc0000' : (isNewValue ? '#0066cc' : '#333'),
     }
 
     return borderStyle
