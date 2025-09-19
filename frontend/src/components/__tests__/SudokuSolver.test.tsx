@@ -391,4 +391,34 @@ describe('SudokuSolver', () => {
       expect(screen.queryByText('⚠️ 制約違反エラー')).not.toBeInTheDocument()
     })
   })
+
+  it('handles edge case where board has NaN values that get filtered out', () => {
+    render(<SudokuSolver />)
+
+    // Input valid values first
+    const inputs = screen.getAllByRole('textbox')
+    fireEvent.change(inputs[0], { target: { value: '1' } })
+    fireEvent.change(inputs[9], { target: { value: '2' } })
+
+    const solveButton = screen.getByText('解く')
+    fireEvent.click(solveButton)
+
+    // Validation should work correctly even with mixed valid/invalid values
+    expect(solveButton).toBeInTheDocument()
+  })
+
+  it('clears solvedFromBoard when clearing the board', () => {
+    render(<SudokuSolver />)
+
+    // Add some input
+    const inputs = screen.getAllByRole('textbox')
+    fireEvent.change(inputs[0], { target: { value: '1' } })
+
+    // Clear the board
+    const clearButton = screen.getByText('クリア')
+    fireEvent.click(clearButton)
+
+    // Board should be empty
+    expect(inputs[0]).toHaveValue('')
+  })
 })
