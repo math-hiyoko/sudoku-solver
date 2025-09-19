@@ -327,6 +327,46 @@ describe('SudokuSolver', () => {
     expect(screen.queryByText('解 1')).not.toBeInTheDocument()
   })
 
+  it('does not show solution count message in initial state', () => {
+    render(<SudokuSolver />)
+
+    // Should not show solution count message initially
+    expect(screen.queryByText(/解の個数:/)).not.toBeInTheDocument()
+    expect(screen.queryByText('この問題には解がありません。')).not.toBeInTheDocument()
+  })
+
+  it('does not show solution count message after clearing board', async () => {
+    // First solve a problem
+    const noSolutionResponse = {
+      solutions: [],
+      num_solutions: 0,
+      is_exact_num_solutions: true
+    }
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(noSolutionResponse)
+    })
+
+    render(<SudokuSolver />)
+
+    const solveButton = screen.getByText('解く')
+    fireEvent.click(solveButton)
+
+    // Wait for solution count to appear
+    await waitFor(() => {
+      expect(screen.getByText('解の個数: 0')).toBeInTheDocument()
+    })
+
+    // Clear the board
+    const clearButton = screen.getByText('クリア')
+    fireEvent.click(clearButton)
+
+    // Should not show solution count message after clearing
+    expect(screen.queryByText(/解の個数:/)).not.toBeInTheDocument()
+    expect(screen.queryByText('この問題には解がありません。')).not.toBeInTheDocument()
+  })
+
   it('shows real-time validation errors during cell input', async () => {
     render(<SudokuSolver />)
 

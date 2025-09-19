@@ -23,6 +23,7 @@ const SudokuSolver: React.FC = () => {
   const [errorDetails, setErrorDetails] = useState<{ row: number; column: number; number: number }[]>([])
   const [errorType, setErrorType] = useState<string>('')
   const [solvedFromBoard, setSolvedFromBoard] = useState<SudokuBoardType | null>(null)
+  const [hasSolved, setHasSolved] = useState<boolean>(false)
 
   const handleCellChange = (row: number, col: number, value: number | null) => {
     const newBoard = inputBoard.map((r, rowIndex) =>
@@ -45,6 +46,7 @@ const SudokuSolver: React.FC = () => {
     setErrorDetails([])
     setErrorType('')
     setSolvedFromBoard(null)
+    setHasSolved(false)
   }
 
   const solveSudoku = async () => {
@@ -87,6 +89,7 @@ const SudokuSolver: React.FC = () => {
       const successData: SudokuApiResponse = data
       setNumSolutions(successData.num_solutions)
       setIsExactCount(successData.is_exact_num_solutions)
+      setHasSolved(true)
 
       // 解の表示用に元の入力盤面を保存（NaN値はnullに変換）
       setSolvedFromBoard(inputBoard.map(row =>
@@ -281,7 +284,7 @@ const SudokuSolver: React.FC = () => {
         </div>
       )}
 
-      {(numSolutions > 0 || (numSolutions === 0 && !loading && !error)) && (
+      {(numSolutions > 0 || (numSolutions === 0 && hasSolved && !loading && !error)) && (
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h2 style={{ color: '#333' }}>
             解の個数: {formatSolutionCount()}
