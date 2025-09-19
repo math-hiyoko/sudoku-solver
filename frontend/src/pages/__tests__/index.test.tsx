@@ -18,20 +18,38 @@ afterAll(() => {
   process.env = originalEnv
 })
 
+const mockLocation = {
+  pathname: '/',
+  search: '',
+  hash: '',
+  href: 'http://localhost:8000/',
+  origin: 'http://localhost:8000',
+  protocol: 'http:',
+  host: 'localhost:8000',
+  hostname: 'localhost',
+  port: '8000',
+  state: {},
+  key: ''
+}
+
 const mockPageProps: PageProps = {
   path: '/',
   uri: '/',
-  location: {} as any,
+  location: mockLocation as PageProps['location'],
   pageContext: {},
   data: {},
   serverData: {},
   children: undefined,
-  pageResources: {} as any,
+  pageResources: {
+    component: null as unknown as PageProps['pageResources']['component'],
+    json: { data: {}, pageContext: {} },
+    page: { componentChunkName: '', path: '/', webpackCompilationHash: '' }
+  },
   params: {}
 }
 
 const mockHeadProps: HeadProps = {
-  location: {} as any,
+  location: mockLocation as HeadProps['location'],
   params: {},
   data: {},
   pageContext: {},

@@ -10,20 +10,38 @@ jest.mock('gatsby', () => ({
   ),
 }))
 
+const mockLocation = {
+  pathname: '/404',
+  search: '',
+  hash: '',
+  href: 'http://localhost:8000/404',
+  origin: 'http://localhost:8000',
+  protocol: 'http:',
+  host: 'localhost:8000',
+  hostname: 'localhost',
+  port: '8000',
+  state: {},
+  key: ''
+}
+
 const mockPageProps: PageProps = {
   path: '/404',
   uri: '/404',
-  location: {} as any,
+  location: mockLocation as PageProps['location'],
   pageContext: {},
   data: {},
   serverData: {},
   children: undefined,
-  pageResources: {} as any,
+  pageResources: {
+    component: null as unknown as PageProps['pageResources']['component'],
+    json: { data: {}, pageContext: {} },
+    page: { componentChunkName: '', path: '/404', webpackCompilationHash: '' }
+  },
   params: {}
 }
 
 const mockHeadProps: HeadProps = {
-  location: {} as any,
+  location: mockLocation as HeadProps['location'],
   params: {},
   data: {},
   pageContext: {},
