@@ -1,12 +1,71 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+* {
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f5f5f5;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  color: #333;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+input:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.sudoku-cell {
+  transition: background-color 0.2s;
+}
+
+.sudoku-cell:hover {
+  background-color: #e6f3ff !important;
+}
+
+.sudoku-cell:focus {
+  background-color: #cce7ff !important;
+}
+
+.error-message {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.solution-grid {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

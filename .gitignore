@@ -41,7 +41,12 @@ build/
 lib/
 bin/
 aws/
+
+# gatsby
+frontend/coverage/
 frontend/package-lock.json
 frontend/public/
+frontend/test-results/
 frontend/node_modules/
-frontend/.chache/
+frontend/.cache/
+frontend/src/gatsby-types.d.ts
