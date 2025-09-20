@@ -59,16 +59,16 @@ int sudokuboard_to_json(const Sudoku::Board &board, boost::json::array &json) {
   for (int i = 0; i < Sudoku::SIZE; i++) {
     boost::json::array inner_json;
     for (int j = 0; j < Sudoku::SIZE; j++) {
-      inner_json.push_back(board[i][j]);
+      inner_json.emplace_back(board[i][j]);
     }
-    json.push_back(inner_json);
+    json.emplace_back(inner_json);
   }
   return 0;
 }
 
 int options_to_json(const std::vector<Sudoku::Option> &options, boost::json::array &json) {
   for (const Sudoku::Option &option : options) {
-    json.push_back(boost::json::object{
+    json.emplace_back(boost::json::object{
         {"row", option.row},
         {"column", option.column},
         {"number", option.number},

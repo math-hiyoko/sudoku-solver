@@ -135,7 +135,7 @@ void HeaderNode::solve(std::vector<std::vector<RowNode *>> &solutions, int &num_
 
   std::vector<SearchBranch> search_branches;
   while (!search_queue.empty()) {
-    search_branches.push_back(search_queue.front());
+    search_branches.emplace_back(search_queue.front());
     search_queue.pop();
   }
 

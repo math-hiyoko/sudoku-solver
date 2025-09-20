@@ -173,8 +173,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
       };
       return error_response(500, error_json);
     }
-    boost::json::object solution_json = {{"solution", board_json}};
-    solutions_json.push_back(solution_json);
+    solutions_json.emplace_back(boost::json::object{{"solution", board_json}});
   }
 
   // レスポンスを返す
