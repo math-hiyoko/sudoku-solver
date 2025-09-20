@@ -199,4 +199,178 @@ describe('SudokuBoard', () => {
     // Second cell (3) had NaN in original, should be blue (treated as new value)
     expect(secondCell.style.color).toBe('rgb(0, 102, 204)')
   })
+
+  describe('Keyboard Navigation', () => {
+    it('moves focus to the right cell when ArrowRight is pressed', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      inputs[0].focus()
+
+      fireEvent.keyDown(inputs[0], { key: 'ArrowRight' })
+
+      expect(document.activeElement).toBe(inputs[1])
+    })
+
+    it('moves focus to the left cell when ArrowLeft is pressed', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      inputs[1].focus()
+
+      fireEvent.keyDown(inputs[1], { key: 'ArrowLeft' })
+
+      expect(document.activeElement).toBe(inputs[0])
+    })
+
+    it('moves focus to the cell below when ArrowDown is pressed', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      inputs[0].focus()
+
+      fireEvent.keyDown(inputs[0], { key: 'ArrowDown' })
+
+      expect(document.activeElement).toBe(inputs[9]) // Next row, same column
+    })
+
+    it('moves focus to the cell above when ArrowUp is pressed', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      inputs[9].focus() // Second row, first column
+
+      fireEvent.keyDown(inputs[9], { key: 'ArrowUp' })
+
+      expect(document.activeElement).toBe(inputs[0]) // First row, first column
+    })
+
+    it('does not move beyond the left boundary', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      inputs[0].focus() // Already at leftmost position
+
+      fireEvent.keyDown(inputs[0], { key: 'ArrowLeft' })
+
+      expect(document.activeElement).toBe(inputs[0]) // Should stay at same position
+    })
+
+    it('does not move beyond the right boundary', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      inputs[8].focus() // Rightmost position of first row
+
+      fireEvent.keyDown(inputs[8], { key: 'ArrowRight' })
+
+      expect(document.activeElement).toBe(inputs[8]) // Should stay at same position
+    })
+
+    it('does not move beyond the top boundary', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      inputs[0].focus() // Already at topmost position
+
+      fireEvent.keyDown(inputs[0], { key: 'ArrowUp' })
+
+      expect(document.activeElement).toBe(inputs[0]) // Should stay at same position
+    })
+
+    it('does not move beyond the bottom boundary', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      inputs[80].focus() // Bottom-right position
+
+      fireEvent.keyDown(inputs[80], { key: 'ArrowDown' })
+
+      expect(document.activeElement).toBe(inputs[80]) // Should stay at same position
+    })
+
+    it('does not handle keyboard navigation when not in input mode', () => {
+      render(<SudokuBoard board={emptyBoard} isInput={false} />)
+
+      const cells = document.querySelectorAll('.sudoku-cell')
+      const firstCell = cells[0] as HTMLElement
+
+      // Should not respond to keyboard events in display mode
+      fireEvent.keyDown(firstCell, { key: 'ArrowRight' })
+      // No assertion needed - just ensuring no errors occur
+    })
+
+    it('highlights focused cell with different background color', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      fireEvent.focus(inputs[0])
+
+      const focusedCell = inputs[0] as HTMLInputElement
+      expect(focusedCell.style.backgroundColor).toBe('rgb(230, 243, 255)')
+    })
+  })
 })

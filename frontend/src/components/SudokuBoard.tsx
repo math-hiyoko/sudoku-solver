@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { SudokuBoard as SudokuBoardType } from '../types/sudoku'
 
 interface SudokuBoardProps {
@@ -21,6 +21,11 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
   const boardSize = SUDOKU_LEVEL * SUDOKU_LEVEL
 
+  const [focusedCell, setFocusedCell] = useState<{ row: number; col: number } | null>(null)
+  const inputRefs = useRef<(HTMLInputElement | null)[][]>(
+    Array(boardSize).fill(null).map(() => Array(boardSize).fill(null))
+  )
+
   const handleCellChange = (row: number, col: number, value: string) => {
     if (!onChange) return
 
@@ -30,18 +35,53 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
     onChange(row, col, numValue)
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent, row: number, col: number) => {
+    if (!isInput) return
+
+    let newRow = row
+    let newCol = col
+
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault()
+        newRow = Math.max(0, row - 1)
+        break
+      case 'ArrowDown':
+        e.preventDefault()
+        newRow = Math.min(boardSize - 1, row + 1)
+        break
+      case 'ArrowLeft':
+        e.preventDefault()
+        newCol = Math.max(0, col - 1)
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        newCol = Math.min(boardSize - 1, col + 1)
+        break
+      default:
+        return
+    }
+
+    setFocusedCell({ row: newRow, col: newCol })
+    const targetInput = inputRefs.current[newRow][newCol]
+    if (targetInput) {
+      targetInput.focus()
+    }
+  }
+
   const getCellStyle = (row: number, col: number) => {
     const isInvalid = invalidCells.some(cell => cell.row === row && cell.column === col)
     const isNewValue = originalBoard && !isInput &&
       (originalBoard[row][col] === null || originalBoard[row][col] === undefined || isNaN(originalBoard[row][col])) &&
       board[row][col] !== null
+    const isFocused = focusedCell && focusedCell.row === row && focusedCell.col === col
 
     const baseStyle = {
       width: '40px',
       height: '40px',
       border: '1px solid #ccc',
       fontSize: '16px',
-      backgroundColor: isInvalid ? '#ffe6e6' : (isInput ? '#fff' : '#f9f9f9'),
+      backgroundColor: isInvalid ? '#ffe6e6' : (isFocused && isInput ? '#e6f3ff' : (isInput ? '#fff' : '#f9f9f9')),
       // 入力フィールドの場合はtextAlign、表示用divの場合はflexレイアウトを使用
       ...(isInput ? {
         textAlign: 'center' as const,
@@ -75,9 +115,12 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
               <div key={colIndex}>
                 {isInput ? (
                   <input
+                    ref={(el) => (inputRefs.current[rowIndex][colIndex] = el)}
                     type="text"
                     value={cell || ''}
                     onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+                    onFocus={() => setFocusedCell({ row: rowIndex, col: colIndex })}
                     style={getCellStyle(rowIndex, colIndex)}
                     className="sudoku-cell"
                     maxLength={1}
