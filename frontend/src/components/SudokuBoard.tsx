@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { SudokuBoard as SudokuBoardType } from '../types/sudoku'
 
 interface SudokuBoardProps {
