@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import SudokuSolver from '../SudokuSolver'
 
 // Mock environment variables
@@ -90,7 +90,9 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     expect(screen.getByText('解いています...')).toBeInTheDocument()
     expect(solveButton).toBeDisabled()
@@ -109,7 +111,10 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('解の個数: 1')).toBeInTheDocument()
@@ -131,7 +136,10 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('🌐 ネットワークエラー')).toBeInTheDocument()
@@ -155,7 +163,9 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('📝 入力エラー')).toBeInTheDocument()
@@ -183,7 +193,9 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('🔢 数値範囲エラー')).toBeInTheDocument()
@@ -218,7 +230,9 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
@@ -249,7 +263,9 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('🔧 サーバーエラー')).toBeInTheDocument()
@@ -267,7 +283,9 @@ describe('SudokuSolver', () => {
     fireEvent.change(inputs[1], { target: { value: '1' } }) // Second cell in same row
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
@@ -294,7 +312,9 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('解の個数: 1,000,000+ (概算)')).toBeInTheDocument()
@@ -316,7 +336,9 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('解の個数: 0')).toBeInTheDocument()
@@ -351,7 +373,9 @@ describe('SudokuSolver', () => {
     render(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     // Wait for solution count to appear
     await waitFor(() => {
@@ -432,7 +456,7 @@ describe('SudokuSolver', () => {
     })
   })
 
-  it('handles edge case where board has NaN values that get filtered out', () => {
+  it('handles edge case where board has NaN values that get filtered out', async () => {
     render(<SudokuSolver />)
 
     // Input valid values first
@@ -441,7 +465,9 @@ describe('SudokuSolver', () => {
     fireEvent.change(inputs[9], { target: { value: '2' } })
 
     const solveButton = screen.getByText('解く')
-    fireEvent.click(solveButton)
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
 
     // Validation should work correctly even with mixed valid/invalid values
     expect(solveButton).toBeInTheDocument()
