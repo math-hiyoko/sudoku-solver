@@ -29,4 +29,4 @@ foreach(env_var IN LISTS env_vars)
 endforeach()
 
 include(GoogleTest)
-gtest_discover_tests(${target_name} XML_OUTPUT_DIR unittest_reports/)
+gtest_discover_tests(${target_name} XML_OUTPUT_DIR unittest-reports/)
