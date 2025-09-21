@@ -12,21 +12,26 @@ add_executable(
   Solve16x16SudokuTest.cpp ValidateSudokuTest.cpp)
 
 target_compile_features(${target_name} PRIVATE cxx_std_20)
+target_compile_options(${target_name} PRIVATE --coverage -O0 -g)
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
                                                   ${Boost_INCLUDE_DIRS})
+target_link_options(${target_name} PRIVATE --coverage)
 target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 target_link_libraries(
   ${target_name}
-  gtest_main
-  AWS::aws-lambda-runtime
-  Boost::json
-  OpenMP::OpenMP_CXX
-  DancingLinks
-  SudokuSolver
-  HandlerTools)
+  PRIVATE gtest_main
+          AWS::aws-lambda-runtime
+          Boost::json
+          OpenMP::OpenMP_CXX
+          DancingLinks
+          SudokuSolver
+          HandlerTools)
 foreach(env_var IN LISTS env_vars)
   target_compile_definitions(${target_name} PRIVATE ${env_var})
 endforeach()
 
 include(GoogleTest)
-gtest_discover_tests(${target_name} XML_OUTPUT_DIR unittest-reports/)
+gtest_discover_tests(
+  ${target_name} XML_OUTPUT_DIR unittest-reports/
+  PROPERTIES LABELS "sudoku"
+  TEST_PREFIX "sudoku::" DISCOVERY_MODE POST_BUILD)
