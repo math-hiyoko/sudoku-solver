@@ -31,7 +31,4 @@ foreach(env_var IN LISTS env_vars)
 endforeach()
 
 include(GoogleTest)
-gtest_discover_tests(
-  ${target_name} XML_OUTPUT_DIR unittest-reports/
-  PROPERTIES LABELS "sudoku"
-  TEST_PREFIX "sudoku::" DISCOVERY_MODE POST_BUILD)
+gtest_discover_tests(${target_name} XML_OUTPUT_DIR unittest-reports/)

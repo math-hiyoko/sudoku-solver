@@ -54,7 +54,7 @@ phases:
                  -DCMAKE_PREFIX_PATH=$CODEBUILD_SRC_DIR/backend
         make
       - echo "Running Tests..."
-      - ctest -V -L sudoku --output-on-failure
+      - ctest -V --output-on-failure
       - echo "Running Benchmarks..."
       - ../bin/bench
       - echo "Building package..."

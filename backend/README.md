@@ -26,7 +26,7 @@ $ cd ../../..
 $ mkdir build && cd build
 $ cmake .. -DCMAKE_PREFIX_PATH=.
 $ make
-$ ctest -V -L sudoku --output-on-failure  # testsディレクトリ内のテストを行う
+$ ctest -V --output-on-failure  # testsディレクトリ内のテストを行う
 $ make format-all  # clang-formatが使えるとき有効、全てのC++ファイルのフォーマットをする
 ```
 
