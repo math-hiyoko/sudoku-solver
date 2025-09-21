@@ -7,4 +7,4 @@
 	url = https://github.com/awslabs/aws-lambda-cpp.git
 [submodule "backend/extern/benchmark"]
 	path = backend/extern/benchmark
-	url = git@github.com:google/benchmark.git
+	url = https://github.com/google/benchmark.git
