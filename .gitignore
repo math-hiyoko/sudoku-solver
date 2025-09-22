@@ -50,3 +50,5 @@ frontend/test-results/
 frontend/node_modules/
 frontend/.cache/
 frontend/src/gatsby-types.d.ts
+
+.venv/
