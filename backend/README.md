@@ -17,18 +17,15 @@
 $ pwd
 sudoku-solver/backend
 # aws-lambda-cppのインストール
-$ cd extern/aws-lambda-cpp
-$ mkdir build && cd build
-$ cmake .. -DCMAKE_INSTALL_PREFIX=../../..
-$ make && make install
-$ cd ../../..
+$ cmake -S extern/aws-lambda-cpp/ -B extern/aws-lambda-cpp/build -DCMAKE_INSTALL_PREFIX=.
+$ cmake --build extern/aws-lambda-cpp/build -j
+$ cmake --install extern/aws-lambda-cpp/build
 # SudokuSolberのビルド
-$ mkdir build && cd build
-$ cmake .. -DCMAKE_PREFIX_PATH=.
-$ make
-$ ctest -V --output-on-failure  # testsディレクトリ内のテストを行う
-$ sh ../bin/bench  # ベンチマークテスト
-$ make format-all  # clang-formatが使えるとき有効、全てのC++ファイルのフォーマットをする
+$ cmake -S . -B build -DCMAKE_PREFIX_PATH=.
+$ cmake --build build -j
+$ ctest --test-dir build --verbose --output-on-failure -j # testsディレクトリ内のテストを行う
+$ ./bin/bench  # ベンチマークテスト
+$ cmake --build build --target format-all -j  # clang-formatが使えるとき有効、全てのC++ファイルのフォーマットをする
 ```
 
 ### 動かしてみる

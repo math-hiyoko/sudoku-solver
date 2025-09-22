@@ -36,29 +36,29 @@ phases:
 
   build:
     commands:
+      - cd $CODEBUILD_SRC_DIR/backend
       - echo "Building external projects..."
       - |
-        cd $CODEBUILD_SRC_DIR/backend/extern/aws-lambda-cpp
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
-                 -DBUILD_SHARED_LIBS=OFF \
-                 -DCMAKE_INSTALL_PREFIX=$CODEBUILD_SRC_DIR/backend
-        make && make install
+        cmake -S extern/aws-lambda-cpp/ \
+              -B extern/aws-lambda-cpp/build \
+              -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+              -DCMAKE_INSTALL_PREFIX=. \
+              -DBUILD_SHARED_LIBS=OFF
+        cmake --build extern/aws-lambda-cpp/build -j
+        cmake --install extern/aws-lambda-cpp/build
       - echo "Building the application..."
       - |
-        cd $CODEBUILD_SRC_DIR/backend
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
-                 -DCMAKE_PREFIX_PATH=$CODEBUILD_SRC_DIR/backend
-        make
+        cmake -S . \
+              -B build \
+              -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+              -DCMAKE_PREFIX_PATH=.
+        cmake --build build -j
       - echo "Running Tests..."
-      - ctest -V --output-on-failure
+      - ctest --test-dir build --verbose --output-on-failure -j
       - echo "Running Benchmarks..."
-      - ../bin/bench
+      - ./bin/bench
       - echo "Building package..."
-      - make aws-lambda-package-$FUCTION_NAME
+      - cmake --build build --target aws-lambda-package-$FUCTION_NAME
 
   post_build:
     commands:
