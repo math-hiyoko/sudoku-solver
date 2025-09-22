@@ -12,10 +12,8 @@ add_executable(
   Solve16x16SudokuTest.cpp ValidateSudokuTest.cpp)
 
 target_compile_features(${target_name} PRIVATE cxx_std_20)
-target_compile_options(${target_name} PRIVATE --coverage -O0 -g)
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
                                                   ${Boost_INCLUDE_DIRS})
-target_link_options(${target_name} PRIVATE --coverage)
 target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 target_link_libraries(
   ${target_name}
