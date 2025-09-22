@@ -26,7 +26,8 @@ $ cd ../../..
 $ mkdir build && cd build
 $ cmake .. -DCMAKE_PREFIX_PATH=.
 $ make
-$ ctest  # testsディレクトリ内のテストを行う
+$ ctest -V --output-on-failure  # testsディレクトリ内のテストを行う
+$ sh ../bin/bench  # ベンチマークテスト
 $ make format-all  # clang-formatが使えるとき有効、全てのC++ファイルのフォーマットをする
 ```
 

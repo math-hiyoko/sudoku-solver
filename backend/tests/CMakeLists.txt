@@ -17,16 +17,16 @@ target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
 target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 target_link_libraries(
   ${target_name}
-  gtest_main
-  AWS::aws-lambda-runtime
-  Boost::json
-  OpenMP::OpenMP_CXX
-  DancingLinks
-  SudokuSolver
-  HandlerTools)
+  PRIVATE gtest_main
+          AWS::aws-lambda-runtime
+          Boost::json
+          OpenMP::OpenMP_CXX
+          DancingLinks
+          SudokuSolver
+          HandlerTools)
 foreach(env_var IN LISTS env_vars)
   target_compile_definitions(${target_name} PRIVATE ${env_var})
 endforeach()
 
 include(GoogleTest)
-gtest_discover_tests(${target_name} XML_OUTPUT_DIR unittest_reports/)
+gtest_discover_tests(${target_name} XML_OUTPUT_DIR unittest-reports/)
