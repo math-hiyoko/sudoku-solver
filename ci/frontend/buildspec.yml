@@ -2,6 +2,8 @@ version: 0.2
 
 env:
   git-credential-helper: yes
+  variables:
+    NPM_CACHE_DIR: "$HOME/.npm"
 
 phases:
   install:
@@ -10,7 +12,8 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - cd $CODEBUILD_SRC_DIR/frontend
-      - npm install
+      - npm config set cache "$NPM_CACHE_DIR"
+      - npm ci --prefer-offline --no-audit --fund=false
 
   pre_build:
     commands:
@@ -59,4 +62,4 @@ artifacts:
 cache:
   paths:
     - frontend/node_modules/**/*
-    - frontend/.cache/**/*
+    - $HOME/.npm/**/*
