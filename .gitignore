@@ -44,7 +44,6 @@ aws/
 
 # gatsby
 frontend/coverage/
-frontend/package-lock.json
 frontend/public/
 frontend/test-results/
 frontend/node_modules/
