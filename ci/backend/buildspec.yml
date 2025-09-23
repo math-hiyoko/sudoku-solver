@@ -12,6 +12,7 @@ phases:
       - yum -y update
       - |
         yum -y install cmake \
+                       ccache \
                        gcc \
                        libomp \
                        boost-devel \
