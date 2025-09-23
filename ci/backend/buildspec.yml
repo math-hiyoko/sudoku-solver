@@ -2,6 +2,8 @@ version: 0.2
 
 env:
   git-credential-helper: yes
+  variables:
+    NPM_CACHE_DIR: "$HOME/.cache/ccache"
 
 phases:
   install:
@@ -37,11 +39,14 @@ phases:
   build:
     commands:
       - cd $CODEBUILD_SRC_DIR/backend
+      - ccache --set-config cache_dir="${CCACHE_DIR}"
       - echo "Building external projects..."
       - |
         cmake -S extern/aws-lambda-cpp/ \
               -B extern/aws-lambda-cpp/build \
               -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
               -DCMAKE_INSTALL_PREFIX=. \
               -DBUILD_SHARED_LIBS=OFF
         cmake --build extern/aws-lambda-cpp/build -j
@@ -51,6 +56,8 @@ phases:
         cmake -S . \
               -B build \
               -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache \
               -DCMAKE_PREFIX_PATH=.
         cmake --build build -j
       - echo "Running Tests..."
@@ -85,3 +92,7 @@ artifacts:
   files: backend/build/src/handler/$FUCTION_NAME.zip
   name: $ARTIFACT_NAME
   discard-paths: yes
+
+cache:
+  paths:
+    - ${NPM_CACHE_DIR}/**/*
