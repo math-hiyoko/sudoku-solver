@@ -39,4 +39,6 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/**/*.test.{js,jsx,ts,tsx}',
   ],
+  coverageDirectory: './coverage',
+  coverageReporters: ['text', 'lcov', 'clover'],
 }
