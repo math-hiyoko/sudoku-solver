@@ -13,7 +13,7 @@ phases:
       - echo Installing source NPM dependencies...
       - cd $CODEBUILD_SRC_DIR/frontend
       - npm config set cache "$NPM_CACHE_DIR"
-      - npm ci --prefer-offline --no-audit --fund=false
+      - npm ci --no-audit --no-fund
 
   pre_build:
     commands:
