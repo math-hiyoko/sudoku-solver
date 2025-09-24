@@ -44,9 +44,10 @@ aws/
 
 # gatsby
 frontend/coverage/
-frontend/package-lock.json
 frontend/public/
 frontend/test-results/
 frontend/node_modules/
 frontend/.cache/
 frontend/src/gatsby-types.d.ts
+
+.venv/

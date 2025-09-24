@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import SudokuBoard from '../SudokuBoard'
 
 // Mock environment variables
@@ -212,9 +212,13 @@ describe('SudokuBoard', () => {
       )
 
       const inputs = screen.getAllByRole('textbox')
-      inputs[0].focus()
+      act(() => {
+        inputs[0].focus()
+      })
 
-      fireEvent.keyDown(inputs[0], { key: 'ArrowRight' })
+      act(() => {
+        fireEvent.keyDown(inputs[0], { key: 'ArrowRight' })
+      })
 
       expect(document.activeElement).toBe(inputs[1])
     })
@@ -230,9 +234,13 @@ describe('SudokuBoard', () => {
       )
 
       const inputs = screen.getAllByRole('textbox')
-      inputs[1].focus()
+      act(() => {
+        inputs[1].focus()
+      })
 
-      fireEvent.keyDown(inputs[1], { key: 'ArrowLeft' })
+      act(() => {
+        fireEvent.keyDown(inputs[1], { key: 'ArrowLeft' })
+      })
 
       expect(document.activeElement).toBe(inputs[0])
     })
@@ -248,9 +256,13 @@ describe('SudokuBoard', () => {
       )
 
       const inputs = screen.getAllByRole('textbox')
-      inputs[0].focus()
+      act(() => {
+        inputs[0].focus()
+      })
 
-      fireEvent.keyDown(inputs[0], { key: 'ArrowDown' })
+      act(() => {
+        fireEvent.keyDown(inputs[0], { key: 'ArrowDown' })
+      })
 
       expect(document.activeElement).toBe(inputs[9]) // Next row, same column
     })
@@ -266,9 +278,13 @@ describe('SudokuBoard', () => {
       )
 
       const inputs = screen.getAllByRole('textbox')
-      inputs[9].focus() // Second row, first column
+      act(() => {
+        inputs[9].focus() // Second row, first column
+      })
 
-      fireEvent.keyDown(inputs[9], { key: 'ArrowUp' })
+      act(() => {
+        fireEvent.keyDown(inputs[9], { key: 'ArrowUp' })
+      })
 
       expect(document.activeElement).toBe(inputs[0]) // First row, first column
     })
@@ -284,9 +300,13 @@ describe('SudokuBoard', () => {
       )
 
       const inputs = screen.getAllByRole('textbox')
-      inputs[0].focus() // Already at leftmost position
+      act(() => {
+        inputs[0].focus() // Already at leftmost position
+      })
 
-      fireEvent.keyDown(inputs[0], { key: 'ArrowLeft' })
+      act(() => {
+        fireEvent.keyDown(inputs[0], { key: 'ArrowLeft' })
+      })
 
       expect(document.activeElement).toBe(inputs[0]) // Should stay at same position
     })
@@ -302,9 +322,13 @@ describe('SudokuBoard', () => {
       )
 
       const inputs = screen.getAllByRole('textbox')
-      inputs[8].focus() // Rightmost position of first row
+      act(() => {
+        inputs[8].focus() // Rightmost position of first row
+      })
 
-      fireEvent.keyDown(inputs[8], { key: 'ArrowRight' })
+      act(() => {
+        fireEvent.keyDown(inputs[8], { key: 'ArrowRight' })
+      })
 
       expect(document.activeElement).toBe(inputs[8]) // Should stay at same position
     })
@@ -320,9 +344,13 @@ describe('SudokuBoard', () => {
       )
 
       const inputs = screen.getAllByRole('textbox')
-      inputs[0].focus() // Already at topmost position
+      act(() => {
+        inputs[0].focus() // Already at topmost position
+      })
 
-      fireEvent.keyDown(inputs[0], { key: 'ArrowUp' })
+      act(() => {
+        fireEvent.keyDown(inputs[0], { key: 'ArrowUp' })
+      })
 
       expect(document.activeElement).toBe(inputs[0]) // Should stay at same position
     })
@@ -338,9 +366,13 @@ describe('SudokuBoard', () => {
       )
 
       const inputs = screen.getAllByRole('textbox')
-      inputs[80].focus() // Bottom-right position
+      act(() => {
+        inputs[80].focus() // Bottom-right position
+      })
 
-      fireEvent.keyDown(inputs[80], { key: 'ArrowDown' })
+      act(() => {
+        fireEvent.keyDown(inputs[80], { key: 'ArrowDown' })
+      })
 
       expect(document.activeElement).toBe(inputs[80]) // Should stay at same position
     })
@@ -367,7 +399,9 @@ describe('SudokuBoard', () => {
       )
 
       const inputs = screen.getAllByRole('textbox')
-      fireEvent.focus(inputs[0])
+      act(() => {
+        fireEvent.focus(inputs[0])
+      })
 
       const focusedCell = inputs[0] as HTMLInputElement
       expect(focusedCell.style.backgroundColor).toBe('rgb(230, 243, 255)')
