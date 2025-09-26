@@ -9,7 +9,7 @@ int isValidRange(const Board &board, std::vector<Option> &options) {
   for (int i = 0; i < SIZE; i++) {
     for (int j = 0; j < SIZE; j++) {
       if (board[i][j] < 0 || board[i][j] > SIZE) {
-        options.push_back(Option{.row = i, .column = j, .number = board[i][j]});
+        options.emplace_back(Option{.row = i, .column = j, .number = board[i][j]});
       }
     }
   }
@@ -95,7 +95,7 @@ int isSatisfy(const Board &board, std::vector<Option> &options) {
   return options.size();
 }  // isSatisfy
 
-int isCorrect(const Board &board, bool &is_correct) {
+int isCorrect(const Board &board, bool &is_correct) noexcept {
   // 数独の制約を満たしているか確認
   std::vector<Option> options;
   int num_invalid = isSatisfy(board, options);

@@ -3,7 +3,7 @@
 #include <cassert>
 
 namespace DancingLinks {
-IDancingLinksNode::IDancingLinksNode() : left(this), right(this) {}
+IDancingLinksNode::IDancingLinksNode() noexcept : left(this), right(this) {}
 
 IDancingLinksNode* IDancingLinksNode::hookLeft(IDancingLinksNode* node) {
   assert(node != nullptr);

@@ -9,9 +9,9 @@ class IDancingLinksNode {
   IDancingLinksNode* left;   // 左にリンクするノード
   IDancingLinksNode* right;  // 右にリンクするノード
 
-  IDancingLinksNode();
+  IDancingLinksNode() noexcept;
 
-  virtual ~IDancingLinksNode() = default;
+  virtual ~IDancingLinksNode() noexcept = default;
 
   /**
    * @brief 現在のノードの左にnodeを相互リンクする

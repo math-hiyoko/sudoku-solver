@@ -19,7 +19,7 @@ namespace {
  */
 aws::lambda_runtime::invocation_response success_response(const boost::json::object &body) {
   // ペイロードを作成
-  boost::json::object response_payload = {
+  const boost::json::object response_payload = {
       {"statusCode", 200},
       {"headers",
        {
@@ -29,7 +29,7 @@ aws::lambda_runtime::invocation_response success_response(const boost::json::obj
       {"isBase64Encoded", false},
   };
   // JSON ペイロードを文字列に変換
-  std::string response_payload_str = boost::json::serialize(response_payload);
+  const std::string response_payload_str = boost::json::serialize(response_payload);
 
   return aws::lambda_runtime::invocation_response::success(response_payload_str,
                                                            "application/json");
@@ -45,7 +45,7 @@ aws::lambda_runtime::invocation_response success_response(const boost::json::obj
 aws::lambda_runtime::invocation_response error_response(const int &status_code,
                                                         const boost::json::object &error_json) {
   // ペイロードを作成
-  boost::json::object response_payload = {
+  const boost::json::object response_payload = {
       {"statusCode", status_code},
       {"headers",
        {
@@ -55,7 +55,7 @@ aws::lambda_runtime::invocation_response error_response(const int &status_code,
       {"isBase64Encoded", false},
   };
   // JSON ペイロードを文字列に変換
-  std::string response_payload_str = boost::json::serialize(response_payload);
+  const std::string response_payload_str = boost::json::serialize(response_payload);
 
   return aws::lambda_runtime::invocation_response::success(response_payload_str,
                                                            "application/json");
@@ -68,7 +68,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
   // リクエストのペイロードをパースして JSON 値を取得
   boost::json::object request_json;
   if (HandlerHelper::parse_invocation_request(request, request_json) != 0) {
-    boost::json::object error_json = {
+    const boost::json::object error_json = {
         {"error",
          {
              {"type", "JSONParseError"},
@@ -80,7 +80,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
 
   // リクエストの JSON から Sudoku::Board を取得
   if (!request_json.contains("board") || !request_json.at("board").is_array()) {
-    boost::json::object error_json = {
+    const boost::json::object error_json = {
         {"error",
          {
              {"type", "MissingField"},
@@ -91,7 +91,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
   }
   Sudoku::Board input_board;
   if (HandlerHelper::json_to_sudokuboard(request_json.at("board").as_array(), input_board) != 0) {
-    boost::json::object error_json = {
+    const boost::json::object error_json = {
         {"error",
          {
              {"type", "InvalidInput"},
@@ -106,7 +106,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
   if (Sudoku::isValidRange(input_board, invalid_numbers) != 0) {
     boost::json::array invalid_numbers_json;
     if (HandlerHelper::options_to_json(invalid_numbers, invalid_numbers_json) != 0) {
-      boost::json::object error_json = {
+      const boost::json::object error_json = {
           {"error",
            {
                {"type", "InternalServerError"},
@@ -116,7 +116,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
       return error_response(500, error_json);
     }
 
-    boost::json::object error_json = {
+    const boost::json::object error_json = {
         {"error",
          {
              {"type", "OutOfRangeError"},
@@ -132,7 +132,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
   if (Sudoku::isSatisfy(input_board, invalid_options) != 0) {
     boost::json::array invalid_options_json;
     if (HandlerHelper::options_to_json(invalid_options, invalid_options_json) != 0) {
-      boost::json::object error_json = {
+      const boost::json::object error_json = {
           {"error",
            {
                {"type", "InternalServerError"},
@@ -142,7 +142,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
       return error_response(500, error_json);
     }
 
-    boost::json::object error_json = {
+    const boost::json::object error_json = {
         {"error",
          {
              {"type", "ConstraintViolation"},
@@ -164,7 +164,7 @@ aws::lambda_runtime::invocation_response sudoku_handler(
   for (const auto &solution_board : solution_boards) {
     boost::json::array board_json;
     if (HandlerHelper::sudokuboard_to_json(solution_board, board_json) != 0) {
-      boost::json::object error_json = {
+      const boost::json::object error_json = {
           {"error",
            {
                {"type", "InternalServerError"},
@@ -173,14 +173,15 @@ aws::lambda_runtime::invocation_response sudoku_handler(
       };
       return error_response(500, error_json);
     }
-    boost::json::object solution_json = {{"solution", board_json}};
-    solutions_json.push_back(solution_json);
+    solutions_json.emplace_back(boost::json::object{{"solution", board_json}});
   }
 
   // レスポンスを返す
-  boost::json::object response_json = {{"solutions", solutions_json},
-                                       {"num_solutions", num_solutions},
-                                       {"is_exact_num_solutions", is_exact_num_solutions}};
+  const boost::json::object response_json = {
+    {"solutions", solutions_json},
+    {"num_solutions", num_solutions},
+    {"is_exact_num_solutions", is_exact_num_solutions},
+  };
 
   return success_response(response_json);
 }

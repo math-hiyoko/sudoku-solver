@@ -2,7 +2,6 @@
 
 #include <array>
 #include <boost/pool/object_pool.hpp>
-#include <iostream>
 #include <memory>
 #include <vector>
 

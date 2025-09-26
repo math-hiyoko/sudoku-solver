@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "solver/IDancingLinksBodyNode.hpp"
 
 namespace DancingLinks {
@@ -10,18 +8,18 @@ namespace DancingLinks {
  */
 class ColumnNode : public IDancingLinksBodyNode {
  public:
-  ColumnNode();
+  ColumnNode() noexcept;
 
   int size;  // この列に含まれる(覆われていない)ノードの数
 
   /**
    * @brief この列をheaderの繋がりから外す
    */
-  void unlinkLR();
+  void unlinkLR() const noexcept;
 
   /**
    * @brief この列をheaderの繋がりに戻す
    */
-  void relinkLR();
+  void relinkLR() noexcept;
 };  // class ColumnNode
 }  // namespace DancingLinks

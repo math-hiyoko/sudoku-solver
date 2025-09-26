@@ -11,13 +11,13 @@ namespace HandlerHelper {
 int parse_invocation_request(const aws::lambda_runtime::invocation_request &request,
                              boost::json::object &json) {
   // リクエストのペイロードをパースして JSON 値を取得
-  boost::json::value parsed_json = boost::json::parse(request.payload);
+  const boost::json::value parsed_json = boost::json::parse(request.payload);
 
   // JSON 値がオブジェクトかどうか確認
   if (!parsed_json.is_object()) {
     return 1;
   }
-  boost::json::object payload_json = parsed_json.as_object();
+  const boost::json::object payload_json = parsed_json.as_object();
 
   // body要素にstring形式で入力が入っている
   if (!payload_json.contains("body") || !payload_json.at("body").is_string()) {
@@ -59,16 +59,16 @@ int sudokuboard_to_json(const Sudoku::Board &board, boost::json::array &json) {
   for (int i = 0; i < Sudoku::SIZE; i++) {
     boost::json::array inner_json;
     for (int j = 0; j < Sudoku::SIZE; j++) {
-      inner_json.push_back(board[i][j]);
+      inner_json.emplace_back(board[i][j]);
     }
-    json.push_back(inner_json);
+    json.emplace_back(inner_json);
   }
   return 0;
 }
 
 int options_to_json(const std::vector<Sudoku::Option> &options, boost::json::array &json) {
   for (const Sudoku::Option &option : options) {
-    json.push_back(boost::json::object{
+    json.emplace_back(boost::json::object{
         {"row", option.row},
         {"column", option.column},
         {"number", option.number},

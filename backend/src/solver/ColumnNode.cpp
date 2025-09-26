@@ -1,18 +1,18 @@
 #include "solver/ColumnNode.hpp"
 
-#include <cassert>
-#include <vector>
-
 #include "solver/IDancingLinksBodyNode.hpp"
 
 namespace DancingLinks {
-ColumnNode::ColumnNode() : IDancingLinksBodyNode(), size(0) {}
+ColumnNode::ColumnNode() noexcept : IDancingLinksBodyNode(), size(0) {}
 
-void ColumnNode::unlinkLR() {
+void ColumnNode::unlinkLR() const noexcept {
   this->left->right = this->right;
   this->right->left = this->left;
   return;
 }
 
-void ColumnNode::relinkLR() { this->left->right = this->right->left = this; }
+void ColumnNode::relinkLR() noexcept {
+  this->left->right = this->right->left = this;
+  return;
+}
 }  // namespace DancingLinks
