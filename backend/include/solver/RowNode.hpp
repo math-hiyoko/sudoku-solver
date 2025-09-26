@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cassert>
-
 #include "solver/DancingNode.hpp"
 
 namespace DancingLinks {
@@ -12,6 +10,6 @@ class RowNode {
  public:
   const int option_id;  // この行が表す選択肢の番号
 
-  RowNode(const int option_id);
+  RowNode(const int option_id) noexcept;
 };  // class RowNode
 }  // namespace DancingLinks

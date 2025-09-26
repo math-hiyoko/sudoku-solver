@@ -30,5 +30,5 @@ int isSatisfy(const Board& board, std::vector<Option>& options);
  * @param is_correct 正解ならtrue, そうでなければfalse
  * @return 数独の制約を満たす場合は0, そうでなければ0以外
  */
-int isCorrect(const Board& board, bool& is_correct);
+int isCorrect(const Board& board, bool& is_correct) noexcept;
 }  // namespace Sudoku

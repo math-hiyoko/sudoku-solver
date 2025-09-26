@@ -22,17 +22,17 @@ class DancingNode : public IDancingLinksBodyNode {
   /**
    * @brief このノードを列のリンクから外す
    */
-  void unlinkUD();
+  void unlinkUD() const noexcept;
 
   /**
    * @brief このノードを列のリンクに戻す
    */
-  void relinkUD();
+  void relinkUD() noexcept;
 
  public:
   RowNode* const row;  // このノードが属する行
 
-  DancingNode(RowNode* const row, ColumnNode* const column);
+  DancingNode(RowNode* const row, ColumnNode* const column) noexcept;
 
   /**
    * @brief 現在のノードの左にnodeを相互リンクする
@@ -44,11 +44,11 @@ class DancingNode : public IDancingLinksBodyNode {
   /**
    * @brief この選択を選択した時の行列の状態を覆って使えなくする
    */
-  void cover();
+  void cover() const noexcept;
 
   /**
    * @brief coverを元に戻す、coverした順の逆順に呼び出す
    */
-  void uncover();
+  void uncover() noexcept;
 };  // class DancingNode
 }  // namespace DancingLinks

@@ -19,13 +19,13 @@ class HeaderNode : public IDancingLinksNode {
    * @brief このヘッダーが表す行列被覆問題が空かどうか判定する
    * @return true 空
    */
-  bool isEmpty() const;
+  bool isEmpty() const noexcept;
 
   /**
    * @brief 残っている行数が最も少ない列を選択する
    * @return 選択された列
    */
-  ColumnNode *selectMinSizeColumn() const;
+  const ColumnNode *selectMinSizeColumn() const noexcept;
 
   /**
    * @brief このheaderと同じ構造を持つHeaderNodeを複製する
@@ -35,7 +35,7 @@ class HeaderNode : public IDancingLinksNode {
                     boost::object_pool<DancingLinks::HeaderNode> &header_node_pool) const;
 
  public:
-  HeaderNode();
+  HeaderNode() noexcept;
 
   /**
    * @brief 行列被覆問題を解く関数

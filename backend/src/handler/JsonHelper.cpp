@@ -11,13 +11,13 @@ namespace HandlerHelper {
 int parse_invocation_request(const aws::lambda_runtime::invocation_request &request,
                              boost::json::object &json) {
   // リクエストのペイロードをパースして JSON 値を取得
-  boost::json::value parsed_json = boost::json::parse(request.payload);
+  const boost::json::value parsed_json = boost::json::parse(request.payload);
 
   // JSON 値がオブジェクトかどうか確認
   if (!parsed_json.is_object()) {
     return 1;
   }
-  boost::json::object payload_json = parsed_json.as_object();
+  const boost::json::object payload_json = parsed_json.as_object();
 
   // body要素にstring形式で入力が入っている
   if (!payload_json.contains("body") || !payload_json.at("body").is_string()) {

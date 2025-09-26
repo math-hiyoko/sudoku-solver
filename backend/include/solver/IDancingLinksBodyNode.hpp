@@ -11,9 +11,9 @@ class IDancingLinksBodyNode : public IDancingLinksNode {
   IDancingLinksBodyNode* up;    // 上にリンクするノード
   IDancingLinksBodyNode* down;  // 下にリンクするノード
 
-  IDancingLinksBodyNode();
+  IDancingLinksBodyNode() noexcept;
 
-  virtual ~IDancingLinksBodyNode() = default;
+  virtual ~IDancingLinksBodyNode() noexcept = default;
 
   /**
    * @brief 現在のノードの上にnodeを相互リンクする

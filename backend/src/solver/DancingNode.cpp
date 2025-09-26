@@ -6,16 +6,16 @@
 #include "solver/IDancingLinksBodyNode.hpp"
 
 namespace DancingLinks {
-DancingNode::DancingNode(RowNode* const row, ColumnNode* const column)
+DancingNode::DancingNode(RowNode* const row, ColumnNode* const column) noexcept
     : IDancingLinksBodyNode(), left(this), right(this), row(row), column(column) {}
 
-void DancingNode::unlinkUD() {
+void DancingNode::unlinkUD() const noexcept {
   this->up->down = this->down;
   this->down->up = this->up;
   return;
 }
 
-void DancingNode::relinkUD() {
+void DancingNode::relinkUD() noexcept {
   this->up->down = this->down->up = this;
   return;
 }
@@ -29,9 +29,9 @@ DancingNode* DancingNode::hookLeft(DancingNode* node) {
   return node;
 }
 
-void DancingNode::cover() {
+void DancingNode::cover() const noexcept {
   // この行が満たす選択肢について走査
-  DancingNode* i = this;
+  const DancingNode* i = this;
   do {
     for (IDancingLinksBodyNode* j = i->down; j != i; j = j->down) {
       if (j == i->column) {
@@ -50,9 +50,9 @@ void DancingNode::cover() {
   return;
 }
 
-void DancingNode::uncover() {
+void DancingNode::uncover() noexcept {
   // この行が満たす選択肢について走査、coverした順の逆順に戻さなければいけない
-  DancingNode* i = this->left;
+  const DancingNode* i = this->left;
   do {
     for (IDancingLinksBodyNode* j = i->up; j != i; j = j->up) {
       if (j == i->column) {

@@ -95,7 +95,7 @@ int isSatisfy(const Board &board, std::vector<Option> &options) {
   return options.size();
 }  // isSatisfy
 
-int isCorrect(const Board &board, bool &is_correct) {
+int isCorrect(const Board &board, bool &is_correct) noexcept {
   // 数独の制約を満たしているか確認
   std::vector<Option> options;
   int num_invalid = isSatisfy(board, options);

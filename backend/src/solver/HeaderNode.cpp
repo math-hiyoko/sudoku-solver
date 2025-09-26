@@ -18,12 +18,12 @@
 #include "solver/SudokuType.hpp"
 
 namespace DancingLinks {
-HeaderNode::HeaderNode() : IDancingLinksNode() {}
+HeaderNode::HeaderNode() noexcept : IDancingLinksNode() {}
 
-bool HeaderNode::isEmpty() const { return this->right == this; }
+bool HeaderNode::isEmpty() const noexcept { return this->right == this; }
 
-ColumnNode *HeaderNode::selectMinSizeColumn() const {
-  ColumnNode *ret = nullptr;
+const ColumnNode *HeaderNode::selectMinSizeColumn() const noexcept {
+  const ColumnNode *ret = nullptr;
   int minSize = std::numeric_limits<int>::max();
   for (IDancingLinksNode *i = this->right; i != this && minSize > 0; i = i->right) {
     ColumnNode *const column_node = static_cast<ColumnNode *>(i);
@@ -47,11 +47,11 @@ HeaderNode *HeaderNode::clone(
   // 全てのColumnNodeとDancingNodeを複製する
   std::map<RowNode *, DancingNode *> row_map;
   for (IDancingLinksNode *i = this->right; i != this; i = i->right) {
-    ColumnNode *const column_node = static_cast<ColumnNode *>(i);
+    const ColumnNode *const column_node = static_cast<ColumnNode *>(i);
     ColumnNode *const new_column_node = column_node_pool.construct();
     new_header->hookLeft(new_column_node);
     for (IDancingLinksBodyNode *j = column_node->down; j != column_node; j = j->down) {
-      DancingNode *const dancing_node = static_cast<DancingNode *>(j);
+      const DancingNode *const dancing_node = static_cast<DancingNode *>(j);
       DancingNode *const new_dancing_node =
           dancing_node_pool.construct(dancing_node->row, new_column_node);
       new_column_node->hookUp(new_dancing_node);
