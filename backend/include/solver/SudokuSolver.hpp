@@ -2,10 +2,6 @@
 
 #include <vector>
 
-#include "solver/ColumnNode.hpp"
-#include "solver/DancingNode.hpp"
-#include "solver/HeaderNode.hpp"
-#include "solver/RowNode.hpp"
 #include "solver/SudokuType.hpp"
 
 namespace Sudoku {
