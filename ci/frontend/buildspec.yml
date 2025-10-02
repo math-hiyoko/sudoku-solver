@@ -24,10 +24,10 @@ phases:
       - |
         if [ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" ]; then
           export GIT_REVISION=$(git rev-list HEAD --count)
-          export ARTIFACT_NAME="${PACKAGE_NAME}-Release-${VERSION}-${GIT_REVISION}"
+          export ARTIFACT_NAME="Release/${VERSION}/${GIT_REVISION}"
         else
           export DATE=$(date +%Y%m%d%H%M%S)
-          export ARTIFACT_NAME="${PACKAGE_NAME}-Debug-${VERSION}-${DATE}"
+          export ARTIFACT_NAME="Debug/${VERSION}/${DATE}"
         fi
       - echo "VERSION=$VERSION"
       - echo "ARTIFACT_NAME=$ARTIFACT_NAME"
