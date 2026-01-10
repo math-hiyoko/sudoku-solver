@@ -44,4 +44,4 @@ endforeach()
 set_target_properties(${target_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                                                 ${PROJECT_SOURCE_DIR}/bin)
 
-aws_lambda_package_target(${target_name} NO_LIBC)
+aws_lambda_package_target(${target_name})
