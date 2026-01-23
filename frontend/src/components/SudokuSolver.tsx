@@ -1,20 +1,36 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import SudokuBoard from './SudokuBoard'
 import { SudokuBoard as SudokuBoardType, SudokuApiResponse, SudokuApiErrorResponse } from '../types/sudoku'
 import { validateSudokuConstraints, validateNumberRange, validateBoardSize } from '../utils/sudokuValidation'
 
+const ERROR_TYPE_LABELS: Record<string, string> = {
+  InvalidInput: '📝 入力エラー',
+  OutOfRangeError: '🔢 数値範囲エラー',
+  ConstraintViolation: '⚠️ 制約違反エラー',
+  InternalServerError: '🔧 サーバーエラー',
+  NetworkError: '🌐 ネットワークエラー',
+}
+
+const ERROR_TYPE_HINTS: Record<string, string> = {
+  OutOfRangeError: '💡 数独の値は1〜9の数字のみ有効です',
+  ConstraintViolation: '💡 数独のルールに違反しています（同じ行・列・ブロックに同じ数字は配置できません）',
+  InternalServerError: '💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください',
+}
+
 const SudokuSolver: React.FC = () => {
-  const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
-  const SUDOKU_MAX_NUM_SOLUTIONS = parseInt(process.env.GATSBY_SUDOKU_MAX_NUM_SOLUTIONS || '1000000')
-  const SUDOKU_MAX_SOLUTIONS = parseInt(process.env.GATSBY_SUDOKU_MAX_SOLUTIONS || '30')
+  const SUDOKU_LEVEL = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3'), [])
+  const SUDOKU_MAX_NUM_SOLUTIONS = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_MAX_NUM_SOLUTIONS || '1000000'), [])
+  const SUDOKU_MAX_SOLUTIONS = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_MAX_SOLUTIONS || '30'), [])
 
-  const boardSize = SUDOKU_LEVEL * SUDOKU_LEVEL
+  const boardSize = useMemo(() => SUDOKU_LEVEL * SUDOKU_LEVEL, [SUDOKU_LEVEL])
 
-  const createEmptyBoard = (): SudokuBoardType => {
+  const createEmptyBoard = useCallback((): SudokuBoardType => {
     return Array(boardSize).fill(null).map(() => Array(boardSize).fill(null))
-  }
+  }, [boardSize])
 
-  const [inputBoard, setInputBoard] = useState<SudokuBoardType>(createEmptyBoard())
+  const [inputBoard, setInputBoard] = useState<SudokuBoardType>(() =>
+    Array(SUDOKU_LEVEL * SUDOKU_LEVEL).fill(null).map(() => Array(SUDOKU_LEVEL * SUDOKU_LEVEL).fill(null))
+  )
   const [solutions, setSolutions] = useState<SudokuBoardType[]>([])
   const [numSolutions, setNumSolutions] = useState<number>(0)
   const [isExactCount, setIsExactCount] = useState<boolean>(false)
@@ -25,19 +41,48 @@ const SudokuSolver: React.FC = () => {
   const [solvedFromBoard, setSolvedFromBoard] = useState<SudokuBoardType | null>(null)
   const [hasSolved, setHasSolved] = useState<boolean>(false)
 
-  const handleCellChange = (row: number, col: number, value: number | null) => {
+  const performRealTimeValidation = useCallback((board: SudokuBoardType) => {
+    setError('')
+    setErrorDetails([])
+    setErrorType('')
+
+    const outOfRangeErrors = []
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        const value = board[row][col]
+        if (value !== null && !isNaN(value) && !validateNumberRange(value, boardSize)) {
+          outOfRangeErrors.push({ row, column: col, number: value })
+        }
+      }
+    }
+
+    if (outOfRangeErrors.length > 0) {
+      setErrorType('OutOfRangeError')
+      setError('入力された数値が有効な範囲外です。')
+      setErrorDetails(outOfRangeErrors)
+      return
+    }
+
+    const constraintValidation = validateSudokuConstraints(board)
+    if (!constraintValidation.isValid) {
+      setErrorType('ConstraintViolation')
+      setError('数独のルールに違反している箇所があります。')
+      setErrorDetails(constraintValidation.errors)
+      return
+    }
+  }, [boardSize])
+
+  const handleCellChange = useCallback((row: number, col: number, value: number | null) => {
     const newBoard = inputBoard.map((r, rowIndex) =>
       r.map((cell, colIndex) =>
         rowIndex === row && colIndex === col ? value : cell
       )
     )
     setInputBoard(newBoard)
-
-    // リアルタイム検証を実行
     performRealTimeValidation(newBoard)
-  }
+  }, [inputBoard, performRealTimeValidation])
 
-  const clearBoard = () => {
+  const clearBoard = useCallback(() => {
     setInputBoard(createEmptyBoard())
     setSolutions([])
     setNumSolutions(0)
@@ -47,9 +92,44 @@ const SudokuSolver: React.FC = () => {
     setErrorType('')
     setSolvedFromBoard(null)
     setHasSolved(false)
-  }
+  }, [createEmptyBoard])
 
-  const solveSudoku = async () => {
+  const performClientSideValidation = useCallback(() => {
+    if (!validateBoardSize(inputBoard)) {
+      setErrorType('InvalidInput')
+      setError('盤面のサイズが正しくありません。')
+      return { isValid: false }
+    }
+
+    const outOfRangeErrors = []
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        const value = inputBoard[row][col]
+        if (value !== null && !isNaN(value) && !validateNumberRange(value, boardSize)) {
+          outOfRangeErrors.push({ row, column: col, number: value })
+        }
+      }
+    }
+
+    if (outOfRangeErrors.length > 0) {
+      setErrorType('OutOfRangeError')
+      setError('入力された数値が有効な範囲外です。')
+      setErrorDetails(outOfRangeErrors)
+      return { isValid: false }
+    }
+
+    const constraintValidation = validateSudokuConstraints(inputBoard)
+    if (!constraintValidation.isValid) {
+      setErrorType('ConstraintViolation')
+      setError('数独のルールに違反している箇所があります。')
+      setErrorDetails(constraintValidation.errors)
+      return { isValid: false }
+    }
+
+    return { isValid: true }
+  }, [inputBoard, boardSize])
+
+  const solveSudoku = useCallback(async () => {
     setLoading(true)
     setError('')
     setErrorDetails([])
@@ -58,7 +138,6 @@ const SudokuSolver: React.FC = () => {
     setNumSolutions(0)
     setIsExactCount(false)
 
-    // クライアント側での事前検証
     const clientSideValidation = performClientSideValidation()
     if (!clientSideValidation.isValid) {
       setLoading(false)
@@ -91,7 +170,6 @@ const SudokuSolver: React.FC = () => {
       setIsExactCount(successData.is_exact_num_solutions)
       setHasSolved(true)
 
-      // 解の表示用に元の入力盤面を保存（NaN値はnullに変換）
       setSolvedFromBoard(inputBoard.map(row =>
         row.map(cell => (cell === null || isNaN(cell)) ? null : cell)
       ))
@@ -105,87 +183,27 @@ const SudokuSolver: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [inputBoard, performClientSideValidation, SUDOKU_MAX_SOLUTIONS])
 
-  const performClientSideValidation = () => {
-    // 盤面サイズの検証
-    if (!validateBoardSize(inputBoard)) {
-      setErrorType('InvalidInput')
-      setError('盤面のサイズが正しくありません。')
-      return { isValid: false }
-    }
-
-    // 数値範囲の検証（NaNや無効な値は除外）
-    const outOfRangeErrors = []
-    for (let row = 0; row < boardSize; row++) {
-      for (let col = 0; col < boardSize; col++) {
-        const value = inputBoard[row][col]
-        if (value !== null && !isNaN(value) && !validateNumberRange(value, boardSize)) {
-          outOfRangeErrors.push({ row, column: col, number: value })
-        }
-      }
-    }
-
-    if (outOfRangeErrors.length > 0) {
-      setErrorType('OutOfRangeError')
-      setError('入力された数値が有効な範囲外です。')
-      setErrorDetails(outOfRangeErrors)
-      return { isValid: false }
-    }
-
-    // 制約違反の検証
-    const constraintValidation = validateSudokuConstraints(inputBoard)
-    if (!constraintValidation.isValid) {
-      setErrorType('ConstraintViolation')
-      setError('数独のルールに違反している箇所があります。')
-      setErrorDetails(constraintValidation.errors)
-      return { isValid: false }
-    }
-
-    return { isValid: true }
-  }
-
-  const performRealTimeValidation = (board: SudokuBoardType) => {
-    // エラー状態をクリア
-    setError('')
-    setErrorDetails([])
-    setErrorType('')
-
-    // 数値範囲の検証（NaNや無効な値は除外）
-    const outOfRangeErrors = []
-    for (let row = 0; row < boardSize; row++) {
-      for (let col = 0; col < boardSize; col++) {
-        const value = board[row][col]
-        if (value !== null && !isNaN(value) && !validateNumberRange(value, boardSize)) {
-          outOfRangeErrors.push({ row, column: col, number: value })
-        }
-      }
-    }
-
-    if (outOfRangeErrors.length > 0) {
-      setErrorType('OutOfRangeError')
-      setError('入力された数値が有効な範囲外です。')
-      setErrorDetails(outOfRangeErrors)
-      return
-    }
-
-    // 制約違反の検証
-    const constraintValidation = validateSudokuConstraints(board)
-    if (!constraintValidation.isValid) {
-      setErrorType('ConstraintViolation')
-      setError('数独のルールに違反している箇所があります。')
-      setErrorDetails(constraintValidation.errors)
-      return
-    }
-  }
-
-  const formatSolutionCount = () => {
+  const formatSolutionCount = useCallback(() => {
     if (numSolutions === 0) return '0'
     if (numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS) {
       return `${SUDOKU_MAX_NUM_SOLUTIONS.toLocaleString()}+`
     }
     return numSolutions.toLocaleString()
-  }
+  }, [numSolutions, SUDOKU_MAX_NUM_SOLUTIONS])
+
+  const getButtonStyle = useCallback((isPrimary: boolean) => ({
+    padding: '10px 20px',
+    fontSize: '16px',
+    backgroundColor: isPrimary ? '#007bff' : '#6c757d',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: loading ? 'not-allowed' : 'pointer',
+    marginRight: isPrimary ? '10px' : '0',
+    opacity: loading ? 0.6 : 1,
+  }), [loading])
 
   return (
     <div style={{ padding: '20px', fontFamily: '-apple-system, Roboto, sans-serif' }}>
@@ -206,17 +224,7 @@ const SudokuSolver: React.FC = () => {
           <button
             onClick={solveSudoku}
             disabled={loading}
-            style={{
-              padding: '10px 20px',
-              fontSize: '16px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              marginRight: '10px',
-              opacity: loading ? 0.6 : 1,
-            }}
+            style={getButtonStyle(true)}
           >
             {loading ? '解いています...' : '解く'}
           </button>
@@ -224,16 +232,7 @@ const SudokuSolver: React.FC = () => {
           <button
             onClick={clearBoard}
             disabled={loading}
-            style={{
-              padding: '10px 20px',
-              fontSize: '16px',
-              backgroundColor: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.6 : 1,
-            }}
+            style={getButtonStyle(false)}
           >
             クリア
           </button>
@@ -250,12 +249,7 @@ const SudokuSolver: React.FC = () => {
           border: '1px solid #f5c6cb',
         }}>
           <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>
-            {errorType === 'InvalidInput' && '📝 入力エラー'}
-            {errorType === 'OutOfRangeError' && '🔢 数値範囲エラー'}
-            {errorType === 'ConstraintViolation' && '⚠️ 制約違反エラー'}
-            {errorType === 'InternalServerError' && '🔧 サーバーエラー'}
-            {errorType === 'NetworkError' && '🌐 ネットワークエラー'}
-            {!errorType && 'エラー'}
+            {ERROR_TYPE_LABELS[errorType] || 'エラー'}
           </div>
           <div style={{ marginBottom: errorDetails.length > 0 ? '10px' : '0' }}>
             {error}
@@ -270,15 +264,16 @@ const SudokuSolver: React.FC = () => {
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
-                {errorType === 'OutOfRangeError' && '💡 数独の値は1〜9の数字のみ有効です'}
-                {errorType === 'ConstraintViolation' && '💡 数独のルールに違反しています（同じ行・列・ブロックに同じ数字は配置できません）'}
-              </div>
+              {ERROR_TYPE_HINTS[errorType] && (
+                <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
+                  {ERROR_TYPE_HINTS[errorType]}
+                </div>
+              )}
             </div>
           )}
-          {errorType === 'InternalServerError' && (
+          {errorType === 'InternalServerError' && errorDetails.length === 0 && (
             <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
-              💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください
+              {ERROR_TYPE_HINTS.InternalServerError}
             </div>
           )}
         </div>
@@ -303,10 +298,10 @@ const SudokuSolver: React.FC = () => {
       )}
 
       <div className="solution-grid" style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        display: 'flex',
+        flexWrap: 'wrap',
         gap: '30px',
-        justifyItems: 'center',
+        justifyContent: 'center',
       }}>
         {solutions.map((solution, index) => (
           <SudokuBoard

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import { SudokuBoard as SudokuBoardType } from '../types/sudoku'
 
 interface SudokuBoardProps {
@@ -21,21 +21,31 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
   const boardSize = SUDOKU_LEVEL * SUDOKU_LEVEL
 
+  const CELL_SIZE = 40
+  const BASE_BORDER = '1px solid #ccc'
+  const THICK_BORDER = '3px solid #333'
+  const ERROR_BORDER = '2px solid #ff4444'
+
   const [focusedCell, setFocusedCell] = useState<{ row: number; col: number } | null>(null)
   const inputRefs = useRef<(HTMLInputElement | null)[][]>(
     Array(boardSize).fill(null).map(() => Array(boardSize).fill(null))
   )
 
-  const handleCellChange = (row: number, col: number, value: string) => {
+  const handleCellChange = useCallback((row: number, col: number, value: string) => {
     if (!onChange) return
 
-    const numValue = value === '' ? null : parseInt(value)
-    if (numValue && (numValue < 1 || numValue > boardSize)) return
+    if (value === '') {
+      onChange(row, col, null)
+      return
+    }
+
+    const numValue = parseInt(value)
+    if (isNaN(numValue) || numValue < 1 || numValue > boardSize) return
 
     onChange(row, col, numValue)
-  }
+  }, [onChange, boardSize])
 
-  const handleKeyDown = (e: React.KeyboardEvent, row: number, col: number) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent, row: number, col: number) => {
     if (!isInput) return
 
     let newRow = row
@@ -67,22 +77,35 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
     if (targetInput) {
       targetInput.focus()
     }
-  }
+  }, [isInput, boardSize])
 
-  const getCellStyle = (row: number, col: number) => {
+  const getCellStyle = useCallback((row: number, col: number) => {
     const isInvalid = invalidCells.some(cell => cell.row === row && cell.column === col)
     const isNewValue = originalBoard && !isInput &&
       (originalBoard[row][col] === null || originalBoard[row][col] === undefined || isNaN(originalBoard[row][col])) &&
       board[row][col] !== null
     const isFocused = focusedCell && focusedCell.row === row && focusedCell.col === col
 
-    const baseStyle = {
-      width: '40px',
-      height: '40px',
-      border: '1px solid #ccc',
+    const getBackgroundColor = () => {
+      if (isInvalid) return '#ffe6e6'
+      if (isFocused && isInput) return '#e6f3ff'
+      if (isInput) return '#fff'
+      return '#f9f9f9'
+    }
+
+    const getBorder = (isEdge: boolean, isBlockEdge: boolean) => {
+      if (isEdge) return THICK_BORDER
+      if (isInvalid) return ERROR_BORDER
+      if (isBlockEdge) return THICK_BORDER
+      return BASE_BORDER
+    }
+
+    return {
+      width: `${CELL_SIZE}px`,
+      height: `${CELL_SIZE}px`,
+      border: BASE_BORDER,
       fontSize: '16px',
-      backgroundColor: isInvalid ? '#ffe6e6' : (isFocused && isInput ? '#e6f3ff' : (isInput ? '#fff' : '#f9f9f9')),
-      // 入力フィールドの場合はtextAlign、表示用divの場合はflexレイアウトを使用
+      backgroundColor: getBackgroundColor(),
       ...(isInput ? {
         textAlign: 'center' as const,
         boxSizing: 'border-box' as const,
@@ -91,19 +114,13 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
       }),
-    }
-
-    const borderStyle = {
-      ...baseStyle,
-      borderRight: (col + 1) % SUDOKU_LEVEL === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
-      borderBottom: (row + 1) % SUDOKU_LEVEL === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
-      borderTop: row === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
-      borderLeft: col === 0 ? '3px solid #333' : (isInvalid ? '2px solid #ff4444' : baseStyle.border),
+      borderRight: getBorder(false, (col + 1) % SUDOKU_LEVEL === 0),
+      borderBottom: getBorder(false, (row + 1) % SUDOKU_LEVEL === 0),
+      borderTop: getBorder(row === 0, false),
+      borderLeft: getBorder(col === 0, false),
       color: isInvalid ? '#cc0000' : (isNewValue ? '#0066cc' : '#333'),
     }
-
-    return borderStyle
-  }
+  }, [invalidCells, originalBoard, isInput, board, focusedCell, SUDOKU_LEVEL])
 
   return (
     <div style={{ margin: '20px 0' }}>
