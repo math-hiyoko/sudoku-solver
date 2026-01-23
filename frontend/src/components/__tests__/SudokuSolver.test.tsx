@@ -415,19 +415,20 @@ describe('SudokuSolver', () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it('shows real-time validation errors for out-of-range values', async () => {
+  it('ignores zero input (treats it like non-numeric input)', async () => {
     render(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
 
-    // Input out-of-range value
+    // Input zero value
     fireEvent.change(inputs[0], { target: { value: '0' } })
 
-    // Error should appear immediately
-    await waitFor(() => {
-      expect(screen.getByText('🔢 数値範囲エラー')).toBeInTheDocument()
-      expect(screen.getByText('入力された数値が有効な範囲外です。')).toBeInTheDocument()
-    })
+    // Cell should remain empty (zero is ignored)
+    expect(inputs[0]).toHaveValue('')
+
+    // No error should appear
+    expect(screen.queryByText('🔢 数値範囲エラー')).not.toBeInTheDocument()
+    expect(screen.queryByText('入力された数値が有効な範囲外です。')).not.toBeInTheDocument()
 
     // API should not have been called
     expect(mockFetch).not.toHaveBeenCalled()
