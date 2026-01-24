@@ -194,19 +194,30 @@ const SudokuSolver: React.FC = () => {
   }, [numSolutions, SUDOKU_MAX_NUM_SOLUTIONS])
 
   const getButtonStyle = useCallback((isPrimary: boolean) => ({
-    padding: '10px 20px',
-    fontSize: '16px',
+    padding: '14px 28px',
+    minHeight: '48px',
+    minWidth: '120px',
+    fontSize: '18px',
     backgroundColor: isPrimary ? '#007bff' : '#6c757d',
     color: 'white',
     border: 'none',
-    borderRadius: '5px',
+    borderRadius: '8px',
     cursor: loading ? 'not-allowed' : 'pointer',
-    marginRight: isPrimary ? '10px' : '0',
     opacity: loading ? 0.6 : 1,
+    WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
+    touchAction: 'manipulation',
+    userSelect: 'none' as const,
+    fontWeight: '600',
   }), [loading])
 
   return (
-    <div style={{ padding: '20px', fontFamily: '-apple-system, Roboto, sans-serif' }}>
+    <div style={{
+      padding: '20px',
+      fontFamily: '-apple-system, Roboto, sans-serif',
+      maxWidth: '100%',
+      overflowX: 'auto',
+      WebkitTextSizeAdjust: '100%',
+    }}>
       <h1 style={{ textAlign: 'center', color: '#333', marginBottom: '30px' }}>
         数独ソルバー
       </h1>
@@ -220,7 +231,13 @@ const SudokuSolver: React.FC = () => {
           invalidCells={errorDetails}
         />
 
-        <div style={{ marginTop: '20px' }}>
+        <div style={{
+          marginTop: '20px',
+          display: 'flex',
+          gap: '10px',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}>
           <button
             onClick={solveSudoku}
             disabled={loading}
