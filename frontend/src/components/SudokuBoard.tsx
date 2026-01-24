@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 import { SudokuBoard as SudokuBoardType } from '../types/sudoku'
 
 interface SudokuBoardProps {
@@ -21,15 +21,38 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
   const boardSize = SUDOKU_LEVEL * SUDOKU_LEVEL
 
-  const CELL_SIZE = 40
   const BASE_BORDER = '1px solid #ccc'
   const THICK_BORDER = '3px solid #333'
   const ERROR_BORDER = '2px solid #ff4444'
 
+  const [cellSize, setCellSize] = useState(44)
   const [focusedCell, setFocusedCell] = useState<{ row: number; col: number } | null>(null)
   const inputRefs = useRef<(HTMLInputElement | null)[][]>(
     Array(boardSize).fill(null).map(() => Array(boardSize).fill(null))
   )
+
+  useEffect(() => {
+    const updateCellSize = () => {
+      if (typeof window === 'undefined') return
+
+      const screenWidth = window.innerWidth
+      const padding = 40
+      const maxBoardWidth = screenWidth - padding
+      const calculatedCellSize = Math.floor(maxBoardWidth / boardSize)
+
+      const minCellSize = 32
+      const maxCellSize = 44
+      const newCellSize = Math.max(minCellSize, Math.min(maxCellSize, calculatedCellSize))
+
+      setCellSize(newCellSize)
+    }
+
+    updateCellSize()
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateCellSize)
+      return () => window.removeEventListener('resize', updateCellSize)
+    }
+  }, [boardSize])
 
   const handleCellChange = useCallback((row: number, col: number, value: string) => {
     if (!onChange) return
@@ -101,18 +124,23 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
     }
 
     return {
-      width: `${CELL_SIZE}px`,
-      height: `${CELL_SIZE}px`,
+      width: `${cellSize}px`,
+      height: `${cellSize}px`,
       border: BASE_BORDER,
-      fontSize: '16px',
+      fontSize: cellSize >= 40 ? '18px' : '16px',
       backgroundColor: getBackgroundColor(),
+      WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
+      touchAction: 'manipulation',
       ...(isInput ? {
         textAlign: 'center' as const,
         boxSizing: 'border-box' as const,
+        WebkitAppearance: 'none' as const,
+        MozAppearance: 'textfield' as const,
       } : {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        userSelect: 'none' as const,
       }),
       borderRight: getBorder(false, (col + 1) % SUDOKU_LEVEL === 0),
       borderBottom: getBorder(false, (row + 1) % SUDOKU_LEVEL === 0),
@@ -120,7 +148,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
       borderLeft: getBorder(col === 0, false),
       color: isInvalid ? '#cc0000' : (isNewValue ? '#0066cc' : '#333'),
     }
-  }, [invalidCells, originalBoard, isInput, board, focusedCell, SUDOKU_LEVEL])
+  }, [invalidCells, originalBoard, isInput, board, focusedCell, SUDOKU_LEVEL, cellSize])
 
   return (
     <div style={{ margin: '20px 0' }}>
@@ -134,6 +162,8 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
                   <input
                     ref={(el) => (inputRefs.current[rowIndex][colIndex] = el)}
                     type="text"
+                    inputMode="numeric"
+                    pattern="[1-9]"
                     value={cell || ''}
                     onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
