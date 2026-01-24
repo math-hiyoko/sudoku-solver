@@ -85,6 +85,6 @@ describe('Head component', () => {
   it('renders correct title', () => {
     const { container } = render(<Head {...mockHeadProps} />)
     const title = container.querySelector('title')
-    expect(title?.textContent).toBe('Not found')
+    expect(title?.textContent).toBe('ページが見つかりません | 数独ソルバー')
   })
 })

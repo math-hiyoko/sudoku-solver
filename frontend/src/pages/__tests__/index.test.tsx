@@ -74,6 +74,6 @@ describe('Head component', () => {
   it('renders correct title', () => {
     const { container } = render(<Head {...mockHeadProps} />)
     const title = container.querySelector('title')
-    expect(title?.textContent).toBe('数独ソルバー')
+    expect(title?.textContent).toBe('数独ソルバー | 無料オンライン数独解答ツール')
   })
 })

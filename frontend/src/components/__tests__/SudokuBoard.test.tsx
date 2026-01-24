@@ -144,7 +144,7 @@ describe('SudokuBoard', () => {
     // First cell (5) was in original, should be black
     expect(firstCell.style.color).toBe('rgb(51, 51, 51)')
     // Second cell (3) was not in original, should be blue
-    expect(secondCell.style.color).toBe('rgb(0, 102, 204)')
+    expect(secondCell.style.color).toBe('rgb(0, 123, 255)')
   })
 
   it('applies invalid cell styling correctly', () => {
@@ -197,7 +197,7 @@ describe('SudokuBoard', () => {
     // First cell (5) was in original, should be black
     expect(firstCell.style.color).toBe('rgb(51, 51, 51)')
     // Second cell (3) had NaN in original, should be blue (treated as new value)
-    expect(secondCell.style.color).toBe('rgb(0, 102, 204)')
+    expect(secondCell.style.color).toBe('rgb(0, 123, 255)')
   })
 
   describe('Keyboard Navigation', () => {
@@ -405,6 +405,38 @@ describe('SudokuBoard', () => {
 
       const focusedCell = inputs[0] as HTMLInputElement
       expect(focusedCell.style.backgroundColor).toBe('rgb(230, 243, 255)')
+    })
+
+    it('does not navigate when non-arrow keys are pressed', () => {
+      const mockOnChange = jest.fn()
+      render(
+        <SudokuBoard
+          board={emptyBoard}
+          isInput={true}
+          onChange={mockOnChange}
+        />
+      )
+
+      const inputs = screen.getAllByRole('textbox')
+      act(() => {
+        inputs[0].focus()
+      })
+
+      const activeElementBefore = document.activeElement
+
+      act(() => {
+        fireEvent.keyDown(inputs[0], { key: 'Enter' })
+      })
+
+      // Focus should stay on the same element
+      expect(document.activeElement).toBe(activeElementBefore)
+
+      act(() => {
+        fireEvent.keyDown(inputs[0], { key: 'a' })
+      })
+
+      // Focus should still stay on the same element
+      expect(document.activeElement).toBe(activeElementBefore)
     })
   })
 })

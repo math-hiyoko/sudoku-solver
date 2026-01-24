@@ -128,6 +128,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
       height: `${cellSize}px`,
       border: BASE_BORDER,
       fontSize: cellSize >= 40 ? '18px' : '16px',
+      fontWeight: '700',
       backgroundColor: getBackgroundColor(),
       WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
       touchAction: 'manipulation',
@@ -146,7 +147,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
       borderBottom: getBorder(false, (row + 1) % SUDOKU_LEVEL === 0),
       borderTop: getBorder(row === 0, false),
       borderLeft: getBorder(col === 0, false),
-      color: isInvalid ? '#cc0000' : (isNewValue ? '#0066cc' : '#333'),
+      color: isInvalid ? '#cc0000' : (isNewValue ? '#007bff' : '#333'),
     }
   }, [invalidCells, originalBoard, isInput, board, focusedCell, SUDOKU_LEVEL, cellSize])
 
