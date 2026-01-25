@@ -297,7 +297,33 @@ describe('SudokuSolver', () => {
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it('formats large solution counts correctly', async () => {
+  it('formats large solution counts correctly with exact count indicator', async () => {
+    const largeCountResponse = {
+      ...mockApiResponse,
+      num_solutions: 1000000,
+      is_exact_num_solutions: true
+    }
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(largeCountResponse)
+    })
+
+    render(<SudokuSolver />)
+
+    const solveButton = screen.getByText('解く')
+    await act(async () => {
+      fireEvent.click(solveButton)
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText(/解の個数:/)).toBeInTheDocument()
+      expect(screen.getByText('1,000,000+')).toBeInTheDocument()
+      expect(screen.getByText('ちょうど')).toBeInTheDocument()
+    })
+  })
+
+  it('does not show exact count indicator when not exact', async () => {
     const largeCountResponse = {
       ...mockApiResponse,
       num_solutions: 1000000,
@@ -319,6 +345,7 @@ describe('SudokuSolver', () => {
     await waitFor(() => {
       expect(screen.getByText(/解の個数:/)).toBeInTheDocument()
       expect(screen.getByText('1,000,000+')).toBeInTheDocument()
+      expect(screen.queryByText('ちょうど')).not.toBeInTheDocument()
     })
   })
 

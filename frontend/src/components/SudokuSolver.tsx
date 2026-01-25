@@ -313,7 +313,12 @@ const SudokuSolver: React.FC = () => {
             {numSolutions === 0 ? (
               '解が見つかりませんでした'
             ) : (
-              <>解の個数: <span style={{ color: '#007bff' }}>{formatSolutionCount()}</span></>
+              <>
+                解の個数: {isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && (
+                  <span style={{ color: '#28a745' }}>ちょうど </span>
+                )}
+                <span style={{ color: '#007bff' }}>{formatSolutionCount()}</span>
+              </>
             )}
           </h2>
           {numSolutions === 0 ? (
