@@ -26,8 +26,8 @@ const config: GatsbyConfig = {
     {
       resolve: 'gatsby-plugin-robots-txt',
       options: {
-        host: 'https://www.yourdomain.tld', // TODO: 実際のドメインに変更してください
-        sitemap: 'https://www.yourdomain.tld/sitemap-index.xml', // TODO: 実際のドメインに変更してください
+        host: 'https://sudoku-solver.piyochan.co',
+        sitemap: 'https://sudoku-solver.piyochan.co/sitemap-index.xml',
         policy: [{ userAgent: '*', allow: '/' }],
       },
     },
