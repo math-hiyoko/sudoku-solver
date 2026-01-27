@@ -12,10 +12,26 @@ process.env.GATSBY_SUDOKU_MAX_SOLUTIONS = process.env.SUDOKU_MAX_SOLUTIONS || '3
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `数独ソルバー`,
-    siteUrl: `https://www.yourdomain.tld`,
+    title: `数独ソルバー | 無料オンライン数独解答ツール`,
+    description: `数独を自動で解く無料オンラインツール。問題を入力するだけで、瞬時に解答を表示します。`,
+    siteUrl: `https://sudoku-solver.piyochan.co`,
   },
-  plugins: [],
+  plugins: [
+    {
+      resolve: 'gatsby-plugin-sitemap',
+      options: {
+        output: '/',
+      },
+    },
+    {
+      resolve: 'gatsby-plugin-robots-txt',
+      options: {
+        host: 'https://www.yourdomain.tld', // TODO: 実際のドメインに変更してください
+        sitemap: 'https://www.yourdomain.tld/sitemap-index.xml', // TODO: 実際のドメインに変更してください
+        policy: [{ userAgent: '*', allow: '/' }],
+      },
+    },
+  ],
   flags: {
     // Disable potentially problematic features for Node v23 compatibility
     DEV_SSR: false,

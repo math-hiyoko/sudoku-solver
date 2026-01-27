@@ -40,6 +40,7 @@ const SudokuSolver: React.FC = () => {
   const [errorType, setErrorType] = useState<string>('')
   const [solvedFromBoard, setSolvedFromBoard] = useState<SudokuBoardType | null>(null)
   const [hasSolved, setHasSolved] = useState<boolean>(false)
+  const [currentSolutionIndex, setCurrentSolutionIndex] = useState<number>(0)
 
   const performRealTimeValidation = useCallback((board: SudokuBoardType) => {
     setError('')
@@ -92,6 +93,7 @@ const SudokuSolver: React.FC = () => {
     setErrorType('')
     setSolvedFromBoard(null)
     setHasSolved(false)
+    setCurrentSolutionIndex(0)
   }, [createEmptyBoard])
 
   const performClientSideValidation = useCallback(() => {
@@ -137,6 +139,7 @@ const SudokuSolver: React.FC = () => {
     setSolutions([])
     setNumSolutions(0)
     setIsExactCount(false)
+    setCurrentSolutionIndex(0)
 
     const clientSideValidation = performClientSideValidation()
     if (!clientSideValidation.isValid) {
@@ -209,6 +212,14 @@ const SudokuSolver: React.FC = () => {
     userSelect: 'none' as const,
     fontWeight: '600',
   }), [loading])
+
+  const handlePreviousSolution = useCallback(() => {
+    setCurrentSolutionIndex(prev => Math.max(0, prev - 1))
+  }, [])
+
+  const handleNextSolution = useCallback(() => {
+    setCurrentSolutionIndex(prev => Math.min(solutions.length - 1, prev + 1))
+  }, [solutions.length])
 
   return (
     <div style={{
@@ -299,8 +310,16 @@ const SudokuSolver: React.FC = () => {
       {(numSolutions > 0 || (numSolutions === 0 && hasSolved && !loading && !error)) && (
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h2 style={{ color: '#333' }}>
-            解の個数: {formatSolutionCount()}
-            {!isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && ' (概算)'}
+            {numSolutions === 0 ? (
+              '解が見つかりませんでした'
+            ) : (
+              <>
+                解の個数: {isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && (
+                  <span style={{ color: '#28a745' }}>ちょうど </span>
+                )}
+                <span style={{ color: '#007bff' }}>{formatSolutionCount()}</span>
+              </>
+            )}
           </h2>
           {numSolutions === 0 ? (
             <p style={{ color: '#666', fontStyle: 'italic' }}>
@@ -308,27 +327,71 @@ const SudokuSolver: React.FC = () => {
             </p>
           ) : solutions.length > 0 && (
             <p style={{ color: '#666' }}>
-              以下に{Math.min(solutions.length, SUDOKU_MAX_SOLUTIONS)}個の解を表示しています
+              {Math.min(solutions.length, SUDOKU_MAX_SOLUTIONS)}個の解を表示中
             </p>
           )}
         </div>
       )}
 
-      <div className="solution-grid" style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '30px',
-        justifyContent: 'center',
-      }}>
-        {solutions.map((solution, index) => (
+      {solutions.length > 0 && (
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '20px',
+            marginBottom: '20px',
+          }}>
+            <button
+              onClick={handlePreviousSolution}
+              disabled={currentSolutionIndex === 0}
+              style={{
+                padding: '12px 24px',
+                fontSize: '20px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: currentSolutionIndex === 0 ? 'not-allowed' : 'pointer',
+                opacity: currentSolutionIndex === 0 ? 0.4 : 1,
+                fontWeight: '600',
+                minWidth: '60px',
+              }}
+            >
+              ←
+            </button>
+
+            <span style={{ fontSize: '18px', fontWeight: '600', minWidth: '150px' }}>
+              解 {currentSolutionIndex + 1} / {solutions.length}
+            </span>
+
+            <button
+              onClick={handleNextSolution}
+              disabled={currentSolutionIndex === solutions.length - 1}
+              style={{
+                padding: '12px 24px',
+                fontSize: '20px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: currentSolutionIndex === solutions.length - 1 ? 'not-allowed' : 'pointer',
+                opacity: currentSolutionIndex === solutions.length - 1 ? 0.4 : 1,
+                fontWeight: '600',
+                minWidth: '60px',
+              }}
+            >
+              →
+            </button>
+          </div>
+
           <SudokuBoard
-            key={index}
-            board={solution}
-            title={`解 ${index + 1}`}
+            board={solutions[currentSolutionIndex]}
+            title={`解 ${currentSolutionIndex + 1}`}
             originalBoard={solvedFromBoard || undefined}
           />
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
