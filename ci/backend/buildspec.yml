@@ -59,7 +59,7 @@ phases:
       - echo "Running Benchmarks..."
       - ./bin/bench
       - echo "Building package..."
-      - cmake --build build --target aws-lambda-package-$FUCTION_NAME
+      - cmake --build build --target aws-lambda-package-SudokuSolverBackend
 
   post_build:
     commands:
@@ -70,9 +70,9 @@ phases:
           git push origin ${VERSION}-${GIT_REVISION}
           echo "Tagged the version: ${VERSION}-${GIT_REVISION}"
         fi
-        if [ -f $CODEBUILD_SRC_DIR/backend/build/src/handler/$FUCTION_NAME.zip ]; then
+        if [ -f $CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuSolverBackend.zip ]; then
           echo "Uploading to aws lambda"
-          aws lambda update-function-code --function-name $FUCTION_NAME --zip-file fileb://$CODEBUILD_SRC_DIR/backend/build/src/handler/$FUCTION_NAME.zip
+          aws lambda update-function-code --function-name $FUCTION_NAME --zip-file fileb://$CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuSolverBackend.zip
         fi
 
 reports:
