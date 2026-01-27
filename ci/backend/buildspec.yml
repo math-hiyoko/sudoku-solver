@@ -83,6 +83,6 @@ reports:
     file-format: JUNITXML
 
 artifacts:
-  files: backend/build/src/handler/$FUCTION_NAME.zip
+  files: backend/build/src/handler/SudokuSolverBackend.zip
   name: $ARTIFACT_NAME
   discard-paths: yes
