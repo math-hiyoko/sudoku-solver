@@ -148,7 +148,7 @@ const SudokuSolver: React.FC = () => {
     }
 
     try {
-      const response = await fetch('https://4cubkquqti.execute-api.ap-northeast-1.amazonaws.com/solve-sudoku', {
+      const response = await fetch('https://etnr7wdzag.execute-api.ap-northeast-1.amazonaws.com/prod/solve-sudoku', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

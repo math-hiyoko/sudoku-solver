@@ -24,6 +24,7 @@ aws::lambda_runtime::invocation_response success_response(const boost::json::obj
       {"headers",
        {
            {"content-type", "application/json"},
+           {"Access-Control-Allow-Origin", "*"},
        }},
       {"body", boost::json::serialize(body)},
       {"isBase64Encoded", false},
@@ -50,6 +51,7 @@ aws::lambda_runtime::invocation_response error_response(const int &status_code,
       {"headers",
        {
            {"content-type", "application/json"},
+           {"Access-Control-Allow-Origin", "*"},
        }},
       {"body", boost::json::serialize(error_json)},
       {"isBase64Encoded", false},
