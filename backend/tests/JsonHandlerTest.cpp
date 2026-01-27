@@ -60,6 +60,7 @@ TEST(JsonHandlerTest, testSuccessResponse) {
       {"headers",
        {
            {"content-type", "application/json"},
+           {"Access-Control-Allow-Origin", "*"},
        }},
       {"body", boost::json::serialize(expected_body)},
       {"isBase64Encoded", false},
@@ -106,6 +107,7 @@ TEST(JsonHandlerTest, testIncorrectInputResponse) {
       {"headers",
        {
            {"content-type", "application/json"},
+           {"Access-Control-Allow-Origin", "*"},
        }},
       {"body", boost::json::serialize(expected_body)},
       {"isBase64Encoded", false},
@@ -165,6 +167,7 @@ TEST(JsonHandlerTest, testOutOfRangeResponse) {
       {"headers",
        {
            {"content-type", "application/json"},
+           {"Access-Control-Allow-Origin", "*"},
        }},
       {"body", boost::json::serialize(expected_body)},
       {"isBase64Encoded", false},
@@ -249,6 +252,7 @@ TEST(JsonHandlerTest, testConstraintViolationResponse) {
       {"headers",
        {
            {"content-type", "application/json"},
+           {"Access-Control-Allow-Origin", "*"},
        }},
       {"body", boost::json::serialize(expected_body)},
       {"isBase64Encoded", false},

@@ -122,7 +122,7 @@ describe('SudokuSolver', () => {
     })
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://4cubkquqti.execute-api.ap-northeast-1.amazonaws.com/solve-sudoku',
+      'https://etnr7wdzag.execute-api.ap-northeast-1.amazonaws.com/prod/solve-sudoku',
       expect.objectContaining({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
