@@ -15,7 +15,7 @@ phases:
       - npm config set cache "$NPM_CACHE_DIR"
       - npm ci --no-audit --no-fund
 
-  test:
+  build:
     commands:
       - cd $CODEBUILD_SRC_DIR/frontend
       - echo "Running Tests..."
