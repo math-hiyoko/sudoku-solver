@@ -9,7 +9,8 @@ beforeAll(() => {
     ...originalEnv,
     GATSBY_SUDOKU_LEVEL: '3',
     GATSBY_SUDOKU_MAX_NUM_SOLUTIONS: '1000000',
-    GATSBY_SUDOKU_MAX_SOLUTIONS: '30'
+    GATSBY_SUDOKU_MAX_SOLUTIONS: '30',
+    GATSBY_API_URL: 'https://etnr7wdzag.execute-api.ap-northeast-1.amazonaws.com/prod/solve-sudoku'
   }
 })
 
