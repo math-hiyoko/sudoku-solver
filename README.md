@@ -1,6 +1,6 @@
 # sudoku-solver
 数独ソルバーウェブアプリ開発  
-https://sudoku-solver.piyochan.co  
+https://sudoku-solver.piyochan.jp  
 
 
 ## backendディレクトリ
