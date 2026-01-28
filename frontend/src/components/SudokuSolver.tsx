@@ -221,6 +221,14 @@ const SudokuSolver: React.FC = () => {
     setCurrentSolutionIndex(prev => Math.min(solutions.length - 1, prev + 1))
   }, [solutions.length])
 
+  const handleBackToInput = useCallback(() => {
+    setSolutions([])
+    setNumSolutions(0)
+    setIsExactCount(false)
+    setHasSolved(false)
+    setCurrentSolutionIndex(0)
+  }, [])
+
   return (
     <div style={{
       padding: '20px',
@@ -233,114 +241,65 @@ const SudokuSolver: React.FC = () => {
         数独ソルバー
       </h1>
 
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <SudokuBoard
-          board={inputBoard}
-          title="問題を入力してください"
-          isInput={true}
-          onChange={handleCellChange}
-          invalidCells={errorDetails}
-        />
+      {solutions.length === 0 ? (
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <SudokuBoard
+            board={inputBoard}
+            title="問題を入力してください"
+            isInput={true}
+            onChange={handleCellChange}
+            invalidCells={errorDetails}
+          />
 
-        <div style={{
-          marginTop: '20px',
-          display: 'flex',
-          gap: '10px',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-        }}>
-          <button
-            onClick={solveSudoku}
-            disabled={loading}
-            style={getButtonStyle(true)}
-          >
-            {loading ? '解いています...' : '解く'}
-          </button>
+          <div style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: '10px',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+          }}>
+            <button
+              onClick={solveSudoku}
+              disabled={loading}
+              style={getButtonStyle(true)}
+            >
+              {loading ? '解いています...' : '解く'}
+            </button>
 
-          <button
-            onClick={clearBoard}
-            disabled={loading}
-            style={getButtonStyle(false)}
-          >
-            クリア
-          </button>
+            <button
+              onClick={clearBoard}
+              disabled={loading}
+              style={getButtonStyle(false)}
+            >
+              クリア
+            </button>
+          </div>
         </div>
-      </div>
-
-      {error && (
-        <div className="error-message" style={{
-          backgroundColor: '#f8d7da',
-          color: '#721c24',
-          padding: '15px',
-          borderRadius: '5px',
-          marginBottom: '20px',
-          border: '1px solid #f5c6cb',
-        }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>
-            {ERROR_TYPE_LABELS[errorType] || 'エラー'}
-          </div>
-          <div style={{ marginBottom: errorDetails.length > 0 ? '10px' : '0' }}>
-            {error}
-          </div>
-          {errorDetails.length > 0 && (
-            <div>
-              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>問題のある位置:</div>
-              <div style={{ fontSize: '14px' }}>
-                {errorDetails.map((detail, index) => (
-                  <div key={index} style={{ marginBottom: '2px' }}>
-                    行 {detail.row + 1}, 列 {detail.column + 1}: 値 {detail.number}
-                  </div>
-                ))}
-              </div>
-              {ERROR_TYPE_HINTS[errorType] && (
-                <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
-                  {ERROR_TYPE_HINTS[errorType]}
-                </div>
+      ) : (
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <h2 style={{ color: '#333', margin: '0 0 5px 0' }}>
+              解の個数: {isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && (
+                <span style={{ color: '#28a745' }}>ちょうど </span>
               )}
-            </div>
-          )}
-          {errorType === 'InternalServerError' && errorDetails.length === 0 && (
-            <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
-              {ERROR_TYPE_HINTS.InternalServerError}
-            </div>
-          )}
-        </div>
-      )}
-
-      {(numSolutions > 0 || (numSolutions === 0 && hasSolved && !loading && !error)) && (
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <h2 style={{ color: '#333' }}>
-            {numSolutions === 0 ? (
-              '解が見つかりませんでした'
-            ) : (
-              <>
-                解の個数: {isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && (
-                  <span style={{ color: '#28a745' }}>ちょうど </span>
-                )}
-                <span style={{ color: '#007bff' }}>{formatSolutionCount()}</span>
-              </>
-            )}
-          </h2>
-          {numSolutions === 0 ? (
-            <p style={{ color: '#666', fontStyle: 'italic' }}>
-              この問題には解がありません。入力を確認してください。
-            </p>
-          ) : solutions.length > 0 && (
-            <p style={{ color: '#666' }}>
+              <span style={{ color: '#007bff' }}>{formatSolutionCount()}</span>
+            </h2>
+            <p style={{ color: '#666', margin: 0 }}>
               {Math.min(solutions.length, SUDOKU_MAX_SOLUTIONS)}個の解を表示中
             </p>
-          )}
-        </div>
-      )}
+          </div>
 
-      {solutions.length > 0 && (
-        <div style={{ textAlign: 'center' }}>
+          <SudokuBoard
+            board={solutions[currentSolutionIndex]}
+            originalBoard={solvedFromBoard || undefined}
+          />
+
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '20px',
-            marginBottom: '20px',
+            marginTop: '20px',
           }}>
             <button
               onClick={handlePreviousSolution}
@@ -385,13 +344,78 @@ const SudokuSolver: React.FC = () => {
             </button>
           </div>
 
-          <SudokuBoard
-            board={solutions[currentSolutionIndex]}
-            title={`解 ${currentSolutionIndex + 1}`}
-            originalBoard={solvedFromBoard || undefined}
-          />
+          <button
+            onClick={handleBackToInput}
+            style={{
+              marginTop: '20px',
+              padding: '14px 28px',
+              minHeight: '48px',
+              minWidth: '120px',
+              fontSize: '18px',
+              backgroundColor: '#6c757d',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600',
+            }}
+          >
+            戻る
+          </button>
         </div>
       )}
+
+      {error && (
+        <div className="error-message" style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '15px',
+          borderRadius: '5px',
+          marginBottom: '20px',
+          border: '1px solid #f5c6cb',
+        }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>
+            {ERROR_TYPE_LABELS[errorType] || 'エラー'}
+          </div>
+          <div style={{ marginBottom: errorDetails.length > 0 ? '10px' : '0' }}>
+            {error}
+          </div>
+          {errorDetails.length > 0 && (
+            <div>
+              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>問題のある位置:</div>
+              <div style={{ fontSize: '14px' }}>
+                {errorDetails.map((detail, index) => (
+                  <div key={index} style={{ marginBottom: '2px' }}>
+                    行 {detail.row + 1}, 列 {detail.column + 1}: 値 {detail.number}
+                  </div>
+                ))}
+              </div>
+              {ERROR_TYPE_HINTS[errorType] && (
+                <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
+                  {ERROR_TYPE_HINTS[errorType]}
+                </div>
+              )}
+            </div>
+          )}
+          {errorType === 'InternalServerError' && errorDetails.length === 0 && (
+            <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
+              {ERROR_TYPE_HINTS.InternalServerError}
+            </div>
+          )}
+        </div>
+      )}
+
+      {numSolutions === 0 && hasSolved && !loading && !error && (
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <h2 style={{ color: '#333' }}>
+            解が見つかりませんでした
+          </h2>
+          <p style={{ color: '#666', fontStyle: 'italic' }}>
+            この問題には解がありません。入力を確認してください。
+          </p>
+        </div>
+      )}
+
     </div>
   )
 }

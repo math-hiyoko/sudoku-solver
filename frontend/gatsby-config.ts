@@ -14,7 +14,7 @@ const config: GatsbyConfig = {
   siteMetadata: {
     title: `数独ソルバー | 無料オンライン数独解答ツール`,
     description: `数独を自動で解く無料オンラインツール。問題を入力するだけで、瞬時に解答を表示します。`,
-    siteUrl: `https://sudoku-solver.piyochan.co`,
+    siteUrl: `https://sudoku-solver.piyochan.jp`,
   },
   plugins: [
     {
@@ -26,7 +26,7 @@ const config: GatsbyConfig = {
     {
       resolve: 'gatsby-plugin-robots-txt',
       options: {
-        host: 'https://sudoku-solver.piyochan.co',
+        host: 'https://sudoku-solver.piyochan.jp',
         sitemap: 'https://sudoku-solver.piyochan.co/sitemap-index.xml',
         policy: [{ userAgent: '*', allow: '/' }],
       },
