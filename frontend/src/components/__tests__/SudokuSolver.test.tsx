@@ -119,7 +119,7 @@ describe('SudokuSolver', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/解の個数:/)).toBeInTheDocument()
-      expect(screen.getByText('解 1')).toBeInTheDocument()
+      expect(screen.getByText(/解 1 \/ 1/)).toBeInTheDocument()
     })
 
     expect(mockFetch).toHaveBeenCalledWith(
