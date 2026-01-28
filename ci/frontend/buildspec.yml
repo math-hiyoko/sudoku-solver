@@ -15,12 +15,31 @@ phases:
       - npm config set cache "$NPM_CACHE_DIR"
       - npm ci --no-audit --no-fund
 
+  pre_build:
+    commands:
+      - echo "Setting up the environment..."
+      - cd $CODEBUILD_SRC_DIR
+      - export PACKAGE_NAME="SudokuSolverFrontend"
+      - export VERSION=$(grep -oP '\[\K[0-9]+\.[0-9]+\.[0-9]+' CHANGELOG.md | head -1)
+      - |
+        if [ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" ]; then
+          export GIT_REVISION=$(git rev-list HEAD --count)
+          export ARTIFACT_NAME="Release/${VERSION}/${GIT_REVISION}"
+        else
+          export DATE=$(date +%Y%m%d%H%M%S)
+          export ARTIFACT_NAME="Debug/${VERSION}/${DATE}"
+        fi
+      - echo "VERSION=$VERSION"
+      - echo "ARTIFACT_NAME=$ARTIFACT_NAME"
+
   build:
     commands:
       - cd $CODEBUILD_SRC_DIR/frontend
       - echo "Running Tests..."
       - npm run test:ci
       - npm run lint:check
+      - echo "Building the application..."
+      - npm run build
 
 reports:
   unittest-reports:
@@ -33,6 +52,12 @@ reports:
     base-directory: frontend/coverage
     discard-paths: yes
     file-format: CLOVERXML
+
+artifacts:
+  files: "**/*"
+  base-directory: frontend/public
+  name: $ARTIFACT_NAME
+  discard-paths: no
 
 cache:
   paths:
