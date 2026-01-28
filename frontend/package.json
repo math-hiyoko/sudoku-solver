@@ -11,6 +11,7 @@
     "develop": "gatsby develop",
     "start": "gatsby develop",
     "build": "gatsby build",
+    "build:staging": "GATSBY_API_URL=https://l6p1pmoa8k.execute-api.ap-northeast-1.amazonaws.com/stage/solve-sudoku gatsby build",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
