@@ -119,18 +119,19 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   const getTdStyle = useCallback((row: number, col: number) => {
     const isInvalid = invalidCells.some(cell => cell.row === row && cell.column === col)
 
-    const getBorderWidth = (isBlockEdge: boolean) => {
-      return isBlockEdge ? '2px' : '1px'
-    }
+    // 各セルは右と下のボーダーのみを持つ（重複を防ぐため）
+    // 最初の行には上ボーダー、最初の列には左ボーダーを設定
+    const isBlockRightEdge = (col + 1) % SUDOKU_LEVEL === 0 && col !== boardSize - 1
+    const isBlockBottomEdge = (row + 1) % SUDOKU_LEVEL === 0 && row !== boardSize - 1
 
     return {
       padding: 0,
       borderStyle: 'solid',
       borderColor: isInvalid ? '#ff4444' : '#333',
-      borderTopWidth: getBorderWidth(row % SUDOKU_LEVEL === 0),
-      borderLeftWidth: getBorderWidth(col % SUDOKU_LEVEL === 0),
-      borderRightWidth: getBorderWidth((col + 1) % SUDOKU_LEVEL === 0 || col === boardSize - 1),
-      borderBottomWidth: getBorderWidth((row + 1) % SUDOKU_LEVEL === 0 || row === boardSize - 1),
+      borderTopWidth: row === 0 ? '2px' : '0',
+      borderLeftWidth: col === 0 ? '2px' : '0',
+      borderRightWidth: col === boardSize - 1 ? '2px' : (isBlockRightEdge ? '2px' : '1px'),
+      borderBottomWidth: row === boardSize - 1 ? '2px' : (isBlockBottomEdge ? '2px' : '1px'),
     }
   }, [invalidCells, SUDOKU_LEVEL, boardSize])
 
