@@ -21,10 +21,6 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
   const boardSize = SUDOKU_LEVEL * SUDOKU_LEVEL
 
-  const BASE_BORDER = '1px solid #ccc'
-  const THICK_BORDER = '3px solid #333'
-  const ERROR_BORDER = '2px solid #ff4444'
-
   const [cellSize, setCellSize] = useState(44)
   const [focusedCell, setFocusedCell] = useState<{ row: number; col: number } | null>(null)
   const inputRefs = useRef<(HTMLInputElement | null)[][]>(
@@ -71,6 +67,15 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   const handleKeyDown = useCallback((e: React.KeyboardEvent, row: number, col: number) => {
     if (!isInput) return
 
+    // DeleteまたはBackspaceキーでセルをクリア
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault()
+      if (onChange) {
+        onChange(row, col, null)
+      }
+      return
+    }
+
     let newRow = row
     let newCol = col
 
@@ -100,7 +105,25 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
     if (targetInput) {
       targetInput.focus()
     }
-  }, [isInput, boardSize])
+  }, [isInput, boardSize, onChange])
+
+  const getTdStyle = useCallback((row: number, col: number) => {
+    const isInvalid = invalidCells.some(cell => cell.row === row && cell.column === col)
+
+    const getBorderWidth = (isBlockEdge: boolean) => {
+      return isBlockEdge ? '2px' : '1px'
+    }
+
+    return {
+      padding: 0,
+      borderStyle: 'solid',
+      borderColor: isInvalid ? '#ff4444' : '#333',
+      borderTopWidth: getBorderWidth(row % SUDOKU_LEVEL === 0),
+      borderLeftWidth: getBorderWidth(col % SUDOKU_LEVEL === 0),
+      borderRightWidth: getBorderWidth((col + 1) % SUDOKU_LEVEL === 0 || col === boardSize - 1),
+      borderBottomWidth: getBorderWidth((row + 1) % SUDOKU_LEVEL === 0 || row === boardSize - 1),
+    }
+  }, [invalidCells, SUDOKU_LEVEL, boardSize])
 
   const getCellStyle = useCallback((row: number, col: number) => {
     const isInvalid = invalidCells.some(cell => cell.row === row && cell.column === col)
@@ -116,25 +139,20 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
       return '#f9f9f9'
     }
 
-    const getBorder = (isEdge: boolean, isBlockEdge: boolean) => {
-      if (isEdge) return THICK_BORDER
-      if (isInvalid) return ERROR_BORDER
-      if (isBlockEdge) return THICK_BORDER
-      return BASE_BORDER
-    }
-
     return {
       width: `${cellSize}px`,
       height: `${cellSize}px`,
-      border: BASE_BORDER,
       fontSize: cellSize >= 40 ? '18px' : '16px',
       fontWeight: '700',
       backgroundColor: getBackgroundColor(),
       WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
       touchAction: 'manipulation',
+      textAlign: 'center' as const,
+      boxSizing: 'border-box' as const,
+      padding: 0,
+      border: 'none',
+      color: isInvalid ? '#cc0000' : (isNewValue ? '#007bff' : '#333'),
       ...(isInput ? {
-        textAlign: 'center' as const,
-        boxSizing: 'border-box' as const,
         WebkitAppearance: 'none' as const,
         MozAppearance: 'textfield' as const,
       } : {
@@ -143,46 +161,43 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
         justifyContent: 'center',
         userSelect: 'none' as const,
       }),
-      borderRight: getBorder(false, (col + 1) % SUDOKU_LEVEL === 0),
-      borderBottom: getBorder(false, (row + 1) % SUDOKU_LEVEL === 0),
-      borderTop: getBorder(row === 0, false),
-      borderLeft: getBorder(col === 0, false),
-      color: isInvalid ? '#cc0000' : (isNewValue ? '#007bff' : '#333'),
     }
-  }, [invalidCells, originalBoard, isInput, board, focusedCell, SUDOKU_LEVEL, cellSize])
+  }, [invalidCells, originalBoard, isInput, board, focusedCell, cellSize])
 
   return (
     <div style={{ margin: '20px 0' }}>
       {title && <h3 style={{ marginBottom: '10px' }}>{title}</h3>}
-      <div style={{ display: 'inline-block' }}>
-        {board.map((row, rowIndex) => (
-          <div key={rowIndex} style={{ display: 'flex' }}>
-            {row.map((cell, colIndex) => (
-              <div key={colIndex}>
-                {isInput ? (
-                  <input
-                    ref={(el) => (inputRefs.current[rowIndex][colIndex] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[1-9]"
-                    value={cell || ''}
-                    onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-                    onFocus={() => setFocusedCell({ row: rowIndex, col: colIndex })}
-                    style={getCellStyle(rowIndex, colIndex)}
-                    className="sudoku-cell"
-                    maxLength={1}
-                  />
-                ) : (
-                  <div style={getCellStyle(rowIndex, colIndex)} className="sudoku-cell">
-                    {cell || ''}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+      <table style={{ borderCollapse: 'collapse', display: 'inline-block' }}>
+        <tbody>
+          {board.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, colIndex) => (
+                <td key={colIndex} style={getTdStyle(rowIndex, colIndex)}>
+                  {isInput ? (
+                    <input
+                      ref={(el) => (inputRefs.current[rowIndex][colIndex] = el)}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[1-9]"
+                      value={cell || ''}
+                      onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+                      onFocus={() => setFocusedCell({ row: rowIndex, col: colIndex })}
+                      style={getCellStyle(rowIndex, colIndex)}
+                      className="sudoku-cell"
+                      maxLength={1}
+                    />
+                  ) : (
+                    <div style={getCellStyle(rowIndex, colIndex)} className="sudoku-cell">
+                      {cell || ''}
+                    </div>
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }

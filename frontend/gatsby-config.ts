@@ -27,7 +27,7 @@ const config: GatsbyConfig = {
       resolve: 'gatsby-plugin-robots-txt',
       options: {
         host: 'https://sudoku-solver.piyochan.jp',
-        sitemap: 'https://sudoku-solver.piyochan.co/sitemap-index.xml',
+        sitemap: 'https://sudoku-solver.piyochan.jp/sitemap-index.xml',
         policy: [{ userAgent: '*', allow: '/' }],
       },
     },
