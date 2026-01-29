@@ -119,19 +119,18 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   const getTdStyle = useCallback((row: number, col: number) => {
     const isInvalid = invalidCells.some(cell => cell.row === row && cell.column === col)
 
-    // 各セルに上と左のボーダーを設定（均一な線の太さを保つため）
-    // 最後の行に下ボーダー、最後の列に右ボーダーを追加
-    const isBlockTopEdge = row % SUDOKU_LEVEL === 0
-    const isBlockLeftEdge = col % SUDOKU_LEVEL === 0
+    const getBorderWidth = (isBlockEdge: boolean) => {
+      return isBlockEdge ? '2px' : '1px'
+    }
 
     return {
       padding: 0,
       borderStyle: 'solid',
       borderColor: isInvalid ? '#ff4444' : '#333',
-      borderTopWidth: isBlockTopEdge ? '2px' : '1px',
-      borderLeftWidth: isBlockLeftEdge ? '2px' : '1px',
-      borderRightWidth: col === boardSize - 1 ? '2px' : '0',
-      borderBottomWidth: row === boardSize - 1 ? '2px' : '0',
+      borderTopWidth: getBorderWidth(row % SUDOKU_LEVEL === 0),
+      borderLeftWidth: getBorderWidth(col % SUDOKU_LEVEL === 0),
+      borderRightWidth: getBorderWidth((col + 1) % SUDOKU_LEVEL === 0 || col === boardSize - 1),
+      borderBottomWidth: getBorderWidth((row + 1) % SUDOKU_LEVEL === 0 || row === boardSize - 1),
     }
   }, [invalidCells, SUDOKU_LEVEL, boardSize])
 
