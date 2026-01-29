@@ -746,4 +746,20 @@ describe('SudokuSolver', () => {
       })
     })
   })
+
+  describe('Mobile mode', () => {
+    it('does not show NumberPad (mobile mode is disabled for better UX)', () => {
+      render(<SudokuSolver />)
+
+      // NumberPad should not be shown - using traditional keyboard input
+      expect(screen.queryByText('セルをタップして選択してください')).not.toBeInTheDocument()
+    })
+
+    it('renders input fields for cell entry', () => {
+      render(<SudokuSolver />)
+
+      // Should have 81 input fields (traditional keyboard input)
+      expect(screen.getAllByRole('textbox')).toHaveLength(81)
+    })
+  })
 })
