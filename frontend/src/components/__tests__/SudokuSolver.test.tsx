@@ -634,4 +634,116 @@ describe('SudokuSolver', () => {
     // this test verifies the validation logic exists
     expect(inputs[0]).toBeInTheDocument()
   })
+
+  describe('Sample puzzles', () => {
+    it('renders three sample buttons', () => {
+      render(<SudokuSolver />)
+
+      expect(screen.getByText('サンプル1')).toBeInTheDocument()
+      expect(screen.getByText('サンプル2')).toBeInTheDocument()
+      expect(screen.getByText('サンプル3')).toBeInTheDocument()
+    })
+
+    it('loads sample 1 when clicking the button', () => {
+      render(<SudokuSolver />)
+
+      const sampleButton = screen.getByText('サンプル1')
+      fireEvent.click(sampleButton)
+
+      const inputs = screen.getAllByRole('textbox')
+
+      // サンプル1の特徴的な値をチェック（2行目の6列目が3）
+      expect(inputs[1 * 9 + 5]).toHaveValue('3')
+      // 2行目の8列目が8
+      expect(inputs[1 * 9 + 7]).toHaveValue('8')
+      // 2行目の9列目が5
+      expect(inputs[1 * 9 + 8]).toHaveValue('5')
+      // 7行目の1列目が5
+      expect(inputs[6 * 9 + 0]).toHaveValue('5')
+    })
+
+    it('loads sample 2 when clicking the button', () => {
+      render(<SudokuSolver />)
+
+      const sampleButton = screen.getByText('サンプル2')
+      fireEvent.click(sampleButton)
+
+      const inputs = screen.getAllByRole('textbox')
+
+      // サンプル2の特徴的な値をチェック（1行目の4列目が2）
+      expect(inputs[0 * 9 + 3]).toHaveValue('2')
+      // 1行目の7列目が7
+      expect(inputs[0 * 9 + 6]).toHaveValue('7')
+      // 2行目の1列目が6
+      expect(inputs[1 * 9 + 0]).toHaveValue('6')
+      // 9行目の1列目が7
+      expect(inputs[8 * 9 + 0]).toHaveValue('7')
+    })
+
+    it('loads sample 3 when clicking the button', () => {
+      render(<SudokuSolver />)
+
+      const sampleButton = screen.getByText('サンプル3')
+      fireEvent.click(sampleButton)
+
+      const inputs = screen.getAllByRole('textbox')
+
+      // サンプル3の特徴的な値をチェック（1行目の1列目が8）
+      expect(inputs[0 * 9 + 0]).toHaveValue('8')
+      // 1行目の9列目が3
+      expect(inputs[0 * 9 + 8]).toHaveValue('3')
+      // 2行目の3列目が3
+      expect(inputs[1 * 9 + 2]).toHaveValue('3')
+      // 9行目の2列目が9
+      expect(inputs[8 * 9 + 1]).toHaveValue('9')
+    })
+
+    it('clears previous errors when loading a sample', async () => {
+      render(<SudokuSolver />)
+
+      // まず制約違反のエラーを発生させる
+      const inputs = screen.getAllByRole('textbox')
+      fireEvent.change(inputs[0], { target: { value: '1' } })
+      fireEvent.change(inputs[1], { target: { value: '1' } })
+
+      // エラーが表示されることを確認
+      await waitFor(() => {
+        expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
+      })
+
+      // サンプルをロード
+      const sampleButton = screen.getByText('サンプル1')
+      fireEvent.click(sampleButton)
+
+      // エラーがクリアされることを確認
+      expect(screen.queryByText('⚠️ 制約違反エラー')).not.toBeInTheDocument()
+    })
+
+    it('disables sample buttons while loading', async () => {
+      mockFetch.mockImplementation(() =>
+        new Promise(resolve =>
+          setTimeout(() => resolve({
+            ok: true,
+            json: () => Promise.resolve(mockApiResponse)
+          }), 100)
+        )
+      )
+
+      render(<SudokuSolver />)
+
+      const solveButton = screen.getByText('解く')
+      await act(async () => {
+        fireEvent.click(solveButton)
+      })
+
+      // ローディング中はサンプルボタンが無効になる
+      expect(screen.getByText('サンプル1')).toBeDisabled()
+      expect(screen.getByText('サンプル2')).toBeDisabled()
+      expect(screen.getByText('サンプル3')).toBeDisabled()
+
+      await waitFor(() => {
+        expect(screen.queryByText('解いています...')).not.toBeInTheDocument()
+      })
+    })
+  })
 })

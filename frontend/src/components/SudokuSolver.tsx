@@ -17,6 +17,51 @@ const ERROR_TYPE_HINTS: Record<string, string> = {
   InternalServerError: '💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください',
 }
 
+const SAMPLE_PUZZLES = [
+  {
+    name: 'サンプル1',
+    board: [
+      [null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, 3, null, 8, 5],
+      [null, null, 1, null, 2, null, null, null, null],
+      [null, null, null, 5, null, 7, null, null, null],
+      [null, null, 4, null, null, null, 1, null, null],
+      [null, 9, null, null, null, null, null, null, null],
+      [5, null, null, null, null, null, null, 7, 3],
+      [null, null, 2, null, 1, null, null, null, null],
+      [null, null, null, null, 4, null, null, null, 9],
+    ],
+  },
+  {
+    name: 'サンプル2',
+    board: [
+      [null, null, null, 2, null, null, 7, null, 1],
+      [6, null, null, null, 7, null, null, 9, null],
+      [null, 9, null, null, null, 4, null, null, null],
+      [null, 2, null, 1, null, null, null, 4, null],
+      [null, null, 4, null, null, 2, 9, null, null],
+      [null, 5, null, null, null, null, null, null, 8],
+      [null, null, null, 3, null, null, null, null, 4],
+      [null, 4, null, null, 5, null, null, 3, null],
+      [7, null, 3, null, null, 8, null, null, null],
+    ],
+  },
+  {
+    name: 'サンプル3',
+    board: [
+      [8, null, null, null, null, null, null, null, 3],
+      [null, null, 3, 6, null, null, null, null, null],
+      [null, 7, null, null, 9, null, 2, null, null],
+      [null, 5, null, null, null, 7, null, null, null],
+      [null, null, null, null, null, 5, 7, null, null],
+      [null, null, null, 1, null, null, null, null, null],
+      [null, null, 1, null, null, null, null, 6, 8],
+      [null, null, null, null, null, null, null, 1, null],
+      [null, 9, null, null, null, null, 4, null, null],
+    ],
+  },
+]
+
 const SudokuSolver: React.FC = () => {
   const SUDOKU_LEVEL = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3'), [])
   const SUDOKU_MAX_NUM_SOLUTIONS = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_MAX_NUM_SOLUTIONS || '1000000'), [])
@@ -95,6 +140,22 @@ const SudokuSolver: React.FC = () => {
     setHasSolved(false)
     setCurrentSolutionIndex(0)
   }, [createEmptyBoard])
+
+  const loadSamplePuzzle = useCallback((index: number) => {
+    const puzzle = SAMPLE_PUZZLES[index]
+    if (puzzle) {
+      setInputBoard(puzzle.board.map(row => [...row]))
+      setSolutions([])
+      setNumSolutions(0)
+      setIsExactCount(false)
+      setError('')
+      setErrorDetails([])
+      setErrorType('')
+      setSolvedFromBoard(null)
+      setHasSolved(false)
+      setCurrentSolutionIndex(0)
+    }
+  }, [])
 
   const performClientSideValidation = useCallback(() => {
     if (!validateBoardSize(inputBoard)) {
@@ -273,6 +334,35 @@ const SudokuSolver: React.FC = () => {
             >
               クリア
             </button>
+          </div>
+
+          <div style={{
+            marginTop: '15px',
+            display: 'flex',
+            gap: '10px',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+          }}>
+            {SAMPLE_PUZZLES.map((puzzle, index) => (
+              <button
+                key={index}
+                onClick={() => loadSamplePuzzle(index)}
+                disabled={loading}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '14px',
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.6 : 1,
+                  fontWeight: '500',
+                }}
+              >
+                {puzzle.name}
+              </button>
+            ))}
           </div>
         </div>
       ) : (
