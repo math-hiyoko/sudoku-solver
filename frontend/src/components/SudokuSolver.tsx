@@ -91,18 +91,10 @@ const SudokuSolver: React.FC = () => {
   const [isMobileMode, setIsMobileMode] = useState<boolean>(false)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
-  // モバイルモード検出
+  // モバイルモード検出（現在は無効化 - 従来のinput方式を使用）
   useEffect(() => {
-    const checkMobileMode = () => {
-      if (typeof window === 'undefined') return
-      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-      const isNarrowScreen = window.innerWidth < 768
-      setIsMobileMode(isTouchDevice && isNarrowScreen)
-    }
-
-    checkMobileMode()
-    window.addEventListener('resize', checkMobileMode)
-    return () => window.removeEventListener('resize', checkMobileMode)
+    // NumberPad UIは使わず、従来のキーボード入力を使用
+    setIsMobileMode(false)
   }, [])
 
   const performRealTimeValidation = useCallback((board: SudokuBoardType) => {
