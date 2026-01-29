@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import SudokuBoard from './SudokuBoard'
+import NumberPad from './NumberPad'
 import { SudokuBoard as SudokuBoardType, SudokuApiResponse, SudokuApiErrorResponse } from '../types/sudoku'
 import { validateSudokuConstraints, validateNumberRange, validateBoardSize } from '../utils/sudokuValidation'
 
@@ -86,6 +87,23 @@ const SudokuSolver: React.FC = () => {
   const [solvedFromBoard, setSolvedFromBoard] = useState<SudokuBoardType | null>(null)
   const [hasSolved, setHasSolved] = useState<boolean>(false)
   const [currentSolutionIndex, setCurrentSolutionIndex] = useState<number>(0)
+  const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
+  const [isMobileMode, setIsMobileMode] = useState<boolean>(false)
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
+
+  // モバイルモード検出
+  useEffect(() => {
+    const checkMobileMode = () => {
+      if (typeof window === 'undefined') return
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      const isNarrowScreen = window.innerWidth < 768
+      setIsMobileMode(isTouchDevice && isNarrowScreen)
+    }
+
+    checkMobileMode()
+    window.addEventListener('resize', checkMobileMode)
+    return () => window.removeEventListener('resize', checkMobileMode)
+  }, [])
 
   const performRealTimeValidation = useCallback((board: SudokuBoardType) => {
     setError('')
@@ -290,9 +308,51 @@ const SudokuSolver: React.FC = () => {
     setCurrentSolutionIndex(0)
   }, [])
 
+  // セル選択ハンドラー（モバイル用）
+  const handleCellSelect = useCallback((row: number, col: number) => {
+    setSelectedCell({ row, col })
+  }, [])
+
+  // NumberPadからの数字選択ハンドラー
+  const handleNumberPadSelect = useCallback((value: number | null) => {
+    if (selectedCell) {
+      handleCellChange(selectedCell.row, selectedCell.col, value)
+    }
+  }, [selectedCell, handleCellChange])
+
+  // スワイプ検出用の定数
+  const SWIPE_THRESHOLD = 50
+
+  // タッチ開始ハンドラー
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!isMobileMode || solutions.length <= 1) return
+    setTouchStartX(e.touches[0].clientX)
+  }, [isMobileMode, solutions.length])
+
+  // タッチ終了ハンドラー（スワイプ検出）
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX === null || !isMobileMode) return
+
+    const touchEndX = e.changedTouches[0].clientX
+    const diff = touchStartX - touchEndX
+
+    if (Math.abs(diff) > SWIPE_THRESHOLD) {
+      if (diff > 0 && currentSolutionIndex < solutions.length - 1) {
+        // 左スワイプ = 次の解
+        handleNextSolution()
+      } else if (diff < 0 && currentSolutionIndex > 0) {
+        // 右スワイプ = 前の解
+        handlePreviousSolution()
+      }
+    }
+
+    setTouchStartX(null)
+  }, [touchStartX, isMobileMode, currentSolutionIndex, solutions.length, handleNextSolution, handlePreviousSolution])
+
   return (
     <div style={{
       padding: '20px',
+      paddingBottom: isMobileMode && solutions.length === 0 ? '220px' : '20px',
       fontFamily: '-apple-system, Roboto, sans-serif',
       maxWidth: '100%',
       overflowX: 'auto',
@@ -310,6 +370,9 @@ const SudokuSolver: React.FC = () => {
             isInput={true}
             onChange={handleCellChange}
             invalidCells={errorDetails}
+            isMobileMode={isMobileMode}
+            selectedCell={selectedCell}
+            onCellSelect={handleCellSelect}
           />
 
           <div style={{
@@ -366,7 +429,11 @@ const SudokuSolver: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <div
+          style={{ textAlign: 'center', marginBottom: '30px' }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <div style={{ marginBottom: '20px' }}>
             <h2 style={{ color: '#333', margin: '0 0 5px 0' }}>
               解の個数: {isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && (
@@ -376,6 +443,7 @@ const SudokuSolver: React.FC = () => {
             </h2>
             <p style={{ color: '#666', margin: 0 }}>
               {Math.min(solutions.length, SUDOKU_MAX_SOLUTIONS)}個の解を表示中
+              {isMobileMode && solutions.length > 1 && ' (左右スワイプで切替)'}
             </p>
           </div>
 
@@ -504,6 +572,15 @@ const SudokuSolver: React.FC = () => {
             この問題には解がありません。入力を確認してください。
           </p>
         </div>
+      )}
+
+      {/* モバイル用NumberPad */}
+      {isMobileMode && solutions.length === 0 && (
+        <NumberPad
+          onNumberSelect={handleNumberPadSelect}
+          disabled={loading}
+          selectedCell={selectedCell}
+        />
       )}
 
     </div>
