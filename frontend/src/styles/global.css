@@ -85,3 +85,25 @@ input:focus {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* モバイル向けスタイル */
+@media (max-width: 767px) {
+  /* タッチ操作時のテキスト選択を防止 */
+  .sudoku-cell {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* モバイルでのフォーカス表示を強化 */
+  .sudoku-cell:focus-visible {
+    outline: 3px solid #007bff;
+    outline-offset: -3px;
+  }
+}
+
+/* NumberPadボタンのホバー効果を無効化（モバイル向け） */
+@media (hover: none) {
+  button:hover:not(:disabled) {
+    opacity: 1;
+  }
+}

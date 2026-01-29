@@ -8,6 +8,10 @@ interface SudokuBoardProps {
   onChange?: (row: number, col: number, value: number | null) => void
   invalidCells?: { row: number; column: number }[]
   originalBoard?: SudokuBoardType
+  // モバイル用props
+  isMobileMode?: boolean
+  selectedCell?: { row: number; col: number } | null
+  onCellSelect?: (row: number, col: number) => void
 }
 
 const SudokuBoard: React.FC<SudokuBoardProps> = ({
@@ -16,7 +20,10 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   isInput = false,
   onChange,
   invalidCells = [],
-  originalBoard
+  originalBoard,
+  isMobileMode = false,
+  selectedCell,
+  onCellSelect
 }) => {
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
   const boardSize = SUDOKU_LEVEL * SUDOKU_LEVEL
@@ -36,8 +43,10 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
       const maxBoardWidth = screenWidth - padding
       const calculatedCellSize = Math.floor(maxBoardWidth / boardSize)
 
-      const minCellSize = 32
-      const maxCellSize = 44
+      // モバイル用に大きめのサイズ範囲を設定
+      const isNarrowScreen = screenWidth < 768
+      const minCellSize = isNarrowScreen ? 36 : 32
+      const maxCellSize = isNarrowScreen ? 52 : 44
       const newCellSize = Math.max(minCellSize, Math.min(maxCellSize, calculatedCellSize))
 
       setCellSize(newCellSize)
@@ -131,13 +140,18 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
       (originalBoard[row][col] === null || originalBoard[row][col] === undefined || isNaN(originalBoard[row][col])) &&
       board[row][col] !== null
     const isFocused = focusedCell && focusedCell.row === row && focusedCell.col === col
+    const isSelected = selectedCell && selectedCell.row === row && selectedCell.col === col
 
     const getBackgroundColor = () => {
       if (isInvalid) return '#ffe6e6'
+      if (isSelected && isMobileMode) return '#b3d9ff'  // モバイル選択時は濃い青
       if (isFocused && isInput) return '#e6f3ff'
       if (isInput) return '#fff'
       return '#f9f9f9'
     }
+
+    // モバイル選択時のボックスシャドウ
+    const boxShadow = (isSelected && isMobileMode) ? 'inset 0 0 0 3px #007bff' : 'none'
 
     return {
       width: `${cellSize}px`,
@@ -151,8 +165,9 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
       boxSizing: 'border-box' as const,
       padding: 0,
       border: 'none',
+      boxShadow,
       color: isInvalid ? '#cc0000' : (isNewValue ? '#007bff' : '#333'),
-      ...(isInput ? {
+      ...(isInput && !isMobileMode ? {
         WebkitAppearance: 'none' as const,
         MozAppearance: 'textfield' as const,
       } : {
@@ -160,9 +175,10 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         userSelect: 'none' as const,
+        cursor: isMobileMode && isInput ? 'pointer' : 'default',
       }),
     }
-  }, [invalidCells, originalBoard, isInput, board, focusedCell, cellSize])
+  }, [invalidCells, originalBoard, isInput, board, focusedCell, cellSize, selectedCell, isMobileMode])
 
   return (
     <div style={{ margin: '20px 0' }}>
@@ -173,7 +189,25 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
             <tr key={rowIndex}>
               {row.map((cell, colIndex) => (
                 <td key={colIndex} style={getTdStyle(rowIndex, colIndex)}>
-                  {isInput ? (
+                  {isMobileMode && isInput ? (
+                    // モバイルモード: タップ可能なdiv
+                    <div
+                      style={getCellStyle(rowIndex, colIndex)}
+                      className="sudoku-cell"
+                      onClick={() => onCellSelect?.(rowIndex, colIndex)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          onCellSelect?.(rowIndex, colIndex)
+                        }
+                      }}
+                      aria-label={`セル ${rowIndex + 1}行 ${colIndex + 1}列${cell ? `, 値 ${cell}` : ', 空'}`}
+                    >
+                      {cell || ''}
+                    </div>
+                  ) : isInput ? (
+                    // デスクトップモード: input要素
                     <input
                       ref={(el) => (inputRefs.current[rowIndex][colIndex] = el)}
                       type="text"
@@ -188,6 +222,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
                       maxLength={1}
                     />
                   ) : (
+                    // 解答表示モード
                     <div style={getCellStyle(rowIndex, colIndex)} className="sudoku-cell">
                       {cell || ''}
                     </div>
