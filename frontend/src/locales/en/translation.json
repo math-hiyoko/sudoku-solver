@@ -41,7 +41,15 @@
       "label": "📝 Input Error",
       "hint": "💡 Only numbers 1-9 are valid for Sudoku values"
     },
+    "InvalidInput": {
+      "label": "📝 Input Error",
+      "hint": "💡 Only numbers 1-9 are valid for Sudoku values"
+    },
     "rangeError": {
+      "label": "🔢 Range Error",
+      "hint": "💡 Only numbers 1-9 are valid for Sudoku values"
+    },
+    "OutOfRangeError": {
       "label": "🔢 Range Error",
       "hint": "💡 Only numbers 1-9 are valid for Sudoku values"
     },
@@ -49,11 +57,23 @@
       "label": "⚠️ Constraint Violation",
       "hint": "💡 Sudoku rules are violated (same number cannot be placed in the same row, column, or block)"
     },
+    "ConstraintViolation": {
+      "label": "⚠️ Constraint Violation",
+      "hint": "💡 Sudoku rules are violated (same number cannot be placed in the same row, column, or block)"
+    },
     "serverError": {
       "label": "🔧 Server Error",
       "hint": "💡 An unexpected server error occurred. Please try again later"
     },
+    "InternalServerError": {
+      "label": "🔧 Server Error",
+      "hint": "💡 An unexpected error occurred on the server. Please try again after a while"
+    },
     "networkError": {
+      "label": "🌐 Network Error",
+      "hint": "💡 An unexpected server error occurred. Please try again later"
+    },
+    "NetworkError": {
       "label": "🌐 Network Error",
       "hint": "💡 An unexpected server error occurred. Please try again later"
     },
@@ -61,7 +81,7 @@
     "outOfRange": "The input value is out of valid range.",
     "constraintViolation": "There are locations violating Sudoku rules.",
     "problemLocations": "Problem locations:",
-    "locationDetail": "Row {{row}}, Column {{col}}: Value {{value}}",
+    "locationDetail": "Row {{row}}, Col {{col}}: value {{value}}",
     "networkErrorOccurred": "A network error occurred"
   },
   "notFound": {

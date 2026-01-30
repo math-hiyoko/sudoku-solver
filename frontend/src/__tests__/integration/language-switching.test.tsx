@@ -23,8 +23,8 @@ describe('Language Switching Integration', () => {
       { language: 'en' }
     )
 
-    // Initially in English
-    expect(screen.getByText('Tap a cell to select')).toBeInTheDocument()
+    // Initially in English (row and col are 0-indexed, but displayed as 1-indexed)
+    expect(screen.getByText('Selected: Row 1 Col 1')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Input number 1' })).toBeInTheDocument()
 
     // Switch to Japanese
@@ -62,23 +62,26 @@ describe('Language Switching Integration', () => {
   })
 
   it('persists language selection to localStorage', () => {
+    const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
     renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
     // Switch to French
     fireEvent.click(screen.getByRole('button', { name: 'Switch to French' }))
-    expect(localStorage.setItem).toHaveBeenCalledWith('language', 'fr')
+    expect(setItemSpy).toHaveBeenCalledWith('language', 'fr')
 
     // Switch to Chinese
     fireEvent.click(screen.getByRole('button', { name: 'Switch to Chinese' }))
-    expect(localStorage.setItem).toHaveBeenCalledWith('language', 'zh')
+    expect(setItemSpy).toHaveBeenCalledWith('language', 'zh')
 
     // Switch to Japanese
     fireEvent.click(screen.getByRole('button', { name: 'Switch to Japanese' }))
-    expect(localStorage.setItem).toHaveBeenCalledWith('language', 'ja')
+    expect(setItemSpy).toHaveBeenCalledWith('language', 'ja')
 
     // Switch back to English
     fireEvent.click(screen.getByRole('button', { name: 'Switch to English' }))
-    expect(localStorage.setItem).toHaveBeenCalledWith('language', 'en')
+    expect(setItemSpy).toHaveBeenCalledWith('language', 'en')
+
+    setItemSpy.mockRestore()
   })
 
   it('updates HTML lang attribute when language changes', async () => {
@@ -170,8 +173,7 @@ describe('Language Switching Integration', () => {
     })
 
     it('uses English for initial render without localStorage', () => {
-      (localStorage.getItem as jest.Mock).mockReturnValue(null)
-
+      // Note: localStorage is already mocked in jest.setup.js
       const { i18n } = renderWithI18n(
         <>
           <LanguageSwitcher />
@@ -186,6 +188,7 @@ describe('Language Switching Integration', () => {
 
   describe('localStorage persistence', () => {
     it('calls localStorage.setItem for each language change', () => {
+      const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
       renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
       const languages = [
@@ -197,27 +200,35 @@ describe('Language Switching Integration', () => {
 
       languages.forEach(({ button, code }) => {
         fireEvent.click(screen.getByRole('button', { name: button }))
-        expect(localStorage.setItem).toHaveBeenCalledWith('language', code)
+        expect(setItemSpy).toHaveBeenCalledWith('language', code)
       })
+
+      setItemSpy.mockRestore()
     })
 
     it('saves language immediately upon change', () => {
+      const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
       renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
       fireEvent.click(screen.getByRole('button', { name: 'Switch to French' }))
 
       // Should be called immediately, not after a delay
-      expect(localStorage.setItem).toHaveBeenCalledWith('language', 'fr')
-      expect(localStorage.setItem).toHaveBeenCalledTimes(1)
+      expect(setItemSpy).toHaveBeenCalledWith('language', 'fr')
+      expect(setItemSpy).toHaveBeenCalledTimes(1)
+
+      setItemSpy.mockRestore()
     })
 
     it('updates both i18n language and localStorage together', () => {
+      const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
       const { i18n } = renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
       fireEvent.click(screen.getByRole('button', { name: 'Switch to Chinese' }))
 
       expect(i18n.language).toBe('zh')
-      expect(localStorage.setItem).toHaveBeenCalledWith('language', 'zh')
+      expect(setItemSpy).toHaveBeenCalledWith('language', 'zh')
+
+      setItemSpy.mockRestore()
     })
   })
 

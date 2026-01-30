@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { screen, fireEvent, act } from '@testing-library/react'
+import { renderWithI18n } from '../../__tests__/utils/i18n-test-utils'
 import SudokuBoard from '../SudokuBoard'
 
 // Mock environment variables
@@ -30,24 +31,24 @@ const solvedBoard = [
 
 describe('SudokuBoard', () => {
   it('renders board with correct title', () => {
-    render(<SudokuBoard board={emptyBoard} title="Test Board" />)
+    renderWithI18n(<SudokuBoard board={emptyBoard} title="Test Board" />)
     expect(screen.getByText('Test Board')).toBeInTheDocument()
   })
 
   it('renders 81 cells for a 9x9 board', () => {
-    render(<SudokuBoard board={emptyBoard} />)
+    renderWithI18n(<SudokuBoard board={emptyBoard} />)
     const cells = document.querySelectorAll('.sudoku-cell')
     expect(cells).toHaveLength(81)
   })
 
   it('displays numbers correctly in solved board', () => {
-    render(<SudokuBoard board={solvedBoard} />)
+    renderWithI18n(<SudokuBoard board={solvedBoard} />)
     expect(screen.getAllByText('5').length).toBeGreaterThan(0)
   })
 
   it('renders input board with editable cells', () => {
     const mockOnChange = jest.fn()
-    render(
+    renderWithI18n(
       <SudokuBoard
         board={emptyBoard}
         isInput={true}
@@ -60,7 +61,7 @@ describe('SudokuBoard', () => {
 
   it('calls onChange when cell value is changed', () => {
     const mockOnChange = jest.fn()
-    render(
+    renderWithI18n(
       <SudokuBoard
         board={emptyBoard}
         isInput={true}
@@ -82,7 +83,7 @@ describe('SudokuBoard', () => {
       )
     )
 
-    render(
+    renderWithI18n(
       <SudokuBoard
         board={boardWithValue}
         isInput={true}
@@ -98,7 +99,7 @@ describe('SudokuBoard', () => {
 
   it('does not allow invalid numbers', () => {
     const mockOnChange = jest.fn()
-    render(
+    renderWithI18n(
       <SudokuBoard
         board={emptyBoard}
         isInput={true}
@@ -113,7 +114,7 @@ describe('SudokuBoard', () => {
   })
 
   it('renders without title when not provided', () => {
-    render(<SudokuBoard board={emptyBoard} />)
+    renderWithI18n(<SudokuBoard board={emptyBoard} />)
     expect(screen.queryByRole('heading')).not.toBeInTheDocument()
   })
 
@@ -130,7 +131,7 @@ describe('SudokuBoard', () => {
       [null, null, null, null, null, null, null, null, null]
     ]
 
-    render(
+    renderWithI18n(
       <SudokuBoard
         board={solvedBoard}
         originalBoard={partialBoard}
@@ -150,7 +151,7 @@ describe('SudokuBoard', () => {
   it('applies invalid cell styling correctly', () => {
     const invalidCells = [{ row: 0, column: 1 }]
 
-    render(
+    renderWithI18n(
       <SudokuBoard
         board={solvedBoard}
         invalidCells={invalidCells}
@@ -183,7 +184,7 @@ describe('SudokuBoard', () => {
       [null, null, null, null, null, null, null, null, null]
     ]
 
-    render(
+    renderWithI18n(
       <SudokuBoard
         board={solvedBoard}
         originalBoard={boardWithNaN}
@@ -203,7 +204,7 @@ describe('SudokuBoard', () => {
   describe('Keyboard Navigation', () => {
     it('moves focus to the right cell when ArrowRight is pressed', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -225,7 +226,7 @@ describe('SudokuBoard', () => {
 
     it('moves focus to the left cell when ArrowLeft is pressed', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -247,7 +248,7 @@ describe('SudokuBoard', () => {
 
     it('moves focus to the cell below when ArrowDown is pressed', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -269,7 +270,7 @@ describe('SudokuBoard', () => {
 
     it('moves focus to the cell above when ArrowUp is pressed', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -291,7 +292,7 @@ describe('SudokuBoard', () => {
 
     it('does not move beyond the left boundary', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -313,7 +314,7 @@ describe('SudokuBoard', () => {
 
     it('does not move beyond the right boundary', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -335,7 +336,7 @@ describe('SudokuBoard', () => {
 
     it('does not move beyond the top boundary', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -357,7 +358,7 @@ describe('SudokuBoard', () => {
 
     it('does not move beyond the bottom boundary', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -378,7 +379,7 @@ describe('SudokuBoard', () => {
     })
 
     it('does not handle keyboard navigation when not in input mode', () => {
-      render(<SudokuBoard board={emptyBoard} isInput={false} />)
+      renderWithI18n(<SudokuBoard board={emptyBoard} isInput={false} />)
 
       const cells = document.querySelectorAll('.sudoku-cell')
       const firstCell = cells[0] as HTMLElement
@@ -390,7 +391,7 @@ describe('SudokuBoard', () => {
 
     it('highlights focused cell with different background color', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -409,7 +410,7 @@ describe('SudokuBoard', () => {
 
     it('does not navigate when non-arrow keys are pressed', () => {
       const mockOnChange = jest.fn()
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -445,7 +446,7 @@ describe('SudokuBoard', () => {
       const mockOnChange = jest.fn()
       const mockOnCellSelect = jest.fn()
 
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -465,7 +466,7 @@ describe('SudokuBoard', () => {
       const mockOnChange = jest.fn()
       const mockOnCellSelect = jest.fn()
 
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -485,7 +486,7 @@ describe('SudokuBoard', () => {
       const mockOnChange = jest.fn()
       const mockOnCellSelect = jest.fn()
 
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -505,7 +506,7 @@ describe('SudokuBoard', () => {
       const mockOnChange = jest.fn()
       const mockOnCellSelect = jest.fn()
 
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -525,7 +526,7 @@ describe('SudokuBoard', () => {
       const mockOnChange = jest.fn()
       const mockOnCellSelect = jest.fn()
 
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}
@@ -550,7 +551,7 @@ describe('SudokuBoard', () => {
         )
       )
 
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={boardWithValue}
           isInput={true}
@@ -559,14 +560,14 @@ describe('SudokuBoard', () => {
         />
       )
 
-      expect(screen.getByLabelText('セル 1行 1列, 値 5')).toBeInTheDocument()
-      expect(screen.getByLabelText('セル 1行 2列, 空')).toBeInTheDocument()
+      expect(screen.getByLabelText('Cell row 1 column 1, value 5')).toBeInTheDocument()
+      expect(screen.getByLabelText('Cell row 1 column 2, empty')).toBeInTheDocument()
     })
 
     it('renders inputs in desktop mode (isMobileMode=false)', () => {
       const mockOnChange = jest.fn()
 
-      render(
+      renderWithI18n(
         <SudokuBoard
           board={emptyBoard}
           isInput={true}

@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderWithI18n } from '../../__tests__/utils/i18n-test-utils'
 import NotFoundPage, { Head } from '../404'
 import type { PageProps, HeadProps } from 'gatsby'
 
@@ -56,26 +57,26 @@ describe('NotFoundPage', () => {
   })
 
   it('renders 404 page content', () => {
-    render(<NotFoundPage {...mockPageProps} />)
+    renderWithI18n(<NotFoundPage {...mockPageProps} />)
     expect(screen.getByText('Page not found')).toBeInTheDocument()
     expect(screen.getByText('Go home')).toBeInTheDocument()
   })
 
   it('shows development message when NODE_ENV is development', () => {
     process.env.NODE_ENV = 'development'
-    render(<NotFoundPage {...mockPageProps} />)
+    renderWithI18n(<NotFoundPage {...mockPageProps} />)
     expect(screen.getByText(/Try creating a page in/)).toBeInTheDocument()
     expect(screen.getByText('src/pages/')).toBeInTheDocument()
   })
 
   it('does not show development message when NODE_ENV is not development', () => {
     process.env.NODE_ENV = 'production'
-    render(<NotFoundPage {...mockPageProps} />)
+    renderWithI18n(<NotFoundPage {...mockPageProps} />)
     expect(screen.queryByText(/Try creating a page in/)).not.toBeInTheDocument()
   })
 
   it('renders link to home page', () => {
-    render(<NotFoundPage {...mockPageProps} />)
+    renderWithI18n(<NotFoundPage {...mockPageProps} />)
     const homeLink = screen.getByText('Go home')
     expect(homeLink).toHaveAttribute('href', '/')
   })
@@ -83,8 +84,8 @@ describe('NotFoundPage', () => {
 
 describe('Head component', () => {
   it('renders correct title', () => {
-    const { container } = render(<Head {...mockHeadProps} />)
+    const { container } = renderWithI18n(<Head {...mockHeadProps} />)
     const title = container.querySelector('title')
-    expect(title?.textContent).toBe('ページが見つかりません | 数独ソルバー')
+    expect(title?.textContent).toBe('Page Not Found | Sudoku Solver')
   })
 })

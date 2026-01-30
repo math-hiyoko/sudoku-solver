@@ -62,7 +62,27 @@
     "constraintViolation": "Il y a des emplacements qui violent les règles du Sudoku.",
     "problemLocations": "Emplacements problématiques :",
     "locationDetail": "Ligne {{row}}, Colonne {{col}} : Valeur {{value}}",
-    "networkErrorOccurred": "Une erreur réseau s'est produite"
+    "networkErrorOccurred": "Une erreur réseau s'est produite",
+    "InvalidInput": {
+      "label": "📝 Erreur de saisie",
+      "hint": "💡 Seuls les nombres de 1 à 9 sont valides pour les valeurs de Sudoku"
+    },
+    "OutOfRangeError": {
+      "label": "🔢 Erreur de plage",
+      "hint": "💡 Seuls les nombres de 1 à 9 sont valides pour les valeurs de Sudoku"
+    },
+    "ConstraintViolation": {
+      "label": "⚠️ Violation de contrainte",
+      "hint": "💡 Les règles du Sudoku sont violées (le même nombre ne peut pas être placé dans la même ligne, colonne ou bloc)"
+    },
+    "InternalServerError": {
+      "label": "🔧 Erreur du serveur",
+      "hint": "💡 Une erreur inattendue du serveur s'est produite. Veuillez réessayer plus tard"
+    },
+    "NetworkError": {
+      "label": "🌐 Erreur réseau",
+      "hint": "💡 Une erreur inattendue du serveur s'est produite. Veuillez réessayer plus tard"
+    }
   },
   "notFound": {
     "title": "Page non trouvée | Solveur de Sudoku",

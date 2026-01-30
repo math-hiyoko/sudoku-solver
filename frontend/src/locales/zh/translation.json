@@ -62,7 +62,27 @@
     "constraintViolation": "存在违反数独规则的位置。",
     "problemLocations": "问题位置：",
     "locationDetail": "第{{row}}行，第{{col}}列：值 {{value}}",
-    "networkErrorOccurred": "发生了网络错误"
+    "networkErrorOccurred": "发生了网络错误",
+    "InvalidInput": {
+      "label": "📝 输入错误",
+      "hint": "💡 数独值只能是1-9的数字"
+    },
+    "OutOfRangeError": {
+      "label": "🔢 范围错误",
+      "hint": "💡 数独值只能是1-9的数字"
+    },
+    "ConstraintViolation": {
+      "label": "⚠️ 约束违规",
+      "hint": "💡 违反了数独规则（同一行、列或块中不能放置相同的数字）"
+    },
+    "InternalServerError": {
+      "label": "🔧 服务器错误",
+      "hint": "💡 发生了意外的服务器错误。请稍后重试"
+    },
+    "NetworkError": {
+      "label": "🌐 网络错误",
+      "hint": "💡 发生了意外的服务器错误。请稍后重试"
+    }
   },
   "notFound": {
     "title": "页面未找到 | 数独求解器",

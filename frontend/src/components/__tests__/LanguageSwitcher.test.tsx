@@ -59,12 +59,14 @@ describe('LanguageSwitcher', () => {
   })
 
   it('saves language to localStorage when changed', () => {
+    const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
     renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
     const zhButton = screen.getByRole('button', { name: 'Switch to Chinese' })
     fireEvent.click(zhButton)
 
-    expect(localStorage.setItem).toHaveBeenCalledWith('language', 'zh')
+    expect(setItemSpy).toHaveBeenCalledWith('language', 'zh')
+    setItemSpy.mockRestore()
   })
 
   it('updates document language attribute when language is changed', () => {

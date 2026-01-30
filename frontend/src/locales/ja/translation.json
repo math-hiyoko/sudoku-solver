@@ -62,7 +62,27 @@
     "constraintViolation": "数独のルールに違反している箇所があります。",
     "problemLocations": "問題のある位置:",
     "locationDetail": "行 {{row}}, 列 {{col}}: 値 {{value}}",
-    "networkErrorOccurred": "ネットワークエラーが発生しました"
+    "networkErrorOccurred": "ネットワークエラーが発生しました",
+    "InvalidInput": {
+      "label": "📝 入力エラー",
+      "hint": "💡 数独の値は1〜9の数字のみ有効です"
+    },
+    "OutOfRangeError": {
+      "label": "🔢 数値範囲エラー",
+      "hint": "💡 数独の値は1〜9の数字のみ有効です"
+    },
+    "ConstraintViolation": {
+      "label": "⚠️ 制約違反エラー",
+      "hint": "💡 数独のルールに違反しています（同じ行・列・ブロックに同じ数字は配置できません）"
+    },
+    "InternalServerError": {
+      "label": "🔧 サーバーエラー",
+      "hint": "💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください"
+    },
+    "NetworkError": {
+      "label": "🌐 ネットワークエラー",
+      "hint": "💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください"
+    }
   },
   "notFound": {
     "title": "ページが見つかりません | 数独ソルバー",

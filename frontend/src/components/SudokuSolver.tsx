@@ -537,7 +537,7 @@ const SudokuSolver: React.FC = () => {
           )}
           {errorType === 'InternalServerError' && errorDetails.length === 0 && (
             <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
-              {t('errors.serverError.hint')}
+              {t('errors.InternalServerError.hint')}
             </div>
           )}
         </div>

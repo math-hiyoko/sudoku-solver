@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
+import { screen, fireEvent, waitFor, act } from '@testing-library/react'
+import { renderWithI18n } from '../../__tests__/utils/i18n-test-utils'
 import SudokuSolver from '../SudokuSolver'
 
 // Mock environment variables
@@ -48,30 +49,30 @@ describe('SudokuSolver', () => {
   })
 
   it('renders main heading', () => {
-    render(<SudokuSolver />)
-    expect(screen.getByText('数独ソルバー')).toBeInTheDocument()
+    renderWithI18n(<SudokuSolver />)
+    expect(screen.getByText('Sudoku Solver')).toBeInTheDocument()
   })
 
   it('renders solve and clear buttons', () => {
-    render(<SudokuSolver />)
-    expect(screen.getByText('解く')).toBeInTheDocument()
-    expect(screen.getByText('クリア')).toBeInTheDocument()
+    renderWithI18n(<SudokuSolver />)
+    expect(screen.getByText('Solve')).toBeInTheDocument()
+    expect(screen.getByText('Clear')).toBeInTheDocument()
   })
 
   it('renders input board', () => {
-    render(<SudokuSolver />)
-    expect(screen.getByText('問題を入力してください')).toBeInTheDocument()
+    renderWithI18n(<SudokuSolver />)
+    expect(screen.getByText('Please enter the puzzle')).toBeInTheDocument()
     const inputs = screen.getAllByRole('textbox')
     expect(inputs).toHaveLength(81)
   })
 
   it('clears board when clear button is clicked', () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
     fireEvent.change(inputs[0], { target: { value: '5' } })
 
-    const clearButton = screen.getByText('クリア')
+    const clearButton = screen.getByText('Clear')
     fireEvent.click(clearButton)
 
     const clearedInputs = screen.getAllByRole('textbox')
@@ -88,18 +89,18 @@ describe('SudokuSolver', () => {
       )
     )
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
-    expect(screen.getByText('解いています...')).toBeInTheDocument()
+    expect(screen.getByText('Solving...')).toBeInTheDocument()
     expect(solveButton).toBeDisabled()
 
     await waitFor(() => {
-      expect(screen.queryByText('解いています...')).not.toBeInTheDocument()
+      expect(screen.queryByText('Solving...')).not.toBeInTheDocument()
     })
   })
 
@@ -109,17 +110,17 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(mockApiResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
 
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText(/解の個数:/)).toBeInTheDocument()
-      expect(screen.getByText(/解 1 \/ 1/)).toBeInTheDocument()
+      expect(screen.getByText(/Number of solutions:/)).toBeInTheDocument()
+      expect(screen.getByText(/Solution 1 \/ 1/)).toBeInTheDocument()
     })
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -134,16 +135,16 @@ describe('SudokuSolver', () => {
   it('shows error message on API failure', async () => {
     mockFetch.mockRejectedValue(new Error('Network error'))
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
 
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText('🌐 ネットワークエラー')).toBeInTheDocument()
+      expect(screen.getByText('🌐 Network Error')).toBeInTheDocument()
       expect(screen.getByText('Network error')).toBeInTheDocument()
     })
   })
@@ -161,15 +162,15 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(errorResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText('📝 入力エラー')).toBeInTheDocument()
+      expect(screen.getByText('📝 Input Error')).toBeInTheDocument()
       expect(screen.getByText('Array size is incorrect or Invalid input type.')).toBeInTheDocument()
     })
   })
@@ -191,20 +192,20 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(errorResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText('🔢 数値範囲エラー')).toBeInTheDocument()
+      expect(screen.getByText('🔢 Range Error')).toBeInTheDocument()
       expect(screen.getByText('Input validation error: some numbers are out of the allowed range.')).toBeInTheDocument()
-      expect(screen.getByText('問題のある位置:')).toBeInTheDocument()
-      expect(screen.getByText('行 9, 列 8: 値 10')).toBeInTheDocument()
-      expect(screen.getByText('行 9, 列 9: 値 -1')).toBeInTheDocument()
-      expect(screen.getByText('💡 数独の値は1〜9の数字のみ有効です')).toBeInTheDocument()
+      expect(screen.getByText('Problem locations:')).toBeInTheDocument()
+      expect(screen.getByText('Row 9, Col 8: value 10')).toBeInTheDocument()
+      expect(screen.getByText('Row 9, Col 9: value -1')).toBeInTheDocument()
+      expect(screen.getByText('💡 Only numbers 1-9 are valid for Sudoku values')).toBeInTheDocument()
     })
   })
 
@@ -228,23 +229,23 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(errorResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
+      expect(screen.getByText('⚠️ Constraint Violation')).toBeInTheDocument()
       expect(screen.getByText('Input does not meet the required constraints.')).toBeInTheDocument()
-      expect(screen.getByText('問題のある位置:')).toBeInTheDocument()
-      expect(screen.getByText('行 5, 列 9: 値 1')).toBeInTheDocument()
-      expect(screen.getByText('行 8, 列 9: 値 1')).toBeInTheDocument()
-      expect(screen.getByText('行 9, 列 1: 値 1')).toBeInTheDocument()
-      expect(screen.getByText('行 9, 列 8: 値 1')).toBeInTheDocument()
-      expect(screen.getByText('行 9, 列 9: 値 1')).toBeInTheDocument()
-      expect(screen.getByText('💡 数独のルールに違反しています（同じ行・列・ブロックに同じ数字は配置できません）')).toBeInTheDocument()
+      expect(screen.getByText('Problem locations:')).toBeInTheDocument()
+      expect(screen.getByText('Row 5, Col 9: value 1')).toBeInTheDocument()
+      expect(screen.getByText('Row 8, Col 9: value 1')).toBeInTheDocument()
+      expect(screen.getByText('Row 9, Col 1: value 1')).toBeInTheDocument()
+      expect(screen.getByText('Row 9, Col 8: value 1')).toBeInTheDocument()
+      expect(screen.getByText('Row 9, Col 9: value 1')).toBeInTheDocument()
+      expect(screen.getByText('💡 Sudoku rules are violated (same number cannot be placed in the same row, column, or block)')).toBeInTheDocument()
     })
   })
 
@@ -261,37 +262,37 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(errorResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText('🔧 サーバーエラー')).toBeInTheDocument()
+      expect(screen.getByText('🔧 Server Error')).toBeInTheDocument()
       expect(screen.getByText('An internal server error occurred while processing your request.')).toBeInTheDocument()
-      expect(screen.getByText('💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください')).toBeInTheDocument()
+      expect(screen.getByText('💡 An unexpected error occurred on the server. Please try again after a while')).toBeInTheDocument()
     })
   })
 
   it('shows client-side constraint violation before calling API', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     // Set up constraint violation: same number in same row
     const inputs = screen.getAllByRole('textbox')
     fireEvent.change(inputs[0], { target: { value: '1' } }) // First cell
     fireEvent.change(inputs[1], { target: { value: '1' } }) // Second cell in same row
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
-      expect(screen.getByText('数独のルールに違反している箇所があります。')).toBeInTheDocument()
-      expect(screen.getByText('問題のある位置:')).toBeInTheDocument()
+      expect(screen.getByText('⚠️ Constraint Violation')).toBeInTheDocument()
+      expect(screen.getByText('There are locations violating Sudoku rules.')).toBeInTheDocument()
+      expect(screen.getByText('Problem locations:')).toBeInTheDocument()
     })
 
     // Should not call the API due to client-side validation
@@ -310,17 +311,17 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(largeCountResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText(/解の個数:/)).toBeInTheDocument()
+      expect(screen.getByText(/Number of solutions:/)).toBeInTheDocument()
       expect(screen.getByText('1,000,000+')).toBeInTheDocument()
-      expect(screen.getByText('ちょうど')).toBeInTheDocument()
+      expect(screen.getByText('Exactly')).toBeInTheDocument()
     })
   })
 
@@ -336,17 +337,17 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(largeCountResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText(/解の個数:/)).toBeInTheDocument()
+      expect(screen.getByText(/Number of solutions:/)).toBeInTheDocument()
       expect(screen.getByText('1,000,000+')).toBeInTheDocument()
-      expect(screen.queryByText('ちょうど')).not.toBeInTheDocument()
+      expect(screen.queryByText('Exactly')).not.toBeInTheDocument()
     })
   })
 
@@ -362,28 +363,28 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(noSolutionResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByText('解が見つかりませんでした')).toBeInTheDocument()
-      expect(screen.getByText('この問題には解がありません。入力を確認してください。')).toBeInTheDocument()
+      expect(screen.getByText('No solution found')).toBeInTheDocument()
+      expect(screen.getByText('This puzzle has no solution. Please check your input.')).toBeInTheDocument()
     })
 
     // Should not show any solution boards
-    expect(screen.queryByText('解 1')).not.toBeInTheDocument()
+    expect(screen.queryByText('Solution 1')).not.toBeInTheDocument()
   })
 
   it('does not show solution count message in initial state', () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     // Should not show solution count message initially
-    expect(screen.queryByText(/解の個数:/)).not.toBeInTheDocument()
-    expect(screen.queryByText('この問題には解がありません。')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Number of solutions:/)).not.toBeInTheDocument()
+    expect(screen.queryByText('This puzzle has no solution.')).not.toBeInTheDocument()
   })
 
   it('does not show solution count message after clearing board', async () => {
@@ -399,29 +400,29 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(noSolutionResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     // Wait for solution count to appear
     await waitFor(() => {
-      expect(screen.getByText('解が見つかりませんでした')).toBeInTheDocument()
+      expect(screen.getByText('No solution found')).toBeInTheDocument()
     })
 
     // Clear the board
-    const clearButton = screen.getByText('クリア')
+    const clearButton = screen.getByText('Clear')
     fireEvent.click(clearButton)
 
     // Should not show solution count message after clearing
-    expect(screen.queryByText(/解の個数:/)).not.toBeInTheDocument()
-    expect(screen.queryByText('この問題には解がありません。')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Number of solutions:/)).not.toBeInTheDocument()
+    expect(screen.queryByText('This puzzle has no solution.')).not.toBeInTheDocument()
   })
 
   it('shows real-time validation errors during cell input', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
 
@@ -429,15 +430,15 @@ describe('SudokuSolver', () => {
     fireEvent.change(inputs[0], { target: { value: '1' } })
 
     // No error should be shown yet (only one cell)
-    expect(screen.queryByText('⚠️ 制約違反エラー')).not.toBeInTheDocument()
+    expect(screen.queryByText('⚠️ Constraint Violation')).not.toBeInTheDocument()
 
     // Add second cell with same value in same row
     fireEvent.change(inputs[1], { target: { value: '1' } })
 
     // Error should appear immediately without clicking solve
     await waitFor(() => {
-      expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
-      expect(screen.getByText('数独のルールに違反している箇所があります。')).toBeInTheDocument()
+      expect(screen.getByText('⚠️ Constraint Violation')).toBeInTheDocument()
+      expect(screen.getByText('There are locations violating Sudoku rules.')).toBeInTheDocument()
     })
 
     // API should not have been called
@@ -445,7 +446,7 @@ describe('SudokuSolver', () => {
   })
 
   it('ignores zero input (treats it like non-numeric input)', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
 
@@ -456,15 +457,14 @@ describe('SudokuSolver', () => {
     expect(inputs[0]).toHaveValue('')
 
     // No error should appear
-    expect(screen.queryByText('🔢 数値範囲エラー')).not.toBeInTheDocument()
-    expect(screen.queryByText('入力された数値が有効な範囲外です。')).not.toBeInTheDocument()
+    expect(screen.queryByText('🔢 Range Error')).not.toBeInTheDocument()
 
     // API should not have been called
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
   it('clears real-time validation errors when invalid input is removed', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
 
@@ -474,7 +474,7 @@ describe('SudokuSolver', () => {
 
     // Error should appear
     await waitFor(() => {
-      expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
+      expect(screen.getByText('⚠️ Constraint Violation')).toBeInTheDocument()
     })
 
     // Clear one of the conflicting values
@@ -482,19 +482,19 @@ describe('SudokuSolver', () => {
 
     // Error should disappear
     await waitFor(() => {
-      expect(screen.queryByText('⚠️ 制約違反エラー')).not.toBeInTheDocument()
+      expect(screen.queryByText('⚠️ Constraint Violation')).not.toBeInTheDocument()
     })
   })
 
   it('handles edge case where board has NaN values that get filtered out', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     // Input valid values first
     const inputs = screen.getAllByRole('textbox')
     fireEvent.change(inputs[0], { target: { value: '1' } })
     fireEvent.change(inputs[9], { target: { value: '2' } })
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
@@ -504,14 +504,14 @@ describe('SudokuSolver', () => {
   })
 
   it('clears solvedFromBoard when clearing the board', () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     // Add some input
     const inputs = screen.getAllByRole('textbox')
     fireEvent.change(inputs[0], { target: { value: '1' } })
 
     // Clear the board
-    const clearButton = screen.getByText('クリア')
+    const clearButton = screen.getByText('Clear')
     fireEvent.click(clearButton)
 
     // Board should be empty
@@ -570,16 +570,16 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(multipleSolutionsResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
-    const solveButton = screen.getByText('解く')
+    const solveButton = screen.getByText('Solve')
     await act(async () => {
       fireEvent.click(solveButton)
     })
 
     // Wait for solutions to appear
     await waitFor(() => {
-      expect(screen.getByText('解 1 / 3')).toBeInTheDocument()
+      expect(screen.getByText('Solution 1 / 3')).toBeInTheDocument()
     })
 
     // Previous button should be disabled (we're at solution 1)
@@ -592,7 +592,7 @@ describe('SudokuSolver', () => {
     // Navigate to solution 2
     fireEvent.click(nextButton)
     await waitFor(() => {
-      expect(screen.getByText('解 2 / 3')).toBeInTheDocument()
+      expect(screen.getByText('Solution 2 / 3')).toBeInTheDocument()
     })
 
     // Both buttons should be enabled
@@ -602,7 +602,7 @@ describe('SudokuSolver', () => {
     // Navigate to solution 3
     fireEvent.click(nextButton)
     await waitFor(() => {
-      expect(screen.getByText('解 3 / 3')).toBeInTheDocument()
+      expect(screen.getByText('Solution 3 / 3')).toBeInTheDocument()
     })
 
     // Next button should be disabled (we're at the last solution)
@@ -612,12 +612,12 @@ describe('SudokuSolver', () => {
     // Navigate back to solution 2
     fireEvent.click(prevButton)
     await waitFor(() => {
-      expect(screen.getByText('解 2 / 3')).toBeInTheDocument()
+      expect(screen.getByText('Solution 2 / 3')).toBeInTheDocument()
     })
   })
 
   it('shows real-time out-of-range validation errors', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
 
@@ -637,22 +637,22 @@ describe('SudokuSolver', () => {
 
   describe('Sample puzzles', () => {
     it('renders three sample buttons', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
-      expect(screen.getByText('サンプル1')).toBeInTheDocument()
-      expect(screen.getByText('サンプル2')).toBeInTheDocument()
-      expect(screen.getByText('サンプル3')).toBeInTheDocument()
+      expect(screen.getByText('Sample 1')).toBeInTheDocument()
+      expect(screen.getByText('Sample 2')).toBeInTheDocument()
+      expect(screen.getByText('Sample 3')).toBeInTheDocument()
     })
 
     it('loads sample 1 when clicking the button', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
-      const sampleButton = screen.getByText('サンプル1')
+      const sampleButton = screen.getByText('Sample 1')
       fireEvent.click(sampleButton)
 
       const inputs = screen.getAllByRole('textbox')
 
-      // サンプル1の特徴的な値をチェック（2行目の6列目が3）
+      // Sample 1の特徴的な値をチェック（2行目の6列目が3）
       expect(inputs[1 * 9 + 5]).toHaveValue('3')
       // 2行目の8列目が8
       expect(inputs[1 * 9 + 7]).toHaveValue('8')
@@ -663,14 +663,14 @@ describe('SudokuSolver', () => {
     })
 
     it('loads sample 2 when clicking the button', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
-      const sampleButton = screen.getByText('サンプル2')
+      const sampleButton = screen.getByText('Sample 2')
       fireEvent.click(sampleButton)
 
       const inputs = screen.getAllByRole('textbox')
 
-      // サンプル2の特徴的な値をチェック（1行目の4列目が2）
+      // Sample 2の特徴的な値をチェック（1行目の4列目が2）
       expect(inputs[0 * 9 + 3]).toHaveValue('2')
       // 1行目の7列目が7
       expect(inputs[0 * 9 + 6]).toHaveValue('7')
@@ -681,14 +681,14 @@ describe('SudokuSolver', () => {
     })
 
     it('loads sample 3 when clicking the button', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
-      const sampleButton = screen.getByText('サンプル3')
+      const sampleButton = screen.getByText('Sample 3')
       fireEvent.click(sampleButton)
 
       const inputs = screen.getAllByRole('textbox')
 
-      // サンプル3の特徴的な値をチェック（1行目の1列目が8）
+      // Sample 3の特徴的な値をチェック（1行目の1列目が8）
       expect(inputs[0 * 9 + 0]).toHaveValue('8')
       // 1行目の9列目が3
       expect(inputs[0 * 9 + 8]).toHaveValue('3')
@@ -699,7 +699,7 @@ describe('SudokuSolver', () => {
     })
 
     it('clears previous errors when loading a sample', async () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       // まず制約違反のエラーを発生させる
       const inputs = screen.getAllByRole('textbox')
@@ -708,15 +708,15 @@ describe('SudokuSolver', () => {
 
       // エラーが表示されることを確認
       await waitFor(() => {
-        expect(screen.getByText('⚠️ 制約違反エラー')).toBeInTheDocument()
+        expect(screen.getByText('⚠️ Constraint Violation')).toBeInTheDocument()
       })
 
       // サンプルをロード
-      const sampleButton = screen.getByText('サンプル1')
+      const sampleButton = screen.getByText('Sample 1')
       fireEvent.click(sampleButton)
 
-      // エラーがクリアされることを確認
-      expect(screen.queryByText('⚠️ 制約違反エラー')).not.toBeInTheDocument()
+      // エラーがClearされることを確認
+      expect(screen.queryByText('⚠️ Constraint Violation')).not.toBeInTheDocument()
     })
 
     it('disables sample buttons while loading', async () => {
@@ -729,34 +729,34 @@ describe('SudokuSolver', () => {
         )
       )
 
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
-      const solveButton = screen.getByText('解く')
+      const solveButton = screen.getByText('Solve')
       await act(async () => {
         fireEvent.click(solveButton)
       })
 
       // ローディング中はサンプルボタンが無効になる
-      expect(screen.getByText('サンプル1')).toBeDisabled()
-      expect(screen.getByText('サンプル2')).toBeDisabled()
-      expect(screen.getByText('サンプル3')).toBeDisabled()
+      expect(screen.getByText('Sample 1')).toBeDisabled()
+      expect(screen.getByText('Sample 2')).toBeDisabled()
+      expect(screen.getByText('Sample 3')).toBeDisabled()
 
       await waitFor(() => {
-        expect(screen.queryByText('解いています...')).not.toBeInTheDocument()
+        expect(screen.queryByText('Solving...')).not.toBeInTheDocument()
       })
     })
   })
 
   describe('Mobile mode', () => {
     it('does not show NumberPad (mobile mode is disabled for better UX)', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       // NumberPad should not be shown - using traditional keyboard input
-      expect(screen.queryByText('セルをタップして選択してください')).not.toBeInTheDocument()
+      expect(screen.queryByText('Tap a cell to select')).not.toBeInTheDocument()
     })
 
     it('renders input fields for cell entry', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       // Should have 81 input fields (traditional keyboard input)
       expect(screen.getAllByRole('textbox')).toHaveLength(81)
