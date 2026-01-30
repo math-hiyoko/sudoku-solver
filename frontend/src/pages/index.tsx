@@ -1,35 +1,58 @@
 import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
+import { useTranslation } from "react-i18next"
 import SudokuSolver from "../components/SudokuSolver"
+import LanguageSwitcher from "../components/LanguageSwitcher"
 
 const IndexPage: React.FC<PageProps> = () => {
-  return <SudokuSolver />
+  return (
+    <>
+      <LanguageSwitcher />
+      <SudokuSolver />
+    </>
+  )
 }
 
 export default IndexPage
 
-export const Head: HeadFC = () => (
-  <>
-    <title>数独ソルバー | 無料オンライン数独解答ツール</title>
-    <meta name="description" content="数独を自動で解く無料オンラインツール。問題を入力するだけで、瞬時に解答を表示します。複数の解がある場合も全て表示可能。9x9の数独パズルに対応。" />
-    <meta name="keywords" content="数独,ナンプレ,ソルバー,解答,パズル,無料,オンライン,sudoku,solver" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+export const Head: HeadFC = () => {
+  const { t, i18n } = useTranslation()
+  const currentLang = i18n.language || 'en'
 
-    {/* Open Graph / Facebook */}
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="数独ソルバー | 無料オンライン数独解答ツール" />
-    <meta property="og:description" content="数独を自動で解く無料オンラインツール。問題を入力するだけで、瞬時に解答を表示します。" />
+  const getLanguageName = (lang: string): string => {
+    const languageNames: Record<string, string> = {
+      en: 'English',
+      fr: 'French',
+      zh: 'Chinese',
+      ja: 'Japanese',
+    }
+    return languageNames[lang] || 'English'
+  }
 
-    {/* Twitter */}
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="数独ソルバー | 無料オンライン数独解答ツール" />
-    <meta name="twitter:description" content="数独を自動で解く無料オンラインツール。問題を入力するだけで、瞬時に解答を表示します。" />
+  return (
+    <>
+      <title>{t('app.siteTitle')}</title>
+      <meta name="description" content={t('app.description')} />
+      <meta name="keywords" content={t('app.keywords')} />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <html lang={currentLang} />
 
-    {/* Additional SEO */}
-    <meta name="robots" content="index, follow" />
-    <meta name="language" content="Japanese" />
-    <meta name="author" content="数独ソルバー" />
-  </>
-)
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content={t('app.siteTitle')} />
+      <meta property="og:description" content={t('app.description')} />
+
+      {/* Twitter */}
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content={t('app.siteTitle')} />
+      <meta name="twitter:description" content={t('app.description')} />
+
+      {/* Additional SEO */}
+      <meta name="robots" content="index, follow" />
+      <meta name="language" content={getLanguageName(currentLang)} />
+      <meta name="author" content={t('app.title')} />
+    </>
+  )
+}

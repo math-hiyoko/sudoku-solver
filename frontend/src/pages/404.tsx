@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Link, HeadFC, PageProps } from "gatsby"
+import { useTranslation } from "react-i18next"
 
 const pageStyles = {
   color: "#232129",
@@ -24,9 +25,10 @@ const codeStyles = {
 }
 
 const NotFoundPage: React.FC<PageProps> = () => {
+  const { t } = useTranslation()
   return (
     <main style={pageStyles}>
-      <h1 style={headingStyles}>Page not found</h1>
+      <h1 style={headingStyles}>{t('notFound.heading')}</h1>
       <p style={paragraphStyles}>
         Sorry 😔, we couldn’t find what you were looking for.
         <br />
@@ -46,9 +48,12 @@ const NotFoundPage: React.FC<PageProps> = () => {
 
 export default NotFoundPage
 
-export const Head: HeadFC = () => (
-  <>
-    <title>ページが見つかりません | 数独ソルバー</title>
-    <meta name="robots" content="noindex, nofollow" />
-  </>
-)
+export const Head: HeadFC = () => {
+  const { t } = useTranslation()
+  return (
+    <>
+      <title>{t('notFound.title')}</title>
+      <meta name="robots" content="noindex, nofollow" />
+    </>
+  )
+}

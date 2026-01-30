@@ -1,0 +1,71 @@
+{
+  "app": {
+    "title": "数独ソルバー",
+    "siteTitle": "数独ソルバー | 無料オンライン数独解答ツール",
+    "description": "数独を自動で解く無料オンラインツール。問題を入力するだけで、瞬時に解答を表示します。複数の解がある場合も全て表示可能。9x9の数独パズルに対応。",
+    "keywords": "数独,ナンプレ,ソルバー,解答,パズル,無料,オンライン,sudoku,solver"
+  },
+  "board": {
+    "inputPrompt": "問題を入力してください",
+    "cellLabel": "セル {{row}}行 {{col}}列{{value}}",
+    "cellValue": ", 値 {{value}}",
+    "cellEmpty": ", 空"
+  },
+  "numberPad": {
+    "selectedCell": "選択中: {{row}}行 {{col}}列",
+    "tapToSelect": "セルをタップして選択してください",
+    "inputNumber": "数字{{num}}を入力",
+    "clearCell": "セルをクリア",
+    "clear": "クリア"
+  },
+  "solver": {
+    "solving": "解いています...",
+    "solve": "解く",
+    "clear": "クリア",
+    "exactly": "ちょうど",
+    "solutionCount": "解の個数:",
+    "displayingSolutions": "個の解を表示中",
+    "swipeInstruction": "(左右スワイプで切替)",
+    "solutionCounter": "解 {{index}} / {{total}}",
+    "back": "戻る",
+    "noSolutionFound": "解が見つかりませんでした",
+    "noSolutionMessage": "この問題には解がありません。入力を確認してください。"
+  },
+  "samples": {
+    "sample1": "サンプル1",
+    "sample2": "サンプル2",
+    "sample3": "サンプル3"
+  },
+  "errors": {
+    "inputError": {
+      "label": "📝 入力エラー",
+      "hint": "💡 数独の値は1〜9の数字のみ有効です"
+    },
+    "rangeError": {
+      "label": "🔢 数値範囲エラー",
+      "hint": "💡 数独の値は1〜9の数字のみ有効です"
+    },
+    "constraintError": {
+      "label": "⚠️ 制約違反エラー",
+      "hint": "💡 数独のルールに違反しています（同じ行・列・ブロックに同じ数字は配置できません）"
+    },
+    "serverError": {
+      "label": "🔧 サーバーエラー",
+      "hint": "💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください"
+    },
+    "networkError": {
+      "label": "🌐 ネットワークエラー",
+      "hint": "💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください"
+    },
+    "invalidBoardSize": "盤面のサイズが正しくありません。",
+    "outOfRange": "入力された数値が有効な範囲外です。",
+    "constraintViolation": "数独のルールに違反している箇所があります。",
+    "problemLocations": "問題のある位置:",
+    "locationDetail": "行 {{row}}, 列 {{col}}: 値 {{value}}",
+    "networkErrorOccurred": "ネットワークエラーが発生しました"
+  },
+  "notFound": {
+    "title": "ページが見つかりません | 数独ソルバー",
+    "heading": "Page not found"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "app": {
+    "title": "数独求解器",
+    "siteTitle": "数独求解器 | 免费在线数独解答工具",
+    "description": "免费在线自动解决数独谜题的工具。只需输入谜题即可立即显示解决方案。当存在多个解决方案时，可以显示所有解决方案。支持9x9数独谜题。",
+    "keywords": "数独,求解器,解决方案,谜题,免费,在线"
+  },
+  "board": {
+    "inputPrompt": "请输入谜题",
+    "cellLabel": "单元格 第{{row}}行 第{{col}}列{{value}}",
+    "cellValue": ", 值 {{value}}",
+    "cellEmpty": ", 空"
+  },
+  "numberPad": {
+    "selectedCell": "已选择：第{{row}}行 第{{col}}列",
+    "tapToSelect": "点击单元格进行选择",
+    "inputNumber": "输入数字{{num}}",
+    "clearCell": "清除单元格",
+    "clear": "清除"
+  },
+  "solver": {
+    "solving": "求解中...",
+    "solve": "求解",
+    "clear": "清除",
+    "exactly": "恰好",
+    "solutionCount": "解决方案数量：",
+    "displayingSolutions": "个解决方案已显示",
+    "swipeInstruction": "（左右滑动切换）",
+    "solutionCounter": "解决方案 {{index}} / {{total}}",
+    "back": "返回",
+    "noSolutionFound": "未找到解决方案",
+    "noSolutionMessage": "此谜题没有解决方案。请检查您的输入。"
+  },
+  "samples": {
+    "sample1": "示例1",
+    "sample2": "示例2",
+    "sample3": "示例3"
+  },
+  "errors": {
+    "inputError": {
+      "label": "📝 输入错误",
+      "hint": "💡 数独值只能是1-9的数字"
+    },
+    "rangeError": {
+      "label": "🔢 范围错误",
+      "hint": "💡 数独值只能是1-9的数字"
+    },
+    "constraintError": {
+      "label": "⚠️ 约束违规",
+      "hint": "💡 违反了数独规则（同一行、列或块中不能放置相同的数字）"
+    },
+    "serverError": {
+      "label": "🔧 服务器错误",
+      "hint": "💡 发生了意外的服务器错误。请稍后重试"
+    },
+    "networkError": {
+      "label": "🌐 网络错误",
+      "hint": "💡 发生了意外的服务器错误。请稍后重试"
+    },
+    "invalidBoardSize": "棋盘大小不正确。",
+    "outOfRange": "输入值超出有效范围。",
+    "constraintViolation": "存在违反数独规则的位置。",
+    "problemLocations": "问题位置：",
+    "locationDetail": "第{{row}}行，第{{col}}列：值 {{value}}",
+    "networkErrorOccurred": "发生了网络错误"
+  },
+  "notFound": {
+    "title": "页面未找到 | 数独求解器",
+    "heading": "页面未找到"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "app": {
+    "title": "Solveur de Sudoku",
+    "siteTitle": "Solveur de Sudoku | Outil gratuit de résolution de Sudoku en ligne",
+    "description": "Un outil gratuit en ligne pour résoudre automatiquement les puzzles de Sudoku. Entrez simplement le puzzle et affichez instantanément la solution. Peut afficher toutes les solutions lorsque plusieurs solutions existent. Prend en charge les puzzles de Sudoku 9x9.",
+    "keywords": "sudoku,solveur,solution,puzzle,gratuit,en ligne"
+  },
+  "board": {
+    "inputPrompt": "Veuillez entrer le puzzle",
+    "cellLabel": "Cellule ligne {{row}} colonne {{col}}{{value}}",
+    "cellValue": ", valeur {{value}}",
+    "cellEmpty": ", vide"
+  },
+  "numberPad": {
+    "selectedCell": "Sélectionné : Ligne {{row}} Col {{col}}",
+    "tapToSelect": "Appuyez sur une cellule pour sélectionner",
+    "inputNumber": "Entrer le numéro {{num}}",
+    "clearCell": "Effacer la cellule",
+    "clear": "Effacer"
+  },
+  "solver": {
+    "solving": "Résolution...",
+    "solve": "Résoudre",
+    "clear": "Effacer",
+    "exactly": "Exactement",
+    "solutionCount": "Nombre de solutions :",
+    "displayingSolutions": "solutions affichées",
+    "swipeInstruction": "(Balayer à gauche/droite pour changer)",
+    "solutionCounter": "Solution {{index}} / {{total}}",
+    "back": "Retour",
+    "noSolutionFound": "Aucune solution trouvée",
+    "noSolutionMessage": "Ce puzzle n'a pas de solution. Veuillez vérifier votre saisie."
+  },
+  "samples": {
+    "sample1": "Exemple 1",
+    "sample2": "Exemple 2",
+    "sample3": "Exemple 3"
+  },
+  "errors": {
+    "inputError": {
+      "label": "📝 Erreur de saisie",
+      "hint": "💡 Seuls les nombres de 1 à 9 sont valides pour les valeurs de Sudoku"
+    },
+    "rangeError": {
+      "label": "🔢 Erreur de plage",
+      "hint": "💡 Seuls les nombres de 1 à 9 sont valides pour les valeurs de Sudoku"
+    },
+    "constraintError": {
+      "label": "⚠️ Violation de contrainte",
+      "hint": "💡 Les règles du Sudoku sont violées (le même nombre ne peut pas être placé dans la même ligne, colonne ou bloc)"
+    },
+    "serverError": {
+      "label": "🔧 Erreur du serveur",
+      "hint": "💡 Une erreur inattendue du serveur s'est produite. Veuillez réessayer plus tard"
+    },
+    "networkError": {
+      "label": "🌐 Erreur réseau",
+      "hint": "💡 Une erreur inattendue du serveur s'est produite. Veuillez réessayer plus tard"
+    },
+    "invalidBoardSize": "La taille du plateau est incorrecte.",
+    "outOfRange": "La valeur d'entrée est hors de la plage valide.",
+    "constraintViolation": "Il y a des emplacements qui violent les règles du Sudoku.",
+    "problemLocations": "Emplacements problématiques :",
+    "locationDetail": "Ligne {{row}}, Colonne {{col}} : Valeur {{value}}",
+    "networkErrorOccurred": "Une erreur réseau s'est produite"
+  },
+  "notFound": {
+    "title": "Page non trouvée | Solveur de Sudoku",
+    "heading": "Page non trouvée"
+  }
+}
