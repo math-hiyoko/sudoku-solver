@@ -28,8 +28,10 @@
     "gatsby-plugin-robots-txt": "^1.8.0",
     "gatsby-plugin-sitemap": "^6.15.0",
     "graphql": "^16.0.0",
+    "i18next": "^25.8.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-i18next": "^16.5.4"
   },
   "resolutions": {
     "graphql": "^16.0.0"
