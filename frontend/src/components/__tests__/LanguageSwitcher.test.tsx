@@ -9,51 +9,43 @@ describe('LanguageSwitcher', () => {
     jest.clearAllMocks()
   })
 
-  it('renders all language buttons', () => {
+  it('renders language selector dropdown', () => {
     renderWithI18n(<LanguageSwitcher />)
 
-    expect(screen.getByRole('button', { name: 'Switch to English' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Switch to French' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Switch to Chinese' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Switch to Japanese' })).toBeInTheDocument()
+    const select = screen.getByRole('combobox', { name: 'Select language' })
+    expect(select).toBeInTheDocument()
   })
 
-  it('displays correct button labels', () => {
+  it('displays all language options', () => {
     renderWithI18n(<LanguageSwitcher />)
 
-    expect(screen.getByText('EN')).toBeInTheDocument()
-    expect(screen.getByText('FR')).toBeInTheDocument()
-    expect(screen.getByText('中文')).toBeInTheDocument()
-    expect(screen.getByText('日本語')).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '日本語' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Français' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '中文' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument()
   })
 
-  it('highlights the current language button (English)', () => {
+  it('shows current language as selected (English)', () => {
     renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
-    const enButton = screen.getByRole('button', { name: 'Switch to English' })
-    const frButton = screen.getByRole('button', { name: 'Switch to French' })
-
-    expect(enButton).toHaveStyle({ fontWeight: '700', backgroundColor: '#007bff' })
-    expect(frButton).toHaveStyle({ fontWeight: '400', backgroundColor: '#f0f0f0' })
+    const select = screen.getByRole('combobox', { name: 'Select language' }) as HTMLSelectElement
+    expect(select.value).toBe('en')
   })
 
-  it('highlights the current language button (Japanese)', () => {
+  it('shows current language as selected (Japanese)', () => {
     renderWithI18n(<LanguageSwitcher />, { language: 'ja' })
 
-    const jaButton = screen.getByRole('button', { name: 'Switch to Japanese' })
-    const enButton = screen.getByRole('button', { name: 'Switch to English' })
-
-    expect(jaButton).toHaveStyle({ fontWeight: '700', backgroundColor: '#007bff' })
-    expect(enButton).toHaveStyle({ fontWeight: '400', backgroundColor: '#f0f0f0' })
+    const select = screen.getByRole('combobox', { name: 'Select language' }) as HTMLSelectElement
+    expect(select.value).toBe('ja')
   })
 
-  it('changes language when button is clicked', () => {
+  it('changes language when option is selected', () => {
     const { i18n } = renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
     expect(i18n.language).toBe('en')
 
-    const frButton = screen.getByRole('button', { name: 'Switch to French' })
-    fireEvent.click(frButton)
+    const select = screen.getByRole('combobox', { name: 'Select language' })
+    fireEvent.change(select, { target: { value: 'fr' } })
 
     expect(i18n.language).toBe('fr')
   })
@@ -62,8 +54,8 @@ describe('LanguageSwitcher', () => {
     const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
     renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
-    const zhButton = screen.getByRole('button', { name: 'Switch to Chinese' })
-    fireEvent.click(zhButton)
+    const select = screen.getByRole('combobox', { name: 'Select language' })
+    fireEvent.change(select, { target: { value: 'zh' } })
 
     expect(setItemSpy).toHaveBeenCalledWith('language', 'zh')
     setItemSpy.mockRestore()
@@ -72,8 +64,8 @@ describe('LanguageSwitcher', () => {
   it('updates document language attribute when language is changed', () => {
     renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
-    const jaButton = screen.getByRole('button', { name: 'Switch to Japanese' })
-    fireEvent.click(jaButton)
+    const select = screen.getByRole('combobox', { name: 'Select language' })
+    fireEvent.change(select, { target: { value: 'ja' } })
 
     expect(document.documentElement.lang).toBe('ja')
   })
@@ -81,30 +73,33 @@ describe('LanguageSwitcher', () => {
   it('allows switching between all 4 languages', () => {
     const { i18n } = renderWithI18n(<LanguageSwitcher />, { language: 'en' })
 
+    const select = screen.getByRole('combobox', { name: 'Select language' })
+
     // Start with English
     expect(i18n.language).toBe('en')
 
     // Switch to French
-    fireEvent.click(screen.getByRole('button', { name: 'Switch to French' }))
+    fireEvent.change(select, { target: { value: 'fr' } })
     expect(i18n.language).toBe('fr')
 
     // Switch to Chinese
-    fireEvent.click(screen.getByRole('button', { name: 'Switch to Chinese' }))
+    fireEvent.change(select, { target: { value: 'zh' } })
     expect(i18n.language).toBe('zh')
 
     // Switch to Japanese
-    fireEvent.click(screen.getByRole('button', { name: 'Switch to Japanese' }))
+    fireEvent.change(select, { target: { value: 'ja' } })
     expect(i18n.language).toBe('ja')
 
     // Switch back to English
-    fireEvent.click(screen.getByRole('button', { name: 'Switch to English' }))
+    fireEvent.change(select, { target: { value: 'en' } })
     expect(i18n.language).toBe('en')
   })
 
   it('has correct styling for language switcher container', () => {
     renderWithI18n(<LanguageSwitcher />)
 
-    const container = screen.getByRole('button', { name: 'Switch to English' }).parentElement
+    const select = screen.getByRole('combobox', { name: 'Select language' })
+    const container = select.parentElement
 
     expect(container).toHaveStyle({
       position: 'fixed',
@@ -121,36 +116,36 @@ describe('LanguageSwitcher', () => {
       expect(i18n.language).toBe('en')
     })
 
-    it('highlights English button by default', () => {
+    it('shows English as selected by default', () => {
       renderWithI18n(<LanguageSwitcher />)
 
-      const enButton = screen.getByRole('button', { name: 'Switch to English' })
-      expect(enButton).toHaveStyle({ fontWeight: '700', backgroundColor: '#007bff' })
+      const select = screen.getByRole('combobox', { name: 'Select language' }) as HTMLSelectElement
+      expect(select.value).toBe('en')
     })
   })
 
-  describe('Language button order', () => {
-    it('displays language buttons in correct order: Japanese, French, Chinese, English', () => {
+  describe('Language option order', () => {
+    it('displays language options in correct order: Japanese, French, Chinese, English', () => {
       renderWithI18n(<LanguageSwitcher />)
 
-      const allButtons = screen.getAllByRole('button')
+      const options = screen.getAllByRole('option')
 
-      expect(allButtons).toHaveLength(4)
-      expect(allButtons[0]).toHaveAttribute('aria-label', 'Switch to Japanese')
-      expect(allButtons[1]).toHaveAttribute('aria-label', 'Switch to French')
-      expect(allButtons[2]).toHaveAttribute('aria-label', 'Switch to Chinese')
-      expect(allButtons[3]).toHaveAttribute('aria-label', 'Switch to English')
+      expect(options).toHaveLength(4)
+      expect(options[0]).toHaveValue('ja')
+      expect(options[1]).toHaveValue('fr')
+      expect(options[2]).toHaveValue('zh')
+      expect(options[3]).toHaveValue('en')
     })
 
     it('displays language labels in correct order', () => {
       renderWithI18n(<LanguageSwitcher />)
 
-      const allButtons = screen.getAllByRole('button')
+      const options = screen.getAllByRole('option')
 
-      expect(allButtons[0]).toHaveTextContent('日本語')
-      expect(allButtons[1]).toHaveTextContent('FR')
-      expect(allButtons[2]).toHaveTextContent('中文')
-      expect(allButtons[3]).toHaveTextContent('EN')
+      expect(options[0]).toHaveTextContent('日本語')
+      expect(options[1]).toHaveTextContent('Français')
+      expect(options[2]).toHaveTextContent('中文')
+      expect(options[3]).toHaveTextContent('English')
     })
 
     it('maintains correct order across different starting languages', () => {
@@ -159,11 +154,11 @@ describe('LanguageSwitcher', () => {
       languages.forEach((lang) => {
         const { unmount } = renderWithI18n(<LanguageSwitcher />, { language: lang })
 
-        const allButtons = screen.getAllByRole('button')
-        expect(allButtons[0]).toHaveAttribute('aria-label', 'Switch to Japanese')
-        expect(allButtons[1]).toHaveAttribute('aria-label', 'Switch to French')
-        expect(allButtons[2]).toHaveAttribute('aria-label', 'Switch to Chinese')
-        expect(allButtons[3]).toHaveAttribute('aria-label', 'Switch to English')
+        const options = screen.getAllByRole('option')
+        expect(options[0]).toHaveValue('ja')
+        expect(options[1]).toHaveValue('fr')
+        expect(options[2]).toHaveValue('zh')
+        expect(options[3]).toHaveValue('en')
 
         unmount()
       })
