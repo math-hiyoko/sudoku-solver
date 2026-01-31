@@ -19,10 +19,10 @@ describe('LanguageSwitcher', () => {
   it('displays all language options', () => {
     renderWithI18n(<LanguageSwitcher />)
 
-    expect(screen.getByRole('option', { name: '日本語' })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: 'Français' })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: '中文' })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: /日本語/ })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: /Français/ })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: /中文/ })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: /English/ })).toBeInTheDocument()
   })
 
   it('shows current language as selected (English)', () => {
@@ -103,8 +103,8 @@ describe('LanguageSwitcher', () => {
 
     expect(container).toHaveStyle({
       position: 'fixed',
-      top: '20px',
-      right: '20px',
+      top: '10px',
+      right: '10px',
       zIndex: '1000',
     })
   })
@@ -137,15 +137,15 @@ describe('LanguageSwitcher', () => {
       expect(options[3]).toHaveValue('en')
     })
 
-    it('displays language labels in correct order', () => {
+    it('displays language labels with flags in correct order', () => {
       renderWithI18n(<LanguageSwitcher />)
 
       const options = screen.getAllByRole('option')
 
-      expect(options[0]).toHaveTextContent('日本語')
-      expect(options[1]).toHaveTextContent('Français')
-      expect(options[2]).toHaveTextContent('中文')
-      expect(options[3]).toHaveTextContent('English')
+      expect(options[0]).toHaveTextContent('🇯🇵 日本語')
+      expect(options[1]).toHaveTextContent('🇫🇷 Français')
+      expect(options[2]).toHaveTextContent('🇨🇳 中文')
+      expect(options[3]).toHaveTextContent('🇬🇧 English')
     })
 
     it('maintains correct order across different starting languages', () => {

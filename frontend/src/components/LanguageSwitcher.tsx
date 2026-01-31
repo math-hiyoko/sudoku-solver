@@ -3,15 +3,16 @@ import { useTranslation } from 'react-i18next'
 
 interface Language {
   code: string
+  flag: string
   label: string
   ariaLabel: string
 }
 
 const LANGUAGES: Language[] = [
-  { code: 'ja', label: '日本語', ariaLabel: 'Switch to Japanese' },
-  { code: 'fr', label: 'Français', ariaLabel: 'Switch to French' },
-  { code: 'zh', label: '中文', ariaLabel: 'Switch to Chinese' },
-  { code: 'en', label: 'English', ariaLabel: 'Switch to English' },
+  { code: 'ja', flag: '🇯🇵', label: '日本語', ariaLabel: 'Switch to Japanese' },
+  { code: 'fr', flag: '🇫🇷', label: 'Français', ariaLabel: 'Switch to French' },
+  { code: 'zh', flag: '🇨🇳', label: '中文', ariaLabel: 'Switch to Chinese' },
+  { code: 'en', flag: '🇬🇧', label: 'English', ariaLabel: 'Switch to English' },
 ]
 
 const LanguageSwitcher: React.FC = () => {
@@ -28,20 +29,23 @@ const LanguageSwitcher: React.FC = () => {
 
   const currentLanguage = i18n.language || 'en'
 
+  const currentLang = LANGUAGES.find(l => l.code === currentLanguage) || LANGUAGES[3]
+
   return (
     <div style={{
       position: 'fixed',
-      top: '20px',
-      right: '20px',
+      top: '10px',
+      right: '10px',
       zIndex: 1000,
     }}>
       <select
         value={currentLanguage}
         onChange={changeLanguage}
         aria-label="Select language"
+        title={currentLang.label}
         style={{
-          padding: '8px 12px',
-          fontSize: '14px',
+          padding: '6px 8px',
+          fontSize: '20px',
           fontWeight: '500',
           backgroundColor: 'white',
           color: '#333',
@@ -51,6 +55,7 @@ const LanguageSwitcher: React.FC = () => {
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           outline: 'none',
           transition: 'all 0.2s ease',
+          minWidth: '50px',
         }}
         onFocus={(e) => {
           e.target.style.borderColor = '#007bff'
@@ -66,7 +71,7 @@ const LanguageSwitcher: React.FC = () => {
             key={language.code}
             value={language.code}
           >
-            {language.label}
+            {language.flag} {language.label}
           </option>
         ))}
       </select>
