@@ -762,4 +762,87 @@ describe('SudokuSolver', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(81)
     })
   })
+
+  describe('Advertisement integration', () => {
+    it('renders footer ad component', () => {
+      const { container } = renderWithI18n(<SudokuSolver />)
+
+      // Check for the footer ad container
+      const adContainer = container.querySelector('script[src*="adm.shinobi.jp"]')
+      expect(adContainer).toBeInTheDocument()
+    })
+
+    it('shows interstitial ad when back button is clicked', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockApiResponse)
+      })
+
+      renderWithI18n(<SudokuSolver />)
+
+      // Solve the puzzle first
+      const solveButton = screen.getByText('解く')
+      await act(async () => {
+        fireEvent.click(solveButton)
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText(/解の個数:/)).toBeInTheDocument()
+      })
+
+      // Click back button
+      const backButton = screen.getByText('戻る')
+      fireEvent.click(backButton)
+
+      // Interstitial ad should appear with countdown
+      await waitFor(() => {
+        expect(screen.getByText(/秒|閉じる/)).toBeInTheDocument()
+      })
+    })
+
+    it('returns to input mode after closing interstitial ad', async () => {
+      jest.useFakeTimers()
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockApiResponse)
+      })
+
+      renderWithI18n(<SudokuSolver />)
+
+      // Solve the puzzle
+      const solveButton = screen.getByText('解く')
+      await act(async () => {
+        fireEvent.click(solveButton)
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText(/解の個数:/)).toBeInTheDocument()
+      })
+
+      // Click back button
+      const backButton = screen.getByText('戻る')
+      await act(async () => {
+        fireEvent.click(backButton)
+      })
+
+      // Wait for countdown
+      await act(async () => {
+        jest.advanceTimersByTime(3000)
+      })
+
+      // Click close button
+      const closeButton = screen.getByText('閉じる')
+      await act(async () => {
+        fireEvent.click(closeButton)
+      })
+
+      // Should return to input mode
+      await waitFor(() => {
+        expect(screen.getByText('問題を入力してください')).toBeInTheDocument()
+      })
+
+      jest.useRealTimers()
+    })
+  })
 })
