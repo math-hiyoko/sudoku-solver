@@ -17,16 +17,16 @@ export default IndexPage
 
 export const Head: HeadFC = () => {
   const { t, i18n } = useTranslation()
-  const currentLang = i18n.language || 'en'
+  const currentLang = i18n.language || 'ja'
 
   const getLanguageName = (lang: string): string => {
     const languageNames: Record<string, string> = {
+      ja: 'Japanese',
       en: 'English',
       fr: 'French',
       zh: 'Chinese',
-      ja: 'Japanese',
     }
-    return languageNames[lang] || 'English'
+    return languageNames[lang] || 'Japanese'
   }
 
   return (
