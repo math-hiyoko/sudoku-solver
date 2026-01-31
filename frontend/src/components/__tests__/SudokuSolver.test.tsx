@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
+import { screen, fireEvent, waitFor, act } from '@testing-library/react'
+import { renderWithI18n } from '../../__tests__/utils/i18n-test-utils'
 import SudokuSolver from '../SudokuSolver'
 
 // Mock environment variables
@@ -48,25 +49,25 @@ describe('SudokuSolver', () => {
   })
 
   it('renders main heading', () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
     expect(screen.getByText('数独ソルバー')).toBeInTheDocument()
   })
 
   it('renders solve and clear buttons', () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
     expect(screen.getByText('解く')).toBeInTheDocument()
     expect(screen.getByText('クリア')).toBeInTheDocument()
   })
 
   it('renders input board', () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
     expect(screen.getByText('問題を入力してください')).toBeInTheDocument()
     const inputs = screen.getAllByRole('textbox')
     expect(inputs).toHaveLength(81)
   })
 
   it('clears board when clear button is clicked', () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
     fireEvent.change(inputs[0], { target: { value: '5' } })
@@ -88,7 +89,7 @@ describe('SudokuSolver', () => {
       )
     )
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -109,7 +110,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(mockApiResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
 
@@ -134,7 +135,7 @@ describe('SudokuSolver', () => {
   it('shows error message on API failure', async () => {
     mockFetch.mockRejectedValue(new Error('Network error'))
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
 
@@ -161,7 +162,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(errorResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -191,7 +192,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(errorResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -228,7 +229,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(errorResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -261,7 +262,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(errorResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -276,7 +277,7 @@ describe('SudokuSolver', () => {
   })
 
   it('shows client-side constraint violation before calling API', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     // Set up constraint violation: same number in same row
     const inputs = screen.getAllByRole('textbox')
@@ -310,7 +311,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(largeCountResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -336,7 +337,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(largeCountResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -362,7 +363,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(noSolutionResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -379,7 +380,7 @@ describe('SudokuSolver', () => {
   })
 
   it('does not show solution count message in initial state', () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     // Should not show solution count message initially
     expect(screen.queryByText(/解の個数:/)).not.toBeInTheDocument()
@@ -399,7 +400,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(noSolutionResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -421,7 +422,7 @@ describe('SudokuSolver', () => {
   })
 
   it('shows real-time validation errors during cell input', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
 
@@ -445,7 +446,7 @@ describe('SudokuSolver', () => {
   })
 
   it('ignores zero input (treats it like non-numeric input)', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
 
@@ -457,14 +458,13 @@ describe('SudokuSolver', () => {
 
     // No error should appear
     expect(screen.queryByText('🔢 数値範囲エラー')).not.toBeInTheDocument()
-    expect(screen.queryByText('入力された数値が有効な範囲外です。')).not.toBeInTheDocument()
 
     // API should not have been called
     expect(mockFetch).not.toHaveBeenCalled()
   })
 
   it('clears real-time validation errors when invalid input is removed', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
 
@@ -487,7 +487,7 @@ describe('SudokuSolver', () => {
   })
 
   it('handles edge case where board has NaN values that get filtered out', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     // Input valid values first
     const inputs = screen.getAllByRole('textbox')
@@ -504,7 +504,7 @@ describe('SudokuSolver', () => {
   })
 
   it('clears solvedFromBoard when clearing the board', () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     // Add some input
     const inputs = screen.getAllByRole('textbox')
@@ -570,7 +570,7 @@ describe('SudokuSolver', () => {
       json: () => Promise.resolve(multipleSolutionsResponse)
     })
 
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const solveButton = screen.getByText('解く')
     await act(async () => {
@@ -617,7 +617,7 @@ describe('SudokuSolver', () => {
   })
 
   it('shows real-time out-of-range validation errors', async () => {
-    render(<SudokuSolver />)
+    renderWithI18n(<SudokuSolver />)
 
     const inputs = screen.getAllByRole('textbox')
 
@@ -637,7 +637,7 @@ describe('SudokuSolver', () => {
 
   describe('Sample puzzles', () => {
     it('renders three sample buttons', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       expect(screen.getByText('サンプル1')).toBeInTheDocument()
       expect(screen.getByText('サンプル2')).toBeInTheDocument()
@@ -645,14 +645,14 @@ describe('SudokuSolver', () => {
     })
 
     it('loads sample 1 when clicking the button', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       const sampleButton = screen.getByText('サンプル1')
       fireEvent.click(sampleButton)
 
       const inputs = screen.getAllByRole('textbox')
 
-      // サンプル1の特徴的な値をチェック（2行目の6列目が3）
+      // Sample 1の特徴的な値をチェック（2行目の6列目が3）
       expect(inputs[1 * 9 + 5]).toHaveValue('3')
       // 2行目の8列目が8
       expect(inputs[1 * 9 + 7]).toHaveValue('8')
@@ -663,14 +663,14 @@ describe('SudokuSolver', () => {
     })
 
     it('loads sample 2 when clicking the button', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       const sampleButton = screen.getByText('サンプル2')
       fireEvent.click(sampleButton)
 
       const inputs = screen.getAllByRole('textbox')
 
-      // サンプル2の特徴的な値をチェック（1行目の4列目が2）
+      // Sample 2の特徴的な値をチェック（1行目の4列目が2）
       expect(inputs[0 * 9 + 3]).toHaveValue('2')
       // 1行目の7列目が7
       expect(inputs[0 * 9 + 6]).toHaveValue('7')
@@ -681,14 +681,14 @@ describe('SudokuSolver', () => {
     })
 
     it('loads sample 3 when clicking the button', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       const sampleButton = screen.getByText('サンプル3')
       fireEvent.click(sampleButton)
 
       const inputs = screen.getAllByRole('textbox')
 
-      // サンプル3の特徴的な値をチェック（1行目の1列目が8）
+      // Sample 3の特徴的な値をチェック（1行目の1列目が8）
       expect(inputs[0 * 9 + 0]).toHaveValue('8')
       // 1行目の9列目が3
       expect(inputs[0 * 9 + 8]).toHaveValue('3')
@@ -699,7 +699,7 @@ describe('SudokuSolver', () => {
     })
 
     it('clears previous errors when loading a sample', async () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       // まず制約違反のエラーを発生させる
       const inputs = screen.getAllByRole('textbox')
@@ -715,7 +715,7 @@ describe('SudokuSolver', () => {
       const sampleButton = screen.getByText('サンプル1')
       fireEvent.click(sampleButton)
 
-      // エラーがクリアされることを確認
+      // エラーがClearされることを確認
       expect(screen.queryByText('⚠️ 制約違反エラー')).not.toBeInTheDocument()
     })
 
@@ -729,7 +729,7 @@ describe('SudokuSolver', () => {
         )
       )
 
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       const solveButton = screen.getByText('解く')
       await act(async () => {
@@ -749,14 +749,14 @@ describe('SudokuSolver', () => {
 
   describe('Mobile mode', () => {
     it('does not show NumberPad (mobile mode is disabled for better UX)', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       // NumberPad should not be shown - using traditional keyboard input
       expect(screen.queryByText('セルをタップして選択してください')).not.toBeInTheDocument()
     })
 
     it('renders input fields for cell entry', () => {
-      render(<SudokuSolver />)
+      renderWithI18n(<SudokuSolver />)
 
       // Should have 81 input fields (traditional keyboard input)
       expect(screen.getAllByRole('textbox')).toHaveLength(81)

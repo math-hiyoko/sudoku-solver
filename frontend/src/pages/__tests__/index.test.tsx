@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderWithI18n } from '../../__tests__/utils/i18n-test-utils'
 import IndexPage, { Head } from '../index'
 import type { PageProps, HeadProps } from 'gatsby'
 
@@ -58,13 +59,13 @@ const mockHeadProps: HeadProps = {
 
 describe('IndexPage', () => {
   it('renders SudokuSolver component', () => {
-    render(<IndexPage {...mockPageProps} />)
+    renderWithI18n(<IndexPage {...mockPageProps} />)
     expect(screen.getByText('数独ソルバー')).toBeInTheDocument()
     expect(screen.getByText('問題を入力してください')).toBeInTheDocument()
   })
 
   it('renders solve and clear buttons', () => {
-    render(<IndexPage {...mockPageProps} />)
+    renderWithI18n(<IndexPage {...mockPageProps} />)
     expect(screen.getByText('解く')).toBeInTheDocument()
     expect(screen.getByText('クリア')).toBeInTheDocument()
   })
@@ -72,7 +73,7 @@ describe('IndexPage', () => {
 
 describe('Head component', () => {
   it('renders correct title', () => {
-    const { container } = render(<Head {...mockHeadProps} />)
+    const { container } = renderWithI18n(<Head {...mockHeadProps} />)
     const title = container.querySelector('title')
     expect(title?.textContent).toBe('数独ソルバー | 無料オンライン数独解答ツール')
   })

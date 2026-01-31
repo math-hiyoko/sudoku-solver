@@ -1,26 +1,13 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import SudokuBoard from './SudokuBoard'
 import NumberPad from './NumberPad'
 import { SudokuBoard as SudokuBoardType, SudokuApiResponse, SudokuApiErrorResponse } from '../types/sudoku'
 import { validateSudokuConstraints, validateNumberRange, validateBoardSize } from '../utils/sudokuValidation'
 
-const ERROR_TYPE_LABELS: Record<string, string> = {
-  InvalidInput: '📝 入力エラー',
-  OutOfRangeError: '🔢 数値範囲エラー',
-  ConstraintViolation: '⚠️ 制約違反エラー',
-  InternalServerError: '🔧 サーバーエラー',
-  NetworkError: '🌐 ネットワークエラー',
-}
-
-const ERROR_TYPE_HINTS: Record<string, string> = {
-  OutOfRangeError: '💡 数独の値は1〜9の数字のみ有効です',
-  ConstraintViolation: '💡 数独のルールに違反しています（同じ行・列・ブロックに同じ数字は配置できません）',
-  InternalServerError: '💡 サーバーで予期しないエラーが発生しました。しばらく時間をおいて再度お試しください',
-}
-
 const SAMPLE_PUZZLES = [
   {
-    name: 'サンプル1',
+    key: 'sample1',
     board: [
       [null, null, null, null, null, null, null, null, null],
       [null, null, null, null, null, 3, null, 8, 5],
@@ -34,7 +21,7 @@ const SAMPLE_PUZZLES = [
     ],
   },
   {
-    name: 'サンプル2',
+    key: 'sample2',
     board: [
       [null, null, null, 2, null, null, 7, null, 1],
       [6, null, null, null, 7, null, null, 9, null],
@@ -48,7 +35,7 @@ const SAMPLE_PUZZLES = [
     ],
   },
   {
-    name: 'サンプル3',
+    key: 'sample3',
     board: [
       [8, null, null, null, null, null, null, null, 3],
       [null, null, 3, 6, null, null, null, null, null],
@@ -64,6 +51,7 @@ const SAMPLE_PUZZLES = [
 ]
 
 const SudokuSolver: React.FC = () => {
+  const { t } = useTranslation()
   const SUDOKU_LEVEL = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3'), [])
   const SUDOKU_MAX_NUM_SOLUTIONS = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_MAX_NUM_SOLUTIONS || '1000000'), [])
   const SUDOKU_MAX_SOLUTIONS = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_MAX_SOLUTIONS || '30'), [])
@@ -114,7 +102,7 @@ const SudokuSolver: React.FC = () => {
 
     if (outOfRangeErrors.length > 0) {
       setErrorType('OutOfRangeError')
-      setError('入力された数値が有効な範囲外です。')
+      setError(t('errors.outOfRange'))
       setErrorDetails(outOfRangeErrors)
       return
     }
@@ -122,11 +110,11 @@ const SudokuSolver: React.FC = () => {
     const constraintValidation = validateSudokuConstraints(board)
     if (!constraintValidation.isValid) {
       setErrorType('ConstraintViolation')
-      setError('数独のルールに違反している箇所があります。')
+      setError(t('errors.constraintViolation'))
       setErrorDetails(constraintValidation.errors)
       return
     }
-  }, [boardSize])
+  }, [boardSize, t])
 
   const handleCellChange = useCallback((row: number, col: number, value: number | null) => {
     const newBoard = inputBoard.map((r, rowIndex) =>
@@ -170,7 +158,7 @@ const SudokuSolver: React.FC = () => {
   const performClientSideValidation = useCallback(() => {
     if (!validateBoardSize(inputBoard)) {
       setErrorType('InvalidInput')
-      setError('盤面のサイズが正しくありません。')
+      setError(t('errors.invalidBoardSize'))
       return { isValid: false }
     }
 
@@ -186,7 +174,7 @@ const SudokuSolver: React.FC = () => {
 
     if (outOfRangeErrors.length > 0) {
       setErrorType('OutOfRangeError')
-      setError('入力された数値が有効な範囲外です。')
+      setError(t('errors.outOfRange'))
       setErrorDetails(outOfRangeErrors)
       return { isValid: false }
     }
@@ -194,13 +182,13 @@ const SudokuSolver: React.FC = () => {
     const constraintValidation = validateSudokuConstraints(inputBoard)
     if (!constraintValidation.isValid) {
       setErrorType('ConstraintViolation')
-      setError('数独のルールに違反している箇所があります。')
+      setError(t('errors.constraintViolation'))
       setErrorDetails(constraintValidation.errors)
       return { isValid: false }
     }
 
     return { isValid: true }
-  }, [inputBoard, boardSize])
+  }, [inputBoard, boardSize, t])
 
   const solveSudoku = useCallback(async () => {
     setLoading(true)
@@ -252,12 +240,12 @@ const SudokuSolver: React.FC = () => {
       setSolutions(displaySolutions.map(sol => sol.solution))
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'ネットワークエラーが発生しました')
+      setError(err instanceof Error ? err.message : t('errors.networkErrorOccurred'))
       setErrorType('NetworkError')
     } finally {
       setLoading(false)
     }
-  }, [inputBoard, performClientSideValidation, SUDOKU_MAX_SOLUTIONS])
+  }, [inputBoard, performClientSideValidation, SUDOKU_MAX_SOLUTIONS, t])
 
   const formatSolutionCount = useCallback(() => {
     if (numSolutions === 0) return '0'
@@ -351,14 +339,14 @@ const SudokuSolver: React.FC = () => {
       WebkitTextSizeAdjust: '100%',
     }}>
       <h1 style={{ textAlign: 'center', color: '#333', marginBottom: '30px' }}>
-        数独ソルバー
+        {t('app.title')}
       </h1>
 
       {solutions.length === 0 ? (
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <SudokuBoard
             board={inputBoard}
-            title="問題を入力してください"
+            title={t('board.inputPrompt')}
             isInput={true}
             onChange={handleCellChange}
             invalidCells={errorDetails}
@@ -379,7 +367,7 @@ const SudokuSolver: React.FC = () => {
               disabled={loading}
               style={getButtonStyle(true)}
             >
-              {loading ? '解いています...' : '解く'}
+              {loading ? t('solver.solving') : t('solver.solve')}
             </button>
 
             <button
@@ -387,7 +375,7 @@ const SudokuSolver: React.FC = () => {
               disabled={loading}
               style={getButtonStyle(false)}
             >
-              クリア
+              {t('solver.clear')}
             </button>
           </div>
 
@@ -415,7 +403,7 @@ const SudokuSolver: React.FC = () => {
                   fontWeight: '500',
                 }}
               >
-                {puzzle.name}
+                {t(`samples.${puzzle.key}`)}
               </button>
             ))}
           </div>
@@ -428,14 +416,14 @@ const SudokuSolver: React.FC = () => {
         >
           <div style={{ marginBottom: '20px' }}>
             <h2 style={{ color: '#333', margin: '0 0 5px 0' }}>
-              解の個数: {isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && (
-                <span style={{ color: '#28a745' }}>ちょうど </span>
+              {t('solver.solutionCount')} {isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && (
+                <span style={{ color: '#28a745' }}>{t('solver.exactly')} </span>
               )}
               <span style={{ color: '#007bff' }}>{formatSolutionCount()}</span>
             </h2>
             <p style={{ color: '#666', margin: 0 }}>
-              {Math.min(solutions.length, SUDOKU_MAX_SOLUTIONS)}個の解を表示中
-              {isMobileMode && solutions.length > 1 && ' (左右スワイプで切替)'}
+              {Math.min(solutions.length, SUDOKU_MAX_SOLUTIONS)}{t('solver.displayingSolutions')}
+              {isMobileMode && solutions.length > 1 && ` ${t('solver.swipeInstruction')}`}
             </p>
           </div>
 
@@ -471,7 +459,7 @@ const SudokuSolver: React.FC = () => {
             </button>
 
             <span style={{ fontSize: '18px', fontWeight: '600', minWidth: '150px' }}>
-              解 {currentSolutionIndex + 1} / {solutions.length}
+              {t('solver.solutionCounter', { index: currentSolutionIndex + 1, total: solutions.length })}
             </span>
 
             <button
@@ -510,7 +498,7 @@ const SudokuSolver: React.FC = () => {
               fontWeight: '600',
             }}
           >
-            戻る
+            {t('solver.back')}
           </button>
         </div>
       )}
@@ -525,31 +513,31 @@ const SudokuSolver: React.FC = () => {
           border: '1px solid #f5c6cb',
         }}>
           <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>
-            {ERROR_TYPE_LABELS[errorType] || 'エラー'}
+            {t(`errors.${errorType}.label`) || t(`errors.${errorType.charAt(0).toLowerCase() + errorType.slice(1)}Error.label`) || 'Error'}
           </div>
           <div style={{ marginBottom: errorDetails.length > 0 ? '10px' : '0' }}>
             {error}
           </div>
           {errorDetails.length > 0 && (
             <div>
-              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>問題のある位置:</div>
+              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>{t('errors.problemLocations')}</div>
               <div style={{ fontSize: '14px' }}>
                 {errorDetails.map((detail, index) => (
                   <div key={index} style={{ marginBottom: '2px' }}>
-                    行 {detail.row + 1}, 列 {detail.column + 1}: 値 {detail.number}
+                    {t('errors.locationDetail', { row: detail.row + 1, col: detail.column + 1, value: detail.number })}
                   </div>
                 ))}
               </div>
-              {ERROR_TYPE_HINTS[errorType] && (
+              {errorType && (
                 <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
-                  {ERROR_TYPE_HINTS[errorType]}
+                  {t(`errors.${errorType}.hint`) || t(`errors.${errorType.charAt(0).toLowerCase() + errorType.slice(1)}Error.hint`) || ''}
                 </div>
               )}
             </div>
           )}
           {errorType === 'InternalServerError' && errorDetails.length === 0 && (
             <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
-              {ERROR_TYPE_HINTS.InternalServerError}
+              {t('errors.InternalServerError.hint')}
             </div>
           )}
         </div>
@@ -558,10 +546,10 @@ const SudokuSolver: React.FC = () => {
       {numSolutions === 0 && hasSolved && !loading && !error && (
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <h2 style={{ color: '#333' }}>
-            解が見つかりませんでした
+            {t('solver.noSolutionFound')}
           </h2>
           <p style={{ color: '#666', fontStyle: 'italic' }}>
-            この問題には解がありません。入力を確認してください。
+            {t('solver.noSolutionMessage')}
           </p>
         </div>
       )}

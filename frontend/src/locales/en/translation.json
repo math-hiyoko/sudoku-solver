@@ -1,0 +1,91 @@
+{
+  "app": {
+    "title": "Sudoku Solver",
+    "siteTitle": "Sudoku Solver | Free Online Sudoku Solution Tool",
+    "description": "A free online tool to automatically solve Sudoku puzzles. Simply input the puzzle and instantly display the solution. Can display all solutions when multiple solutions exist. Supports 9x9 Sudoku puzzles.",
+    "keywords": "sudoku,numberplace,solver,solution,puzzle,free,online"
+  },
+  "board": {
+    "inputPrompt": "Please enter the puzzle",
+    "cellLabel": "Cell row {{row}} column {{col}}{{value}}",
+    "cellValue": ", value {{value}}",
+    "cellEmpty": ", empty"
+  },
+  "numberPad": {
+    "selectedCell": "Selected: Row {{row}} Col {{col}}",
+    "tapToSelect": "Tap a cell to select",
+    "inputNumber": "Input number {{num}}",
+    "clearCell": "Clear cell",
+    "clear": "Clear"
+  },
+  "solver": {
+    "solving": "Solving...",
+    "solve": "Solve",
+    "clear": "Clear",
+    "exactly": "Exactly",
+    "solutionCount": "Number of solutions:",
+    "displayingSolutions": "solutions displayed",
+    "swipeInstruction": "(Swipe left/right to switch)",
+    "solutionCounter": "Solution {{index}} / {{total}}",
+    "back": "Back",
+    "noSolutionFound": "No solution found",
+    "noSolutionMessage": "This puzzle has no solution. Please check your input."
+  },
+  "samples": {
+    "sample1": "Sample 1",
+    "sample2": "Sample 2",
+    "sample3": "Sample 3"
+  },
+  "errors": {
+    "inputError": {
+      "label": "📝 Input Error",
+      "hint": "💡 Only numbers 1-9 are valid for Sudoku values"
+    },
+    "InvalidInput": {
+      "label": "📝 Input Error",
+      "hint": "💡 Only numbers 1-9 are valid for Sudoku values"
+    },
+    "rangeError": {
+      "label": "🔢 Range Error",
+      "hint": "💡 Only numbers 1-9 are valid for Sudoku values"
+    },
+    "OutOfRangeError": {
+      "label": "🔢 Range Error",
+      "hint": "💡 Only numbers 1-9 are valid for Sudoku values"
+    },
+    "constraintError": {
+      "label": "⚠️ Constraint Violation",
+      "hint": "💡 Sudoku rules are violated (same number cannot be placed in the same row, column, or block)"
+    },
+    "ConstraintViolation": {
+      "label": "⚠️ Constraint Violation",
+      "hint": "💡 Sudoku rules are violated (same number cannot be placed in the same row, column, or block)"
+    },
+    "serverError": {
+      "label": "🔧 Server Error",
+      "hint": "💡 An unexpected server error occurred. Please try again later"
+    },
+    "InternalServerError": {
+      "label": "🔧 Server Error",
+      "hint": "💡 An unexpected error occurred on the server. Please try again after a while"
+    },
+    "networkError": {
+      "label": "🌐 Network Error",
+      "hint": "💡 An unexpected server error occurred. Please try again later"
+    },
+    "NetworkError": {
+      "label": "🌐 Network Error",
+      "hint": "💡 An unexpected server error occurred. Please try again later"
+    },
+    "invalidBoardSize": "The board size is incorrect.",
+    "outOfRange": "The input value is out of valid range.",
+    "constraintViolation": "There are locations violating Sudoku rules.",
+    "problemLocations": "Problem locations:",
+    "locationDetail": "Row {{row}}, Col {{col}}: value {{value}}",
+    "networkErrorOccurred": "A network error occurred"
+  },
+  "notFound": {
+    "title": "Page Not Found | Sudoku Solver",
+    "heading": "Page not found"
+  }
+}

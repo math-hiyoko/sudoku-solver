@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface NumberPadProps {
   onNumberSelect: (value: number | null) => void
@@ -11,6 +12,7 @@ const NumberPad: React.FC<NumberPadProps> = ({
   disabled = false,
   selectedCell
 }) => {
+  const { t } = useTranslation()
   const [pressedNumber, setPressedNumber] = useState<number | 'clear' | null>(null)
 
   const handleButtonPress = useCallback((value: number | null) => {
@@ -61,8 +63,8 @@ const NumberPad: React.FC<NumberPadProps> = ({
         color: selectedCell ? '#007bff' : '#999',
       }}>
         {selectedCell
-          ? `選択中: ${selectedCell.row + 1}行 ${selectedCell.col + 1}列`
-          : 'セルをタップして選択してください'
+          ? t('numberPad.selectedCell', { row: selectedCell.row + 1, col: selectedCell.col + 1 })
+          : t('numberPad.tapToSelect')
         }
       </div>
 
@@ -80,7 +82,7 @@ const NumberPad: React.FC<NumberPadProps> = ({
             onClick={() => handleButtonPress(num)}
             disabled={disabled || !selectedCell}
             style={getButtonStyle(num)}
-            aria-label={`数字${num}を入力`}
+            aria-label={t('numberPad.inputNumber', { num })}
           >
             {num}
           </button>
@@ -99,9 +101,9 @@ const NumberPad: React.FC<NumberPadProps> = ({
             ...getButtonStyle('clear'),
             width: '200px',
           }}
-          aria-label="セルをクリア"
+          aria-label={t('numberPad.clearCell')}
         >
-          クリア
+          {t('numberPad.clear')}
         </button>
       </div>
     </div>

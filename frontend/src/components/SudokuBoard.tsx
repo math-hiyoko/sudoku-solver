@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { SudokuBoard as SudokuBoardType } from '../types/sudoku'
 
 interface SudokuBoardProps {
@@ -25,6 +26,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   selectedCell,
   onCellSelect
 }) => {
+  const { t } = useTranslation()
   const SUDOKU_LEVEL = parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3')
   const boardSize = SUDOKU_LEVEL * SUDOKU_LEVEL
 
@@ -202,7 +204,11 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
                           onCellSelect?.(rowIndex, colIndex)
                         }
                       }}
-                      aria-label={`セル ${rowIndex + 1}行 ${colIndex + 1}列${cell ? `, 値 ${cell}` : ', 空'}`}
+                      aria-label={t('board.cellLabel', {
+                        row: rowIndex + 1,
+                        col: colIndex + 1,
+                        value: cell ? t('board.cellValue', { value: cell }) : t('board.cellEmpty')
+                      })}
                     >
                       {cell || ''}
                     </div>
