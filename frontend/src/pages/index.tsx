@@ -53,6 +53,9 @@ export const Head: HeadFC = () => {
       <meta name="robots" content="index, follow" />
       <meta name="language" content={getLanguageName(currentLang)} />
       <meta name="author" content={t('app.title')} />
+
+      {/* Google Search Console */}
+      <meta name="google-site-verification" content="UctFPhueN-xFWQsqr49PfXY0LXO_orciS77jzWl3PZ0" />
     </>
   )
 }
