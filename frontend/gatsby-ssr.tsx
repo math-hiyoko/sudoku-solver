@@ -1,5 +1,6 @@
 import type { GatsbySSR } from "gatsby"
 
 export const onRenderBody: GatsbySSR["onRenderBody"] = ({ setHtmlAttributes }) => {
-  setHtmlAttributes({ lang: "en" })
+  // i18n config defaults to 'ja' for SSR, so this must match
+  setHtmlAttributes({ lang: "ja" })
 }
