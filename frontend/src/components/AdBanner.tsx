@@ -40,7 +40,7 @@ const AdBanner: React.FC = () => {
 
   if (!isClient) return null
 
-  // スマホ：下部オーバーレイ（固定） 320x50
+  // スマホ：下部オーバーレイ（固定）
   if (isMobile) {
     return (
       <div
@@ -61,37 +61,36 @@ const AdBanner: React.FC = () => {
         <div
           ref={adContainerRef}
           style={{
-            width: 320,
-            height: 50,
-            overflow: "hidden",
+            width: "100%",
+            maxWidth: 320,
           }}
         />
       </div>
     )
   }
 
-  // PC：画面下部（固定） 728x90
+  // PC：画面最上部（固定）
   return (
     <div
       style={{
         position: "fixed",
-        bottom: 0,
+        top: 0,
         left: 0,
         right: 0,
         backgroundColor: "#fff",
-        borderTop: "1px solid #e0e0e0",
+        borderBottom: "1px solid #e0e0e0",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         padding: "8px 0",
+        zIndex: 9999,
       }}
     >
       <div
         ref={adContainerRef}
         style={{
-          width: 728,
-          height: 90,
-          overflow: "hidden",
+          width: "100%",
+          maxWidth: 728,
         }}
       />
     </div>
