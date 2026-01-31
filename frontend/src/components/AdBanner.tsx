@@ -20,21 +20,20 @@ const AdBanner: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (!isClient || !adContainerRef.current) return
+    const container = adContainerRef.current
+    if (!isClient || !container) return
 
     // 既存のスクリプトをクリア
-    adContainerRef.current.innerHTML = ""
+    container.innerHTML = ""
 
     // 非同期でスクリプトを読み込み
     const script = document.createElement("script")
     script.src = isMobile ? MOBILE_AD_SCRIPT : PC_AD_SCRIPT
     script.async = true
-    adContainerRef.current.appendChild(script)
+    container.appendChild(script)
 
     return () => {
-      if (adContainerRef.current) {
-        adContainerRef.current.innerHTML = ""
-      }
+      container.innerHTML = ""
     }
   }, [isClient, isMobile])
 
