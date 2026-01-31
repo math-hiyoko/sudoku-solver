@@ -18,14 +18,14 @@ const resources = {
 }
 
 // Create a test i18n instance
-export const createTestI18n = (language = 'en') => {
+export const createTestI18n = (language = 'ja') => {
   const testI18n = i18n.createInstance()
 
   testI18n
     .use(initReactI18next)
     .init({
       lng: language,
-      fallbackLng: 'en',
+      fallbackLng: 'ja',
       resources,
       interpolation: {
         escapeValue: false,
@@ -45,7 +45,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 // Custom render function with i18n provider
 export const renderWithI18n = (
   ui: ReactElement,
-  { language = 'en', ...renderOptions }: CustomRenderOptions = {}
+  { language = 'ja', ...renderOptions }: CustomRenderOptions = {}
 ) => {
   const testI18n = createTestI18n(language)
 

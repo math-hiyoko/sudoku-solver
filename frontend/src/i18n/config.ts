@@ -22,8 +22,8 @@ const resources = {
 
 // Helper function to detect language from browser settings
 const detectLanguage = (): string => {
-  // Default to English for server-side rendering
-  if (typeof window === 'undefined') return 'en';
+  // Default to Japanese for server-side rendering
+  if (typeof window === 'undefined') return 'ja';
 
   const savedLanguage = localStorage.getItem('language');
   if (savedLanguage && ['ja', 'en', 'fr', 'zh'].includes(savedLanguage)) {
@@ -37,8 +37,8 @@ const detectLanguage = (): string => {
   if (browserLang.startsWith('fr')) return 'fr';
   if (browserLang.startsWith('zh')) return 'zh';
 
-  // Default to English if no match
-  return 'en';
+  // Default to Japanese if no match
+  return 'ja';
 };
 
 i18n
@@ -46,7 +46,7 @@ i18n
   .init({
     resources,
     lng: detectLanguage(),
-    fallbackLng: 'en',
+    fallbackLng: 'ja',
     interpolation: {
       escapeValue: false,
     },

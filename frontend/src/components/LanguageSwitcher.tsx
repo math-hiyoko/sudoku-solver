@@ -27,9 +27,9 @@ const LanguageSwitcher: React.FC = () => {
     }
   }, [i18n])
 
-  const currentLanguage = i18n.language || 'en'
+  const currentLanguage = i18n.language || 'ja'
 
-  const currentLang = LANGUAGES.find(l => l.code === currentLanguage) || LANGUAGES[3]
+  const currentLang = LANGUAGES.find(l => l.code === currentLanguage) || LANGUAGES[0]
 
   return (
     <div style={{
@@ -44,26 +44,34 @@ const LanguageSwitcher: React.FC = () => {
         aria-label="Select language"
         title={currentLang.label}
         style={{
-          padding: '6px 8px',
-          fontSize: '20px',
+          padding: '4px 6px',
+          fontSize: '24px',
           fontWeight: '500',
-          backgroundColor: 'white',
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
           color: '#333',
-          border: '1px solid #ccc',
+          border: '1px solid rgba(204, 204, 204, 0.5)',
           borderRadius: '6px',
           cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
           outline: 'none',
           transition: 'all 0.2s ease',
-          minWidth: '50px',
+          opacity: 0.7,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.opacity = '1'
+          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.95)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.opacity = '0.7'
+          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.7)'
         }}
         onFocus={(e) => {
           e.target.style.borderColor = '#007bff'
-          e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.2)'
+          e.target.style.opacity = '1'
         }}
         onBlur={(e) => {
-          e.target.style.borderColor = '#ccc'
-          e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)'
+          e.target.style.borderColor = 'rgba(204, 204, 204, 0.5)'
+          e.target.style.opacity = '0.7'
         }}
       >
         {LANGUAGES.map((language) => (
@@ -71,7 +79,7 @@ const LanguageSwitcher: React.FC = () => {
             key={language.code}
             value={language.code}
           >
-            {language.flag} {language.label}
+            {language.flag}
           </option>
         ))}
       </select>

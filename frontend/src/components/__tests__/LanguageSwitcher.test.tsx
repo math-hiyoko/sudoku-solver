@@ -16,13 +16,13 @@ describe('LanguageSwitcher', () => {
     expect(select).toBeInTheDocument()
   })
 
-  it('displays all language options', () => {
+  it('displays all language options as flags', () => {
     renderWithI18n(<LanguageSwitcher />)
 
-    expect(screen.getByRole('option', { name: /日本語/ })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: /Français/ })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: /中文/ })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: /English/ })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '🇯🇵' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '🇫🇷' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '🇨🇳' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '🇬🇧' })).toBeInTheDocument()
   })
 
   it('shows current language as selected (English)', () => {
@@ -110,17 +110,17 @@ describe('LanguageSwitcher', () => {
   })
 
   describe('Default language', () => {
-    it('defaults to English when no language is specified', () => {
+    it('defaults to Japanese when no language is specified', () => {
       const { i18n } = renderWithI18n(<LanguageSwitcher />)
 
-      expect(i18n.language).toBe('en')
+      expect(i18n.language).toBe('ja')
     })
 
-    it('shows English as selected by default', () => {
+    it('shows Japanese as selected by default', () => {
       renderWithI18n(<LanguageSwitcher />)
 
       const select = screen.getByRole('combobox', { name: 'Select language' }) as HTMLSelectElement
-      expect(select.value).toBe('en')
+      expect(select.value).toBe('ja')
     })
   })
 
@@ -137,15 +137,15 @@ describe('LanguageSwitcher', () => {
       expect(options[3]).toHaveValue('en')
     })
 
-    it('displays language labels with flags in correct order', () => {
+    it('displays flags only in correct order', () => {
       renderWithI18n(<LanguageSwitcher />)
 
       const options = screen.getAllByRole('option')
 
-      expect(options[0]).toHaveTextContent('🇯🇵 日本語')
-      expect(options[1]).toHaveTextContent('🇫🇷 Français')
-      expect(options[2]).toHaveTextContent('🇨🇳 中文')
-      expect(options[3]).toHaveTextContent('🇬🇧 English')
+      expect(options[0]).toHaveTextContent('🇯🇵')
+      expect(options[1]).toHaveTextContent('🇫🇷')
+      expect(options[2]).toHaveTextContent('🇨🇳')
+      expect(options[3]).toHaveTextContent('🇬🇧')
     })
 
     it('maintains correct order across different starting languages', () => {
