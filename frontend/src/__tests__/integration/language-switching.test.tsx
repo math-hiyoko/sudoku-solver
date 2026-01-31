@@ -155,21 +155,21 @@ describe('Language Switching Integration', () => {
     expect(allOptions[2]).toHaveValue('zh')
     expect(allOptions[3]).toHaveValue('en')
 
-    // Verify order by checking option text content
-    expect(allOptions[0]).toHaveTextContent('日本語')
-    expect(allOptions[1]).toHaveTextContent('Français')
-    expect(allOptions[2]).toHaveTextContent('中文')
-    expect(allOptions[3]).toHaveTextContent('English')
+    // Verify order by checking option text content (flags only)
+    expect(allOptions[0]).toHaveTextContent('🇯🇵')
+    expect(allOptions[1]).toHaveTextContent('🇫🇷')
+    expect(allOptions[2]).toHaveTextContent('🇨🇳')
+    expect(allOptions[3]).toHaveTextContent('🇬🇧')
   })
 
   describe('Default language behavior', () => {
-    it('defaults to English when no language is specified', () => {
+    it('defaults to Japanese when no language is specified', () => {
       const { i18n } = renderWithI18n(<LanguageSwitcher />)
 
-      expect(i18n.language).toBe('en')
+      expect(i18n.language).toBe('ja')
     })
 
-    it('uses English for initial render without localStorage', () => {
+    it('uses Japanese for initial render without localStorage', () => {
       // Note: localStorage is already mocked in jest.setup.js
       const { i18n } = renderWithI18n(
         <>
@@ -178,8 +178,8 @@ describe('Language Switching Integration', () => {
         </>
       )
 
-      expect(i18n.language).toBe('en')
-      expect(screen.getByText('Tap a cell to select')).toBeInTheDocument()
+      expect(i18n.language).toBe('ja')
+      expect(screen.getByText('セルをタップして選択してください')).toBeInTheDocument()
     })
   })
 

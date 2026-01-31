@@ -560,8 +560,8 @@ describe('SudokuBoard', () => {
         />
       )
 
-      expect(screen.getByLabelText('Cell row 1 column 1, value 5')).toBeInTheDocument()
-      expect(screen.getByLabelText('Cell row 1 column 2, empty')).toBeInTheDocument()
+      expect(screen.getByLabelText('セル 1行 1列, 値 5')).toBeInTheDocument()
+      expect(screen.getByLabelText('セル 1行 2列, 空')).toBeInTheDocument()
     })
 
     it('renders inputs in desktop mode (isMobileMode=false)', () => {

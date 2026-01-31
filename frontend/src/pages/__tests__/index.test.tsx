@@ -60,14 +60,14 @@ const mockHeadProps: HeadProps = {
 describe('IndexPage', () => {
   it('renders SudokuSolver component', () => {
     renderWithI18n(<IndexPage {...mockPageProps} />)
-    expect(screen.getByText('Sudoku Solver')).toBeInTheDocument()
-    expect(screen.getByText('Please enter the puzzle')).toBeInTheDocument()
+    expect(screen.getByText('数独ソルバー')).toBeInTheDocument()
+    expect(screen.getByText('問題を入力してください')).toBeInTheDocument()
   })
 
   it('renders solve and clear buttons', () => {
     renderWithI18n(<IndexPage {...mockPageProps} />)
-    expect(screen.getByText('Solve')).toBeInTheDocument()
-    expect(screen.getByText('Clear')).toBeInTheDocument()
+    expect(screen.getByText('解く')).toBeInTheDocument()
+    expect(screen.getByText('クリア')).toBeInTheDocument()
   })
 })
 
@@ -75,6 +75,6 @@ describe('Head component', () => {
   it('renders correct title', () => {
     const { container } = renderWithI18n(<Head {...mockHeadProps} />)
     const title = container.querySelector('title')
-    expect(title?.textContent).toBe('Sudoku Solver | Free Online Sudoku Solution Tool')
+    expect(title?.textContent).toBe('数独ソルバー | 無料オンライン数独解答ツール')
   })
 })

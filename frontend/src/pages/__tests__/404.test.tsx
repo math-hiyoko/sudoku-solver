@@ -86,6 +86,6 @@ describe('Head component', () => {
   it('renders correct title', () => {
     const { container } = renderWithI18n(<Head {...mockHeadProps} />)
     const title = container.querySelector('title')
-    expect(title?.textContent).toBe('Page Not Found | Sudoku Solver')
+    expect(title?.textContent).toBe('ページが見つかりません | 数独ソルバー')
   })
 })
