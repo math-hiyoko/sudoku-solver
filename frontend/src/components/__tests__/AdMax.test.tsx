@@ -2,10 +2,19 @@ import React from 'react'
 import { render, cleanup } from '@testing-library/react'
 import AdMax from '../AdMax'
 
+declare global {
+  interface Window {
+    admaxads?: Array<{ admax_id: string; type: string }>
+  }
+}
+
 describe('AdMax', () => {
   beforeEach(() => {
-    // Clean up DOM before each test
+    // Clean up DOM and global state before each test
     document.body.innerHTML = ''
+    window.admaxads = undefined
+    // Remove any existing admax scripts
+    document.querySelectorAll('script[src="https://adm.shinobi.jp/st/t.js"]').forEach(el => el.remove())
   })
 
   afterEach(() => {
@@ -17,13 +26,29 @@ describe('AdMax', () => {
     expect(container.firstChild).toBeInTheDocument()
   })
 
-  it('creates a script element with correct src', () => {
+  it('creates an ins element with correct data-admax-id', () => {
     const testAdId = '8dc91f046104d62a27c2b4beb41ee218'
     const { container } = render(<AdMax adId={testAdId} />)
 
-    const script = container.querySelector('script')
+    const ins = container.querySelector('ins.admax-ads')
+    expect(ins).toBeInTheDocument()
+    expect(ins?.getAttribute('data-admax-id')).toBe(testAdId)
+  })
+
+  it('pushes ad config to window.admaxads array', () => {
+    const testAdId = 'test-ad-id'
+    render(<AdMax adId={testAdId} />)
+
+    expect(window.admaxads).toBeDefined()
+    expect(window.admaxads).toContainEqual({ admax_id: testAdId, type: 'banner' })
+  })
+
+  it('loads the admax async script in document.body', () => {
+    render(<AdMax adId="test-id" />)
+
+    const script = document.querySelector('script[src="https://adm.shinobi.jp/st/t.js"]')
     expect(script).toBeInTheDocument()
-    expect(script?.src).toBe(`https://adm.shinobi.jp/s/${testAdId}`)
+    expect((script as HTMLScriptElement)?.async).toBe(true)
   })
 
   it('applies custom styles', () => {
@@ -44,26 +69,26 @@ describe('AdMax', () => {
     expect(div.style.alignItems).toBe('center')
   })
 
-  it('updates script when adId changes', () => {
+  it('updates ins element when adId changes', () => {
     const { container, rerender } = render(<AdMax adId="first-id" />)
 
-    let script = container.querySelector('script')
-    expect(script?.src).toContain('first-id')
+    let ins = container.querySelector('ins.admax-ads')
+    expect(ins?.getAttribute('data-admax-id')).toBe('first-id')
 
     rerender(<AdMax adId="second-id" />)
 
-    script = container.querySelector('script')
-    expect(script?.src).toContain('second-id')
+    ins = container.querySelector('ins.admax-ads')
+    expect(ins?.getAttribute('data-admax-id')).toBe('second-id')
   })
 
-  it('cleans up script on unmount', () => {
+  it('cleans up ins element on unmount', () => {
     const { container, unmount } = render(<AdMax adId="test-id" />)
 
-    expect(container.querySelector('script')).toBeInTheDocument()
+    expect(container.querySelector('ins.admax-ads')).toBeInTheDocument()
 
     unmount()
 
     // After unmount, the container should be empty
-    expect(container.querySelector('script')).not.toBeInTheDocument()
+    expect(container.querySelector('ins.admax-ads')).not.toBeInTheDocument()
   })
 })

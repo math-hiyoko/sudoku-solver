@@ -96,15 +96,15 @@ describe('InterstitialAd', () => {
     expect(onClose).not.toHaveBeenCalled()
   })
 
-  it('creates ad script with correct src', () => {
+  it('creates ad ins element with correct data-admax-id', () => {
     const testAdId = '4f3e88c41850ab88c16d7a485c3ed7fd'
     const { container } = render(
       <InterstitialAd adId={testAdId} isOpen={true} onClose={jest.fn()} />
     )
 
-    const script = container.querySelector('script')
-    expect(script).toBeInTheDocument()
-    expect(script?.src).toBe(`https://adm.shinobi.jp/s/${testAdId}`)
+    const ins = container.querySelector('ins.admax-ads')
+    expect(ins).toBeInTheDocument()
+    expect(ins?.getAttribute('data-admax-id')).toBe(testAdId)
   })
 
   it('resets countdown when reopened', () => {

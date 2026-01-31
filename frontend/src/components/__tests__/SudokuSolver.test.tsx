@@ -767,8 +767,8 @@ describe('SudokuSolver', () => {
     it('renders footer ad component', () => {
       const { container } = renderWithI18n(<SudokuSolver />)
 
-      // Check for the footer ad container
-      const adContainer = container.querySelector('script[src*="adm.shinobi.jp"]')
+      // Check for the footer ad container (ins element with admax-ads class)
+      const adContainer = container.querySelector('ins.admax-ads')
       expect(adContainer).toBeInTheDocument()
     })
 
