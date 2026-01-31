@@ -2,8 +2,14 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import SudokuBoard from './SudokuBoard'
 import NumberPad from './NumberPad'
+import AdMax from './AdMax'
+import InterstitialAd from './InterstitialAd'
 import { SudokuBoard as SudokuBoardType, SudokuApiResponse, SudokuApiErrorResponse } from '../types/sudoku'
 import { validateSudokuConstraints, validateNumberRange, validateBoardSize } from '../utils/sudokuValidation'
+
+// 忍者AdMax広告ID
+const ADMAX_FOOTER_ID = '8dc91f046104d62a27c2b4beb41ee218'
+const ADMAX_INTERSTITIAL_ID = '4f3e88c41850ab88c16d7a485c3ed7fd'
 
 const SAMPLE_PUZZLES = [
   {
@@ -78,6 +84,7 @@ const SudokuSolver: React.FC = () => {
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
   const [isMobileMode, setIsMobileMode] = useState<boolean>(false)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  const [showInterstitial, setShowInterstitial] = useState<boolean>(false)
 
   // モバイルモード検出（現在は無効化 - 従来のinput方式を使用）
   useEffect(() => {
@@ -281,6 +288,12 @@ const SudokuSolver: React.FC = () => {
   }, [solutions.length])
 
   const handleBackToInput = useCallback(() => {
+    // インタースティシャル広告を表示
+    setShowInterstitial(true)
+  }, [])
+
+  const handleInterstitialClose = useCallback(() => {
+    setShowInterstitial(false)
     setSolutions([])
     setNumSolutions(0)
     setIsExactCount(false)
@@ -563,6 +576,22 @@ const SudokuSolver: React.FC = () => {
         />
       )}
 
+      {/* ページ下部広告（忍者AdMax） */}
+      <div style={{
+        marginTop: '40px',
+        paddingTop: '20px',
+        borderTop: '1px solid #eee',
+        textAlign: 'center',
+      }}>
+        <AdMax adId={ADMAX_FOOTER_ID} />
+      </div>
+
+      {/* インタースティシャル広告（忍者AdMax） */}
+      <InterstitialAd
+        adId={ADMAX_INTERSTITIAL_ID}
+        isOpen={showInterstitial}
+        onClose={handleInterstitialClose}
+      />
     </div>
   )
 }
