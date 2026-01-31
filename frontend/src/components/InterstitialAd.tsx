@@ -15,7 +15,6 @@ interface InterstitialAdProps {
 const InterstitialAd: React.FC<InterstitialAdProps> = ({ adId, isOpen, onClose }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [countdown, setCountdown] = useState(3)
-  const scriptLoadedRef = useRef<boolean>(false)
 
   useEffect(() => {
     if (!isOpen) {
@@ -51,18 +50,16 @@ const InterstitialAd: React.FC<InterstitialAdProps> = ({ adId, isOpen, onClose }
     ins.setAttribute('data-admax-id', adId)
     container.appendChild(ins)
 
-    // admaxads配列に広告IDをプッシュ
-    window.admaxads = window.admaxads || []
-    window.admaxads.push({ admax_id: adId, type: 'banner' })
+    // admaxads配列に広告IDをプッシュするスクリプトを追加
+    const configScript = document.createElement('script')
+    configScript.textContent = `(admaxads = window.admaxads || []).push({admax_id: "${adId}", type: "banner"});`
+    container.appendChild(configScript)
 
-    // 非同期スクリプトがまだ読み込まれていなければ追加
-    if (!scriptLoadedRef.current && !document.querySelector('script[src="https://adm.shinobi.jp/st/t.js"]')) {
-      const script = document.createElement('script')
-      script.src = 'https://adm.shinobi.jp/st/t.js'
-      script.async = true
-      document.body.appendChild(script)
-      scriptLoadedRef.current = true
-    }
+    // 忍者AdMaxの非同期スクリプトを追加（毎回新しく追加して広告を初期化）
+    const adScript = document.createElement('script')
+    adScript.src = 'https://adm.shinobi.jp/st/t.js'
+    adScript.async = true
+    container.appendChild(adScript)
 
     return () => {
       container.innerHTML = ''
