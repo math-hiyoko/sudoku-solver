@@ -21,8 +21,8 @@ const resources = {
 };
 
 // Helper function to detect language from browser settings
-const detectLanguage = (): string => {
-  // Default to Japanese for server-side rendering
+// Called only after hydration to avoid SSR mismatch
+export const detectLanguage = (): string => {
   if (typeof window === 'undefined') return 'ja';
 
   const savedLanguage = localStorage.getItem('language');
@@ -45,7 +45,9 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: detectLanguage(),
+    // Always initialize with 'ja' to ensure SSR/client match
+    // Language will be updated after hydration via useEffect
+    lng: 'ja',
     fallbackLng: 'ja',
     interpolation: {
       escapeValue: false,

@@ -37,59 +37,52 @@ const AdBanner: React.FC = () => {
     }
   }, [isClient, isMobile])
 
-  if (!isClient) return null
-
-  // スマホ：下部オーバーレイ（固定）
-  if (isMobile) {
-    return (
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: "#fff",
-          boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
-          zIndex: 9999,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "4px 0",
-        }}
-      >
-        <div
-          ref={adContainerRef}
-          style={{
-            width: "100%",
-            maxWidth: 320,
-          }}
-        />
-      </div>
-    )
+  // SSR時とクライアント初期状態で同じ構造をレンダリング（hydrationエラー回避）
+  // PC用のレイアウトをデフォルトとして使用
+  const mobileStyles: React.CSSProperties = {
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
+    zIndex: 9999,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "4px 0",
   }
 
-  // PC：画面最上部（固定）
+  const pcStyles: React.CSSProperties = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    borderBottom: "1px solid #e0e0e0",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "8px 0",
+    zIndex: 9999,
+  }
+
+  // isClientがfalseの間は非表示だがDOMは存在させる
+  const containerStyles = isMobile ? mobileStyles : pcStyles
+  const innerMaxWidth = isMobile ? 320 : 728
+
   return (
     <div
       style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: "#fff",
-        borderBottom: "1px solid #e0e0e0",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "8px 0",
-        zIndex: 9999,
+        ...containerStyles,
+        visibility: isClient ? "visible" : "hidden",
       }}
     >
       <div
         ref={adContainerRef}
         style={{
           width: "100%",
-          maxWidth: 728,
+          maxWidth: innerMaxWidth,
         }}
       />
     </div>
