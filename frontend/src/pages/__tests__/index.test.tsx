@@ -85,6 +85,23 @@ describe('IndexPage', () => {
 })
 
 describe('Head component', () => {
+  // GatsbyのHead APIは<html>タグを含むため、テスト環境でDOM警告が出る
+  // これは想定内の動作なので警告を抑制する
+  let consoleErrorSpy: jest.SpyInstance
+
+  beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation((message) => {
+      if (typeof message === 'string' && message.includes('validateDOMNesting')) {
+        return
+      }
+      console.warn(message)
+    })
+  })
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore()
+  })
+
   it('renders correct title', () => {
     const { container } = renderWithI18n(<Head {...mockHeadProps} />)
     const title = container.querySelector('title')
