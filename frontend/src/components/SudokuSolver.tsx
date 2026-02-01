@@ -1,96 +1,55 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import SudokuBoard from './SudokuBoard'
-import NumberPad from './NumberPad'
-import { SudokuBoard as SudokuBoardType, SudokuApiResponse, SudokuApiErrorResponse } from '../types/sudoku'
+import ErrorDisplay from './ErrorDisplay'
+import { SudokuBoard as SudokuBoardType, SudokuApiResponse, SudokuApiErrorResponse, SudokuErrorDetail } from '../types/sudoku'
 import { validateSudokuConstraints, validateNumberRange, validateBoardSize } from '../utils/sudokuValidation'
+import { config, boardSize, SAMPLE_PUZZLES, createEmptyBoard } from '../config'
 
-const SAMPLE_PUZZLES = [
-  {
-    key: 'sample1',
-    board: [
-      [null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, 3, null, 8, 5],
-      [null, null, 1, null, 2, null, null, null, null],
-      [null, null, null, 5, null, 7, null, null, null],
-      [null, null, 4, null, null, null, 1, null, null],
-      [null, 9, null, null, null, null, null, null, null],
-      [5, null, null, null, null, null, null, 7, 3],
-      [null, null, 2, null, 1, null, null, null, null],
-      [null, null, null, null, 4, null, null, null, 9],
-    ],
-  },
-  {
-    key: 'sample2',
-    board: [
-      [null, null, null, 2, null, null, 7, null, 1],
-      [6, null, null, null, 7, null, null, 9, null],
-      [null, 9, null, null, null, 4, null, null, null],
-      [null, 2, null, 1, null, null, null, 4, null],
-      [null, null, 4, null, null, 2, 9, null, null],
-      [null, 5, null, null, null, null, null, null, 8],
-      [null, null, null, 3, null, null, null, null, 4],
-      [null, 4, null, null, 5, null, null, 3, null],
-      [7, null, 3, null, null, 8, null, null, null],
-    ],
-  },
-  {
-    key: 'sample3',
-    board: [
-      [8, null, null, null, null, null, null, null, 3],
-      [null, null, 3, 6, null, null, null, null, null],
-      [null, 7, null, null, 9, null, 2, null, null],
-      [null, 5, null, null, null, 7, null, null, null],
-      [null, null, null, null, null, 5, 7, null, null],
-      [null, null, null, 1, null, null, null, null, null],
-      [null, null, 1, null, null, null, null, 6, 8],
-      [null, null, null, null, null, null, null, 1, null],
-      [null, 9, null, null, null, null, 4, null, null],
-    ],
-  },
-]
+interface SolverState {
+  inputBoard: SudokuBoardType
+  solutions: SudokuBoardType[]
+  numSolutions: number
+  isExactCount: boolean
+  loading: boolean
+  error: string
+  errorDetails: SudokuErrorDetail[]
+  errorType: string
+  solvedFromBoard: SudokuBoardType | null
+  hasSolved: boolean
+  currentSolutionIndex: number
+}
+
+const initialState: SolverState = {
+  inputBoard: createEmptyBoard(),
+  solutions: [],
+  numSolutions: 0,
+  isExactCount: false,
+  loading: false,
+  error: '',
+  errorDetails: [],
+  errorType: '',
+  solvedFromBoard: null,
+  hasSolved: false,
+  currentSolutionIndex: 0,
+}
 
 const SudokuSolver: React.FC = () => {
   const { t } = useTranslation()
-  const SUDOKU_LEVEL = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_LEVEL || '3'), [])
-  const SUDOKU_MAX_NUM_SOLUTIONS = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_MAX_NUM_SOLUTIONS || '1000000'), [])
-  const SUDOKU_MAX_SOLUTIONS = useMemo(() => parseInt(process.env.GATSBY_SUDOKU_MAX_SOLUTIONS || '30'), [])
+  const [state, setState] = useState<SolverState>(initialState)
 
-  const boardSize = useMemo(() => SUDOKU_LEVEL * SUDOKU_LEVEL, [SUDOKU_LEVEL])
+  const {
+    inputBoard, solutions, numSolutions, isExactCount,
+    loading, error, errorDetails, errorType,
+    solvedFromBoard, hasSolved, currentSolutionIndex,
+  } = state
 
-  const createEmptyBoard = useCallback((): SudokuBoardType => {
-    return Array(boardSize).fill(null).map(() => Array(boardSize).fill(null))
-  }, [boardSize])
-
-  const [inputBoard, setInputBoard] = useState<SudokuBoardType>(() =>
-    Array(SUDOKU_LEVEL * SUDOKU_LEVEL).fill(null).map(() => Array(SUDOKU_LEVEL * SUDOKU_LEVEL).fill(null))
-  )
-  const [solutions, setSolutions] = useState<SudokuBoardType[]>([])
-  const [numSolutions, setNumSolutions] = useState<number>(0)
-  const [isExactCount, setIsExactCount] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string>('')
-  const [errorDetails, setErrorDetails] = useState<{ row: number; column: number; number: number }[]>([])
-  const [errorType, setErrorType] = useState<string>('')
-  const [solvedFromBoard, setSolvedFromBoard] = useState<SudokuBoardType | null>(null)
-  const [hasSolved, setHasSolved] = useState<boolean>(false)
-  const [currentSolutionIndex, setCurrentSolutionIndex] = useState<number>(0)
-  const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null)
-  const [isMobileMode, setIsMobileMode] = useState<boolean>(false)
-  const [touchStartX, setTouchStartX] = useState<number | null>(null)
-
-  // モバイルモード検出（現在は無効化 - 従来のinput方式を使用）
-  useEffect(() => {
-    // NumberPad UIは使わず、従来のキーボード入力を使用
-    setIsMobileMode(false)
+  const setError = useCallback((type: string, message: string, details: SudokuErrorDetail[] = []) => {
+    setState(s => ({ ...s, error: message, errorType: type, errorDetails: details }))
   }, [])
 
-  const performRealTimeValidation = useCallback((board: SudokuBoardType) => {
-    setError('')
-    setErrorDetails([])
-    setErrorType('')
-
-    const outOfRangeErrors = []
+  const validateBoard = useCallback((board: SudokuBoardType) => {
+    const outOfRangeErrors: SudokuErrorDetail[] = []
     for (let row = 0; row < boardSize; row++) {
       for (let col = 0; col < boardSize; col++) {
         const value = board[row][col]
@@ -99,119 +58,81 @@ const SudokuSolver: React.FC = () => {
         }
       }
     }
-
     if (outOfRangeErrors.length > 0) {
-      setErrorType('OutOfRangeError')
-      setError(t('errors.outOfRange'))
-      setErrorDetails(outOfRangeErrors)
-      return
+      return { isValid: false, errorType: 'OutOfRangeError', errors: outOfRangeErrors }
     }
 
     const constraintValidation = validateSudokuConstraints(board)
     if (!constraintValidation.isValid) {
-      setErrorType('ConstraintViolation')
-      setError(t('errors.constraintViolation'))
-      setErrorDetails(constraintValidation.errors)
-      return
+      return { isValid: false, errorType: 'ConstraintViolation', errors: constraintValidation.errors }
     }
-  }, [boardSize, t])
+
+    return { isValid: true, errorType: '', errors: [] }
+  }, [])
 
   const handleCellChange = useCallback((row: number, col: number, value: number | null) => {
-    const newBoard = inputBoard.map((r, rowIndex) =>
-      r.map((cell, colIndex) =>
-        rowIndex === row && colIndex === col ? value : cell
+    setState(s => {
+      const newBoard = s.inputBoard.map((r, ri) =>
+        r.map((cell, ci) => (ri === row && ci === col ? value : cell))
       )
-    )
-    setInputBoard(newBoard)
-    performRealTimeValidation(newBoard)
-  }, [inputBoard, performRealTimeValidation])
+      const validation = validateBoard(newBoard)
+      return {
+        ...s,
+        inputBoard: newBoard,
+        error: validation.isValid ? '' : t(`errors.${validation.errorType === 'OutOfRangeError' ? 'outOfRange' : 'constraintViolation'}`),
+        errorType: validation.errorType,
+        errorDetails: validation.errors,
+      }
+    })
+  }, [validateBoard, t])
 
   const clearBoard = useCallback(() => {
-    setInputBoard(createEmptyBoard())
-    setSolutions([])
-    setNumSolutions(0)
-    setIsExactCount(false)
-    setError('')
-    setErrorDetails([])
-    setErrorType('')
-    setSolvedFromBoard(null)
-    setHasSolved(false)
-    setCurrentSolutionIndex(0)
-  }, [createEmptyBoard])
+    setState({ ...initialState, inputBoard: createEmptyBoard() })
+  }, [])
 
   const loadSamplePuzzle = useCallback((index: number) => {
     const puzzle = SAMPLE_PUZZLES[index]
     if (puzzle) {
-      setInputBoard(puzzle.board.map(row => [...row]))
-      setSolutions([])
-      setNumSolutions(0)
-      setIsExactCount(false)
-      setError('')
-      setErrorDetails([])
-      setErrorType('')
-      setSolvedFromBoard(null)
-      setHasSolved(false)
-      setCurrentSolutionIndex(0)
+      setState({
+        ...initialState,
+        inputBoard: puzzle.board.map(row => [...row]),
+      })
     }
   }, [])
 
-  const performClientSideValidation = useCallback(() => {
-    if (!validateBoardSize(inputBoard)) {
-      setErrorType('InvalidInput')
-      setError(t('errors.invalidBoardSize'))
-      return { isValid: false }
-    }
-
-    const outOfRangeErrors = []
-    for (let row = 0; row < boardSize; row++) {
-      for (let col = 0; col < boardSize; col++) {
-        const value = inputBoard[row][col]
-        if (value !== null && !isNaN(value) && !validateNumberRange(value, boardSize)) {
-          outOfRangeErrors.push({ row, column: col, number: value })
-        }
-      }
-    }
-
-    if (outOfRangeErrors.length > 0) {
-      setErrorType('OutOfRangeError')
-      setError(t('errors.outOfRange'))
-      setErrorDetails(outOfRangeErrors)
-      return { isValid: false }
-    }
-
-    const constraintValidation = validateSudokuConstraints(inputBoard)
-    if (!constraintValidation.isValid) {
-      setErrorType('ConstraintViolation')
-      setError(t('errors.constraintViolation'))
-      setErrorDetails(constraintValidation.errors)
-      return { isValid: false }
-    }
-
-    return { isValid: true }
-  }, [inputBoard, boardSize, t])
-
   const solveSudoku = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    setErrorDetails([])
-    setErrorType('')
-    setSolutions([])
-    setNumSolutions(0)
-    setIsExactCount(false)
-    setCurrentSolutionIndex(0)
+    setState(s => ({
+      ...s,
+      loading: true,
+      error: '',
+      errorDetails: [],
+      errorType: '',
+      solutions: [],
+      numSolutions: 0,
+      isExactCount: false,
+      currentSolutionIndex: 0,
+    }))
 
-    const clientSideValidation = performClientSideValidation()
-    if (!clientSideValidation.isValid) {
-      setLoading(false)
+    if (!validateBoardSize(inputBoard)) {
+      setError('InvalidInput', t('errors.invalidBoardSize'))
+      setState(s => ({ ...s, loading: false }))
+      return
+    }
+
+    const validation = validateBoard(inputBoard)
+    if (!validation.isValid) {
+      const errorMsg = validation.errorType === 'OutOfRangeError'
+        ? t('errors.outOfRange')
+        : t('errors.constraintViolation')
+      setError(validation.errorType, errorMsg, validation.errors)
+      setState(s => ({ ...s, loading: false }))
       return
     }
 
     try {
-      const response = await fetch(process.env.GATSBY_API_URL!, {
+      const response = await fetch(config.apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ board: inputBoard }),
       })
 
@@ -219,189 +140,96 @@ const SudokuSolver: React.FC = () => {
 
       if (!response.ok) {
         const errorData: SudokuApiErrorResponse = data
-        setErrorType(errorData.error.type)
-        setError(errorData.error.message)
-        if (errorData.error.detail) {
-          setErrorDetails(errorData.error.detail)
-        }
+        setError(errorData.error.type, errorData.error.message, errorData.error.detail || [])
+        setState(s => ({ ...s, loading: false }))
         return
       }
 
       const successData: SudokuApiResponse = data
-      setNumSolutions(successData.num_solutions)
-      setIsExactCount(successData.is_exact_num_solutions)
-      setHasSolved(true)
+      const displaySolutions = successData.solutions.slice(0, config.maxDisplaySolutions)
 
-      setSolvedFromBoard(inputBoard.map(row =>
-        row.map(cell => (cell === null || isNaN(cell)) ? null : cell)
-      ))
-
-      const displaySolutions = successData.solutions.slice(0, SUDOKU_MAX_SOLUTIONS)
-      setSolutions(displaySolutions.map(sol => sol.solution))
-
+      setState(s => ({
+        ...s,
+        loading: false,
+        numSolutions: successData.num_solutions,
+        isExactCount: successData.is_exact_num_solutions,
+        hasSolved: true,
+        solvedFromBoard: inputBoard.map(row =>
+          row.map(cell => (cell === null || isNaN(cell)) ? null : cell)
+        ),
+        solutions: displaySolutions.map(sol => sol.solution),
+      }))
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.networkErrorOccurred'))
-      setErrorType('NetworkError')
-    } finally {
-      setLoading(false)
+      setError('NetworkError', err instanceof Error ? err.message : t('errors.networkErrorOccurred'))
+      setState(s => ({ ...s, loading: false }))
     }
-  }, [inputBoard, performClientSideValidation, SUDOKU_MAX_SOLUTIONS, t])
+  }, [inputBoard, validateBoard, setError, t])
 
-  const formatSolutionCount = useCallback(() => {
+  const formatSolutionCount = () => {
     if (numSolutions === 0) return '0'
-    if (numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS) {
-      return `${SUDOKU_MAX_NUM_SOLUTIONS.toLocaleString()}+`
+    if (numSolutions >= config.maxNumSolutions) {
+      return `${config.maxNumSolutions.toLocaleString()}+`
     }
     return numSolutions.toLocaleString()
-  }, [numSolutions, SUDOKU_MAX_NUM_SOLUTIONS])
-
-  const getButtonStyle = useCallback((isPrimary: boolean) => ({
-    padding: '14px 28px',
-    minHeight: '48px',
-    minWidth: '120px',
-    fontSize: '18px',
-    backgroundColor: isPrimary ? '#007bff' : '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: loading ? 'not-allowed' : 'pointer',
-    opacity: loading ? 0.6 : 1,
-    WebkitTapHighlightColor: 'rgba(0, 0, 0, 0.1)',
-    touchAction: 'manipulation',
-    userSelect: 'none' as const,
-    fontWeight: '600',
-  }), [loading])
+  }
 
   const handlePreviousSolution = useCallback(() => {
-    setCurrentSolutionIndex(prev => Math.max(0, prev - 1))
+    setState(s => ({ ...s, currentSolutionIndex: Math.max(0, s.currentSolutionIndex - 1) }))
   }, [])
 
   const handleNextSolution = useCallback(() => {
-    setCurrentSolutionIndex(prev => Math.min(solutions.length - 1, prev + 1))
-  }, [solutions.length])
+    setState(s => ({ ...s, currentSolutionIndex: Math.min(s.solutions.length - 1, s.currentSolutionIndex + 1) }))
+  }, [])
 
   const handleBackToInput = useCallback(() => {
-    setSolutions([])
-    setNumSolutions(0)
-    setIsExactCount(false)
-    setHasSolved(false)
-    setCurrentSolutionIndex(0)
+    setState(s => ({
+      ...s,
+      solutions: [],
+      numSolutions: 0,
+      isExactCount: false,
+      hasSolved: false,
+      currentSolutionIndex: 0,
+    }))
   }, [])
-
-  // セル選択ハンドラー（モバイル用）
-  const handleCellSelect = useCallback((row: number, col: number) => {
-    setSelectedCell({ row, col })
-  }, [])
-
-  // NumberPadからの数字選択ハンドラー
-  const handleNumberPadSelect = useCallback((value: number | null) => {
-    if (selectedCell) {
-      handleCellChange(selectedCell.row, selectedCell.col, value)
-    }
-  }, [selectedCell, handleCellChange])
-
-  // スワイプ検出用の定数
-  const SWIPE_THRESHOLD = 50
-
-  // タッチ開始ハンドラー
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (!isMobileMode || solutions.length <= 1) return
-    setTouchStartX(e.touches[0].clientX)
-  }, [isMobileMode, solutions.length])
-
-  // タッチ終了ハンドラー（スワイプ検出）
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (touchStartX === null || !isMobileMode) return
-
-    const touchEndX = e.changedTouches[0].clientX
-    const diff = touchStartX - touchEndX
-
-    if (Math.abs(diff) > SWIPE_THRESHOLD) {
-      if (diff > 0 && currentSolutionIndex < solutions.length - 1) {
-        // 左スワイプ = 次の解
-        handleNextSolution()
-      } else if (diff < 0 && currentSolutionIndex > 0) {
-        // 右スワイプ = 前の解
-        handlePreviousSolution()
-      }
-    }
-
-    setTouchStartX(null)
-  }, [touchStartX, isMobileMode, currentSolutionIndex, solutions.length, handleNextSolution, handlePreviousSolution])
 
   return (
-    <div style={{
-      padding: '20px',
-      paddingBottom: isMobileMode && solutions.length === 0 ? '220px' : '20px',
-      fontFamily: '-apple-system, Roboto, sans-serif',
-      maxWidth: '100%',
-      overflowX: 'auto',
-      WebkitTextSizeAdjust: '100%',
-    }}>
-      <h1 style={{ textAlign: 'center', color: '#333', marginBottom: '30px' }}>
-        {t('app.title')}
-      </h1>
+    <div className="solver-container">
+      <h1 className="solver-title">{t('app.title')}</h1>
 
       {solutions.length === 0 ? (
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <div className="board-section">
           <SudokuBoard
             board={inputBoard}
             title={t('board.inputPrompt')}
             isInput={true}
             onChange={handleCellChange}
             invalidCells={errorDetails}
-            isMobileMode={isMobileMode}
-            selectedCell={selectedCell}
-            onCellSelect={handleCellSelect}
           />
 
-          <div style={{
-            marginTop: '20px',
-            display: 'flex',
-            gap: '10px',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-          }}>
+          <div className="button-group">
             <button
+              className="btn btn-primary"
               onClick={solveSudoku}
               disabled={loading}
-              style={getButtonStyle(true)}
             >
               {loading ? t('solver.solving') : t('solver.solve')}
             </button>
-
             <button
+              className="btn btn-secondary"
               onClick={clearBoard}
               disabled={loading}
-              style={getButtonStyle(false)}
             >
               {t('solver.clear')}
             </button>
           </div>
 
-          <div style={{
-            marginTop: '15px',
-            display: 'flex',
-            gap: '10px',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-          }}>
+          <div className="button-group sample-button-group">
             {SAMPLE_PUZZLES.map((puzzle, index) => (
               <button
                 key={index}
+                className="btn btn-success btn-sample"
                 onClick={() => loadSamplePuzzle(index)}
                 disabled={loading}
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '14px',
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  opacity: loading ? 0.6 : 1,
-                  fontWeight: '500',
-                }}
               >
                 {t(`samples.${puzzle.key}`)}
               </button>
@@ -409,21 +237,17 @@ const SudokuSolver: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div
-          style={{ textAlign: 'center', marginBottom: '30px' }}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          <div style={{ marginBottom: '20px' }}>
-            <h2 style={{ color: '#333', margin: '0 0 5px 0' }}>
-              {t('solver.solutionCount')} {isExactCount && numSolutions >= SUDOKU_MAX_NUM_SOLUTIONS && (
-                <span style={{ color: '#28a745' }}>{t('solver.exactly')} </span>
+        <div className="board-section">
+          <div className="solution-header">
+            <h2 className="solution-count">
+              {t('solver.solutionCount')}{' '}
+              {isExactCount && numSolutions >= config.maxNumSolutions && (
+                <span className="solution-count-exact">{t('solver.exactly')} </span>
               )}
-              <span style={{ color: '#007bff' }}>{formatSolutionCount()}</span>
+              <span className="solution-count-number">{formatSolutionCount()}</span>
             </h2>
-            <p style={{ color: '#666', margin: 0 }}>
-              {Math.min(solutions.length, SUDOKU_MAX_SOLUTIONS)}{t('solver.displayingSolutions')}
-              {isMobileMode && solutions.length > 1 && ` ${t('solver.swipeInstruction')}`}
+            <p className="solution-info">
+              {Math.min(solutions.length, config.maxDisplaySolutions)}{t('solver.displayingSolutions')}
             </p>
           </div>
 
@@ -432,71 +256,30 @@ const SudokuSolver: React.FC = () => {
             originalBoard={solvedFromBoard || undefined}
           />
 
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '20px',
-            marginTop: '20px',
-          }}>
+          <div className="solution-nav">
             <button
+              className="btn btn-primary btn-nav"
               onClick={handlePreviousSolution}
               disabled={currentSolutionIndex === 0}
-              style={{
-                padding: '12px 24px',
-                fontSize: '20px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: currentSolutionIndex === 0 ? 'not-allowed' : 'pointer',
-                opacity: currentSolutionIndex === 0 ? 0.4 : 1,
-                fontWeight: '600',
-                minWidth: '60px',
-              }}
             >
               ←
             </button>
-
-            <span style={{ fontSize: '18px', fontWeight: '600', minWidth: '150px' }}>
+            <span className="solution-counter">
               {t('solver.solutionCounter', { index: currentSolutionIndex + 1, total: solutions.length })}
             </span>
-
             <button
+              className="btn btn-primary btn-nav"
               onClick={handleNextSolution}
               disabled={currentSolutionIndex === solutions.length - 1}
-              style={{
-                padding: '12px 24px',
-                fontSize: '20px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: currentSolutionIndex === solutions.length - 1 ? 'not-allowed' : 'pointer',
-                opacity: currentSolutionIndex === solutions.length - 1 ? 0.4 : 1,
-                fontWeight: '600',
-                minWidth: '60px',
-              }}
             >
               →
             </button>
           </div>
 
           <button
+            className="btn btn-secondary"
             onClick={handleBackToInput}
-            style={{
-              marginTop: '20px',
-              padding: '14px 28px',
-              minHeight: '48px',
-              minWidth: '120px',
-              fontSize: '18px',
-              backgroundColor: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600',
-            }}
+            style={{ marginTop: '20px' }}
           >
             {t('solver.back')}
           </button>
@@ -504,65 +287,19 @@ const SudokuSolver: React.FC = () => {
       )}
 
       {error && (
-        <div className="error-message" style={{
-          backgroundColor: '#f8d7da',
-          color: '#721c24',
-          padding: '15px',
-          borderRadius: '5px',
-          marginBottom: '20px',
-          border: '1px solid #f5c6cb',
-        }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>
-            {t(`errors.${errorType}.label`) || t(`errors.${errorType.charAt(0).toLowerCase() + errorType.slice(1)}Error.label`) || 'Error'}
-          </div>
-          <div style={{ marginBottom: errorDetails.length > 0 ? '10px' : '0' }}>
-            {error}
-          </div>
-          {errorDetails.length > 0 && (
-            <div>
-              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>{t('errors.problemLocations')}</div>
-              <div style={{ fontSize: '14px' }}>
-                {errorDetails.map((detail, index) => (
-                  <div key={index} style={{ marginBottom: '2px' }}>
-                    {t('errors.locationDetail', { row: detail.row + 1, col: detail.column + 1, value: detail.number })}
-                  </div>
-                ))}
-              </div>
-              {errorType && (
-                <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
-                  {t(`errors.${errorType}.hint`) || t(`errors.${errorType.charAt(0).toLowerCase() + errorType.slice(1)}Error.hint`) || ''}
-                </div>
-              )}
-            </div>
-          )}
-          {errorType === 'InternalServerError' && errorDetails.length === 0 && (
-            <div style={{ marginTop: '10px', fontSize: '14px', fontStyle: 'italic' }}>
-              {t('errors.InternalServerError.hint')}
-            </div>
-          )}
-        </div>
-      )}
-
-      {numSolutions === 0 && hasSolved && !loading && !error && (
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <h2 style={{ color: '#333' }}>
-            {t('solver.noSolutionFound')}
-          </h2>
-          <p style={{ color: '#666', fontStyle: 'italic' }}>
-            {t('solver.noSolutionMessage')}
-          </p>
-        </div>
-      )}
-
-      {/* モバイル用NumberPad */}
-      {isMobileMode && solutions.length === 0 && (
-        <NumberPad
-          onNumberSelect={handleNumberPadSelect}
-          disabled={loading}
-          selectedCell={selectedCell}
+        <ErrorDisplay
+          error={error}
+          errorType={errorType}
+          errorDetails={errorDetails}
         />
       )}
 
+      {numSolutions === 0 && hasSolved && !loading && !error && (
+        <div className="no-solution">
+          <h2>{t('solver.noSolutionFound')}</h2>
+          <p>{t('solver.noSolutionMessage')}</p>
+        </div>
+      )}
     </div>
   )
 }

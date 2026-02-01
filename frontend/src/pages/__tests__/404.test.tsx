@@ -4,13 +4,6 @@ import { renderWithI18n } from '../../__tests__/utils/i18n-test-utils'
 import NotFoundPage, { Head } from '../404'
 import type { PageProps, HeadProps } from 'gatsby'
 
-// Mock Gatsby Link component
-jest.mock('gatsby', () => ({
-  Link: ({ to, children }: { to: string; children: React.ReactNode }) => (
-    <a href={to}>{children}</a>
-  ),
-}))
-
 const mockLocation = {
   pathname: '/404',
   search: '',
@@ -50,10 +43,10 @@ const mockHeadProps: HeadProps = {
 }
 
 describe('NotFoundPage', () => {
-  const originalEnv = process.env
+  const originalEnv = process.env.NODE_ENV
 
   afterEach(() => {
-    process.env = originalEnv
+    process.env.NODE_ENV = originalEnv
   })
 
   it('renders 404 page content', () => {
@@ -62,14 +55,14 @@ describe('NotFoundPage', () => {
     expect(screen.getByText('Go home')).toBeInTheDocument()
   })
 
-  it('shows development message when NODE_ENV is development', () => {
+  it('shows development message in development mode', () => {
     process.env.NODE_ENV = 'development'
     renderWithI18n(<NotFoundPage {...mockPageProps} />)
     expect(screen.getByText(/Try creating a page in/)).toBeInTheDocument()
     expect(screen.getByText('src/pages/')).toBeInTheDocument()
   })
 
-  it('does not show development message when NODE_ENV is not development', () => {
+  it('hides development message in production mode', () => {
     process.env.NODE_ENV = 'production'
     renderWithI18n(<NotFoundPage {...mockPageProps} />)
     expect(screen.queryByText(/Try creating a page in/)).not.toBeInTheDocument()
@@ -82,10 +75,16 @@ describe('NotFoundPage', () => {
   })
 })
 
-describe('Head component', () => {
+describe('404 Head component', () => {
   it('renders correct title', () => {
     const { container } = renderWithI18n(<Head {...mockHeadProps} />)
     const title = container.querySelector('title')
     expect(title?.textContent).toBe('ページが見つかりません | 数独ソルバー')
+  })
+
+  it('includes noindex meta tag', () => {
+    const { container } = renderWithI18n(<Head {...mockHeadProps} />)
+    const meta = container.querySelector('meta[name="robots"]')
+    expect(meta).toHaveAttribute('content', 'noindex, nofollow')
   })
 })

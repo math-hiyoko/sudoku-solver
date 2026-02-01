@@ -3,7 +3,9 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^gatsby$': '<rootDir>/__mocks__/gatsby.js',
   },
+  modulePathIgnorePatterns: ['<rootDir>/.cache/'],
   testMatch: [
     '<rootDir>/src/**/*.test.{js,jsx,ts,tsx}',
   ],
