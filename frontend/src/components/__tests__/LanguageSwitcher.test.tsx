@@ -95,18 +95,14 @@ describe('LanguageSwitcher', () => {
     expect(i18n.language).toBe('en')
   })
 
-  it('has correct styling for language switcher container', () => {
+  it('has correct CSS class for language switcher container', () => {
     renderWithI18n(<LanguageSwitcher />)
 
     const select = screen.getByRole('combobox', { name: 'Select language' })
     const container = select.parentElement
 
-    expect(container).toHaveStyle({
-      position: 'fixed',
-      top: '10px',
-      right: '10px',
-      zIndex: '1000',
-    })
+    expect(container).toHaveClass('language-switcher')
+    expect(select).toHaveClass('language-select')
   })
 
   describe('Default language', () => {
