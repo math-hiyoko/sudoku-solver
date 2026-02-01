@@ -24,11 +24,12 @@ const AdSlotDisplay: React.FC<AdSlotDisplayProps> = ({ admaxId }) => {
     if (!window.admaxads) {
       window.admaxads = []
     }
-    window.admaxads.push({ admax_id: admaxId, type: 'switch' })
+    window.admaxads.push({ admax_id: admaxId, type: 'banner' })
   }, [admaxId])
 
   return (
     <div
+      className="admax-ads"
       data-admax-id={admaxId}
       style={{
         display: 'inline-block',

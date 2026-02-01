@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useRef, useEffect } from "react"
 import type { HeadFC, PageProps } from "gatsby"
 import { useTranslation } from "react-i18next"
 import SudokuSolver from "../components/SudokuSolver"
@@ -9,19 +10,45 @@ import AdSdkLoader from "../components/AdSdkLoader"
 const AD_ID = "170ab79f44a8ae267d269b78243cdeda"
 
 const IndexPage: React.FC<PageProps> = () => {
+  const adContainerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const adContainer = adContainerRef.current
+    if (!adContainer) return
+
+    const updateAdHeight = () => {
+      const height = adContainer.offsetHeight
+      document.documentElement.style.setProperty('--ad-banner-height', `${height}px`)
+    }
+
+    // 初期値を設定
+    updateAdHeight()
+
+    // ResizeObserverで広告の高さの変化を監視
+    const resizeObserver = new ResizeObserver(updateAdHeight)
+    resizeObserver.observe(adContainer)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
   return (
     <>
-      <LanguageSwitcher />
-      <div style={{
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        padding: '10px 0',
-        backgroundColor: '#f5f5f5',
-      }}>
+      <div
+        ref={adContainerRef}
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          padding: '10px 0',
+          backgroundColor: '#f5f5f5',
+        }}
+      >
         <AdSlotDisplay admaxId={AD_ID} />
       </div>
       <AdSdkLoader />
+      <LanguageSwitcher />
       <SudokuSolver />
     </>
   )

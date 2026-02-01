@@ -253,7 +253,7 @@ input:focus {
 
 .language-switcher {
   position: fixed;
-  top: 10px;
+  top: calc(var(--ad-banner-height, 0px) + 10px);
   right: 10px;
   z-index: 1000;
 }
