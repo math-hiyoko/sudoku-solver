@@ -91,10 +91,10 @@ describe('Head component', () => {
 
   beforeEach(() => {
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation((message) => {
+      // validateDOMNesting警告以外は元のconsole.errorを呼び出す
       if (typeof message === 'string' && message.includes('validateDOMNesting')) {
         return
       }
-      console.warn(message)
     })
   })
 
