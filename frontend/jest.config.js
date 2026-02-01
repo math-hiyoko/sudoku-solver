@@ -6,9 +6,7 @@ module.exports = {
     '^gatsby$': '<rootDir>/__mocks__/gatsby.js',
   },
   modulePathIgnorePatterns: ['<rootDir>/.cache/'],
-  testMatch: [
-    '<rootDir>/src/**/*.test.{js,jsx,ts,tsx}',
-  ],
+  testMatch: ['<rootDir>/src/**/*.test.{js,jsx,ts,tsx}'],
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', {
       presets: [
@@ -18,9 +16,6 @@ module.exports = {
       ]
     }]
   },
-  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
-
-  // JUnit XML reporter configuration
   reporters: [
     'default',
     ['jest-junit', {
@@ -33,9 +28,6 @@ module.exports = {
       usePathForSuiteName: false,
     }]
   ],
-
-  // Coverage configuration
-  collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',

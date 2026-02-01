@@ -2,11 +2,7 @@
   "name": "frontend",
   "version": "1.0.0",
   "private": true,
-  "description": "frontend",
   "author": "koki watanabe",
-  "keywords": [
-    "gatsby"
-  ],
   "scripts": {
     "develop": "gatsby develop",
     "start": "gatsby develop",
