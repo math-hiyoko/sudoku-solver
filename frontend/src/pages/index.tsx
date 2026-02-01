@@ -3,14 +3,12 @@ import type { HeadFC, PageProps } from "gatsby"
 import { useTranslation } from "react-i18next"
 import SudokuSolver from "../components/SudokuSolver"
 import LanguageSwitcher from "../components/LanguageSwitcher"
-import AdBanner from "../components/AdBanner"
 
 const IndexPage: React.FC<PageProps> = () => {
   return (
     <>
       <LanguageSwitcher />
       <SudokuSolver />
-      <AdBanner />
     </>
   )
 }
