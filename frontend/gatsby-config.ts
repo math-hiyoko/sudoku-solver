@@ -10,8 +10,8 @@ process.env.GATSBY_SUDOKU_MAX_SOLUTIONS = process.env.SUDOKU_MAX_SOLUTIONS || '3
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `数独ソルバー | 無料オンライン数独解答ツール`,
-    description: `数独を自動で解く無料オンラインツール。解が1つに決まらない問題にも対応。`,
+    title: `数独ソルバー｜複数解にも対応した無料オンライン数独解答ツール`,
+    description: `数独を自動で解く無料オンラインソルバー。解が1つに定まらない数独にも対応し、あり得る解の個数や全解一覧を表示できます。`,
     siteUrl: `https://sudoku-solver.piyochan.jp`,
   },
   plugins: [

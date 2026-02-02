@@ -1,8 +1,8 @@
 {
   "app": {
     "title": "Sudoku Solver",
-    "siteTitle": "Sudoku Solver | Free Online Sudoku Solution Tool",
-    "description": "A free online tool to automatically solve Sudoku puzzles. Simply input the puzzle and instantly display the solution. Can display all solutions when multiple solutions exist. Supports 9x9 Sudoku puzzles.",
+    "siteTitle": "Sudoku Solver | Free Online Tool Supporting Multiple Solutions",
+    "description": "A free online Sudoku solver. Handles puzzles with multiple solutions, displaying the total number of possible solutions and a complete list of all solutions.",
     "keywords": "sudoku,numberplace,solver,solution,puzzle,free,online"
   },
   "board": {

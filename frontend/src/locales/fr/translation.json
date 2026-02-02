@@ -1,8 +1,8 @@
 {
   "app": {
     "title": "Solveur de Sudoku",
-    "siteTitle": "Solveur de Sudoku | Outil gratuit de résolution de Sudoku en ligne",
-    "description": "Un outil gratuit en ligne pour résoudre automatiquement les puzzles de Sudoku. Entrez simplement le puzzle et affichez instantanément la solution. Peut afficher toutes les solutions lorsque plusieurs solutions existent. Prend en charge les puzzles de Sudoku 9x9.",
+    "siteTitle": "Solveur de Sudoku | Outil en ligne gratuit prenant en charge les solutions multiples",
+    "description": "Solveur de Sudoku en ligne gratuit. Gère les puzzles avec plusieurs solutions, affichant le nombre total de solutions possibles et la liste complète de toutes les solutions.",
     "keywords": "sudoku,solveur,solution,puzzle,gratuit,en ligne"
   },
   "board": {
