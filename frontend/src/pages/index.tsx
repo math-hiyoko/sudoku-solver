@@ -6,6 +6,7 @@ import SudokuSolver from "../components/SudokuSolver"
 import LanguageSwitcher from "../components/LanguageSwitcher"
 import AdSlotDisplay from "../components/AdSlotDisplay"
 import AdSdkLoader from "../components/AdSdkLoader"
+import Footer from "../components/Footer"
 
 const AD_ID = "326c6aae086754fcb0952b2dfa0c91f6"
 
@@ -50,6 +51,7 @@ const IndexPage: React.FC<PageProps> = () => {
       <AdSdkLoader />
       <LanguageSwitcher />
       <SudokuSolver />
+      <Footer />
     </>
   )
 }
