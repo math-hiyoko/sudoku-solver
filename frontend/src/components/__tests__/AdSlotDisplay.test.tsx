@@ -15,7 +15,7 @@ describe('AdSlotDisplay', () => {
 
   it('renders ad container with correct data-admax-id', () => {
     const { container } = render(<AdSlotDisplay admaxId="test-ad-123" />)
-    const adDiv = container.querySelector('.admax-ads')
+    const adDiv = container.querySelector('.admax-switch')
 
     expect(adDiv).toBeInTheDocument()
     expect(adDiv).toHaveAttribute('data-admax-id', 'test-ad-123')
@@ -23,11 +23,9 @@ describe('AdSlotDisplay', () => {
 
   it('applies correct inline styles', () => {
     const { container } = render(<AdSlotDisplay admaxId="test-ad-123" />)
-    const adDiv = container.querySelector('.admax-ads') as HTMLElement
+    const adDiv = container.querySelector('.admax-switch') as HTMLElement
 
     expect(adDiv.style.display).toBe('inline-block')
-    expect(adDiv.style.width).toBe('100%')
-    expect(adDiv.style.maxWidth).toBe('728px')
   })
 
   it('initializes window.admaxads if not exists', () => {
@@ -45,7 +43,7 @@ describe('AdSlotDisplay', () => {
     expect(window.admaxads).toHaveLength(1)
     expect(window.admaxads![0]).toEqual({
       admax_id: 'test-ad-123',
-      type: 'banner'
+      type: 'switch'
     })
   })
 
@@ -66,7 +64,7 @@ describe('AdSlotDisplay', () => {
 
     expect(window.admaxads).toHaveLength(2)
     expect(window.admaxads![0]).toEqual({ admax_id: 'existing-ad', type: 'banner' })
-    expect(window.admaxads![1]).toEqual({ admax_id: 'test-ad-123', type: 'banner' })
+    expect(window.admaxads![1]).toEqual({ admax_id: 'test-ad-123', type: 'switch' })
   })
 
   it('renders multiple ad slots independently', () => {
@@ -77,7 +75,7 @@ describe('AdSlotDisplay', () => {
       </>
     )
 
-    const adDivs = container.querySelectorAll('.admax-ads')
+    const adDivs = container.querySelectorAll('.admax-switch')
     expect(adDivs).toHaveLength(2)
     expect(adDivs[0]).toHaveAttribute('data-admax-id', 'ad-1')
     expect(adDivs[1]).toHaveAttribute('data-admax-id', 'ad-2')

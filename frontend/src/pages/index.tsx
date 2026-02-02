@@ -7,7 +7,7 @@ import LanguageSwitcher from "../components/LanguageSwitcher"
 import AdSlotDisplay from "../components/AdSlotDisplay"
 import AdSdkLoader from "../components/AdSdkLoader"
 
-const AD_ID = "170ab79f44a8ae267d269b78243cdeda"
+const AD_ID = "326c6aae086754fcb0952b2dfa0c91f6"
 
 const IndexPage: React.FC<PageProps> = () => {
   const adContainerRef = useRef<HTMLDivElement>(null)
