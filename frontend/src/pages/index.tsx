@@ -8,8 +8,6 @@ import AdSlotDisplay from "../components/AdSlotDisplay"
 import AdSdkLoader from "../components/AdSdkLoader"
 import Footer from "../components/Footer"
 
-const AD_ID = "326c6aae086754fcb0952b2dfa0c91f6"
-
 const IndexPage: React.FC<PageProps> = () => {
   const adContainerRef = useRef<HTMLDivElement>(null)
 
@@ -46,7 +44,7 @@ const IndexPage: React.FC<PageProps> = () => {
           backgroundColor: '#f5f5f5',
         }}
       >
-        <AdSlotDisplay admaxId={AD_ID} />
+        <AdSlotDisplay />
       </div>
       <AdSdkLoader />
       <LanguageSwitcher />

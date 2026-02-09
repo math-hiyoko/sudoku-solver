@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 
-interface AdSlotDisplayProps {
-  admaxId: string
-}
+const SWITCH_AD_ID = '326c6aae086754fcb0952b2dfa0c91f6'
+const ACTION_AD_ID = '4f3e88c41850ab88c16d7a485c3ed7fd'
 
 declare global {
   interface Window {
@@ -10,7 +9,7 @@ declare global {
   }
 }
 
-const AdSlotDisplay: React.FC<AdSlotDisplayProps> = ({ admaxId }) => {
+const AdSlotDisplay: React.FC = () => {
   const pushedRef = useRef(false)
 
   useEffect(() => {
@@ -24,13 +23,14 @@ const AdSlotDisplay: React.FC<AdSlotDisplayProps> = ({ admaxId }) => {
     if (!window.admaxads) {
       window.admaxads = []
     }
-    window.admaxads.push({ admax_id: admaxId, type: 'switch' })
-  }, [admaxId])
+    window.admaxads.push({ admax_id: SWITCH_AD_ID, type: 'switch' })
+    window.admaxads.push({ admax_id: ACTION_AD_ID, type: 'action' })
+  }, [])
 
   return (
     <div
       className="admax-switch"
-      data-admax-id={admaxId}
+      data-admax-id={SWITCH_AD_ID}
       style={{ display: 'inline-block' }}
     />
   )
