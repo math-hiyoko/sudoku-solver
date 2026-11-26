@@ -7,24 +7,8 @@ phases:
   install:
     commands:
       - echo "Installing dependencies..."
-      - dnf -y install gcc14-c++ boost-devel boost-json libcurl-devel make tar gzip zip
+      - dnf -y install cmake gcc14-c++ boost-devel boost-json libcurl-devel make zip
       - export CC=gcc14-gcc CXX=gcc14-g++
-      - |
-        CMAKE_VERSION=4.5.1
-        CMAKE_ARCH=$(uname -m)
-        case "$CMAKE_ARCH" in
-          x86_64) CMAKE_SHA256=83b71181fb62b4fe8f26067a9321448572e7a43bd04ff6c7f54a24c33698f16d ;;
-          aarch64) CMAKE_SHA256=3bec208f11ed96c173032eeaf97937c54dd246acefee22acd7794a6b4e70d536 ;;
-          *) echo "Unsupported CMake architecture: $CMAKE_ARCH" >&2; exit 1 ;;
-        esac
-        CMAKE_RELEASE="cmake-${CMAKE_VERSION}-linux-${CMAKE_ARCH}"
-        export CMAKE_TOOLS_DIR="$CODEBUILD_SRC_DIR/backend/build/toolchain"
-        mkdir -p "$CMAKE_TOOLS_DIR"
-        curl -fsSL --retry 3 "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${CMAKE_RELEASE}.tar.gz" \
-          -o "$CMAKE_TOOLS_DIR/$CMAKE_RELEASE.tar.gz"
-        printf '%s  %s\n' "$CMAKE_SHA256" "$CMAKE_TOOLS_DIR/$CMAKE_RELEASE.tar.gz" | sha256sum -c -
-        tar -xzf "$CMAKE_TOOLS_DIR/$CMAKE_RELEASE.tar.gz" -C "$CMAKE_TOOLS_DIR"
-        export PATH="$CMAKE_TOOLS_DIR/$CMAKE_RELEASE/bin:$PATH"
 
   pre_build:
     commands:
@@ -52,13 +36,14 @@ phases:
       - |
         set -e
         # Fetch the release tags and verify them against the recorded submodule commits.
+        mkdir -p backend/build
         for dependency in aws-lambda-cpp benchmark googletest; do
           submodule_path="backend/extern/$dependency"
           revision=$(git rev-parse --verify ":$submodule_path")
           repository=$(git config --file .gitmodules --get "submodule.$submodule_path.url")
           release_tag=$(git config --file .gitmodules --get "submodule.$submodule_path.tag")
           tag_ref="refs/tags/$release_tag"
-          checkout=$(mktemp -d "$CMAKE_TOOLS_DIR/$dependency.XXXXXX")
+          checkout=$(mktemp -d "backend/build/$dependency.XXXXXX")
           git init --quiet "$checkout/source"
           git -C "$checkout/source" fetch --depth 1 --no-tags "$repository" "$tag_ref:$tag_ref"
           tag_revision=$(git -C "$checkout/source" rev-parse --verify "$tag_ref^{commit}")
@@ -78,19 +63,19 @@ phases:
       - |
         AWS_LAMBDA_CPP_TAG=$(git -C "$CODEBUILD_SRC_DIR" config --file .gitmodules --get submodule.backend/extern/aws-lambda-cpp.tag)
         cmake -S extern/aws-lambda-cpp/ \
-              -B build/dependencies/aws-lambda-cpp-build \
+              -B extern/aws-lambda-cpp/build \
               -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
-              -DCMAKE_INSTALL_PREFIX="$PWD/build/dependencies" \
+              -DCMAKE_INSTALL_PREFIX=. \
               -DAWS_LAMBDA_CPP_VERSION="${AWS_LAMBDA_CPP_TAG#v}" \
               -DBUILD_SHARED_LIBS=OFF
-        cmake --build build/dependencies/aws-lambda-cpp-build -j
-        cmake --install build/dependencies/aws-lambda-cpp-build
+        cmake --build extern/aws-lambda-cpp/build -j
+        cmake --install extern/aws-lambda-cpp/build
       - echo "Building the application..."
       - |
         cmake -S . \
               -B build \
               -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
-              -DCMAKE_PREFIX_PATH="$PWD/build/dependencies"
+              -DCMAKE_PREFIX_PATH=.
         cmake --build build -j
       - echo "Running Tests..."
       - ctest --test-dir build --verbose --output-on-failure -j

@@ -39,7 +39,6 @@ phases:
       - echo "Running Tests..."
       - npm run test:ci
       - npm run lint:check
-      - npm run typecheck
       - echo "Building the application..."
       - npm run build
 

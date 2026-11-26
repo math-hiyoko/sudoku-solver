@@ -2,7 +2,7 @@ import type { GatsbyConfig } from "gatsby"
 import * as dotenv from "dotenv"
 import * as path from "path"
 
-dotenv.config({ path: path.join(__dirname, "../.env"), quiet: true })
+dotenv.config({ path: path.join(__dirname, "../.env") })
 
 process.env.GATSBY_SUDOKU_LEVEL = process.env.SUDOKU_LEVEL || '3'
 process.env.GATSBY_SUDOKU_MAX_NUM_SOLUTIONS = process.env.SUDOKU_MAX_NUM_SOLUTIONS || '1000000'
