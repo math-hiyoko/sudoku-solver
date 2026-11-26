@@ -1,5 +1,5 @@
 import React from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
+import { renderToStaticMarkup } from 'react-dom/server.node'
 import { I18nextProvider } from 'react-i18next'
 import { screen } from '@testing-library/react'
 import { createTestI18n, renderWithI18n } from '../../__tests__/utils/i18n-test-utils'
