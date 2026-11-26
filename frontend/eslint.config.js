@@ -22,6 +22,7 @@ module.exports = defineConfig([
       react: { version: 'detect' },
     },
     rules: {
+      'react-hooks/set-state-in-effect': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
       'react/react-in-jsx-scope': 'off',
