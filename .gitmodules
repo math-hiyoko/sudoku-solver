@@ -1,9 +1,12 @@
 [submodule "backend/extern/googletest"]
 	path = backend/extern/googletest
 	url = https://github.com/google/googletest.git
+	tag = v1.18.0
 [submodule "backend/extern/aws-lambda-cpp"]
 	path = backend/extern/aws-lambda-cpp
 	url = https://github.com/awslabs/aws-lambda-cpp.git
+	tag = v1.0.1
 [submodule "backend/extern/benchmark"]
 	path = backend/extern/benchmark
 	url = https://github.com/google/benchmark.git
+	tag = v1.10.0

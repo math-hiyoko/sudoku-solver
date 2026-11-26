@@ -15,7 +15,7 @@ add_library(
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(${target_name} PUBLIC Boost::pool OpenMP::OpenMP_CXX)
+target_link_libraries(${target_name} PUBLIC Boost::headers OpenMP::OpenMP_CXX)
 foreach(env_var IN LISTS env_vars)
   target_compile_definitions(${target_name} PRIVATE ${env_var})
 endforeach()

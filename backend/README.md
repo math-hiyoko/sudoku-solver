@@ -17,7 +17,7 @@
 バックエンドのビルドには C++23 が必要です。
 ローカルでの検証環境は GCC 16.2、CMake 4.5.1、Boost 1.92.0 です。
 Boost の JSON と Pool、libcurl の開発用ヘッダー、C++ コンパイラの OpenMP サポートが必要です。
-CodeBuild では Amazon Linux 2023 の GCC 14 を使用します。
+CodeBuild では Amazon Linux 2023 の GCC 14 と Boost 1.75.0 を使用します。
 
 ```
 $ pwd

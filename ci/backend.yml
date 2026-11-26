@@ -7,8 +7,7 @@ phases:
   install:
     commands:
       - echo "Installing dependencies..."
-      - dnf -y upgrade
-      - dnf -y install gcc14-c++ libcurl-devel make tar gzip xz zip
+      - dnf -y install gcc14-c++ boost-devel boost-json libcurl-devel make tar gzip zip
       - export CC=gcc14-gcc CXX=gcc14-g++
       - |
         CMAKE_VERSION=4.5.1
@@ -49,32 +48,40 @@ phases:
 
   build:
     commands:
-      - git -C "$CODEBUILD_SRC_DIR" submodule update --init
-      - cd $CODEBUILD_SRC_DIR/backend
+      - cd "$CODEBUILD_SRC_DIR"
+      - |
+        set -e
+        # Fetch the release tags and verify them against the recorded submodule commits.
+        for dependency in aws-lambda-cpp benchmark googletest; do
+          submodule_path="backend/extern/$dependency"
+          revision=$(git rev-parse --verify ":$submodule_path")
+          repository=$(git config --file .gitmodules --get "submodule.$submodule_path.url")
+          release_tag=$(git config --file .gitmodules --get "submodule.$submodule_path.tag")
+          tag_ref="refs/tags/$release_tag"
+          checkout=$(mktemp -d "$CMAKE_TOOLS_DIR/$dependency.XXXXXX")
+          git init --quiet "$checkout/source"
+          git -C "$checkout/source" fetch --depth 1 --no-tags "$repository" "$tag_ref:$tag_ref"
+          tag_revision=$(git -C "$checkout/source" rev-parse --verify "$tag_ref^{commit}")
+          if [ "$tag_revision" != "$revision" ]; then
+            echo "$dependency $release_tag resolves to $tag_revision, expected $revision" >&2
+            exit 1
+          fi
+          git -C "$checkout/source" checkout --quiet --detach "$tag_ref"
+          test -f "$checkout/source/CMakeLists.txt"
+          if [ -e "$submodule_path" ]; then
+            mv "$submodule_path" "$checkout/previous"
+          fi
+          mv "$checkout/source" "$submodule_path"
+        done
+      - cd "$CODEBUILD_SRC_DIR/backend"
       - echo "Building external projects..."
       - |
-        BOOST_VERSION=1.92.0
-        BOOST_RELEASE="boost-${BOOST_VERSION}-cmake"
-        BOOST_SHA256=9bed76128d4e46755dbe818487788c6fceb6f72b378f4daa49b7e1e600d9088d
-        curl -fsSL --retry 3 "https://github.com/boostorg/boost/releases/download/boost-${BOOST_VERSION}/${BOOST_RELEASE}.tar.xz" \
-          -o "$CMAKE_TOOLS_DIR/$BOOST_RELEASE.tar.xz"
-        printf '%s  %s\n' "$BOOST_SHA256" "$CMAKE_TOOLS_DIR/$BOOST_RELEASE.tar.xz" | sha256sum -c -
-        mkdir -p "$CMAKE_TOOLS_DIR/boost"
-        tar -xJf "$CMAKE_TOOLS_DIR/$BOOST_RELEASE.tar.xz" -C "$CMAKE_TOOLS_DIR/boost" --strip-components=1
-        cmake -S "$CMAKE_TOOLS_DIR/boost" \
-              -B build/dependencies/boost-build \
-              -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
-              -DCMAKE_INSTALL_PREFIX="$PWD/build/dependencies" \
-              -DBUILD_SHARED_LIBS=OFF \
-              -DBOOST_INCLUDE_LIBRARIES='json;pool'
-        cmake --build build/dependencies/boost-build -j
-        cmake --install build/dependencies/boost-build
-      - |
+        AWS_LAMBDA_CPP_TAG=$(git -C "$CODEBUILD_SRC_DIR" config --file .gitmodules --get submodule.backend/extern/aws-lambda-cpp.tag)
         cmake -S extern/aws-lambda-cpp/ \
               -B build/dependencies/aws-lambda-cpp-build \
               -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
               -DCMAKE_INSTALL_PREFIX="$PWD/build/dependencies" \
-              -DAWS_LAMBDA_CPP_VERSION=1.0.1 \
+              -DAWS_LAMBDA_CPP_VERSION="${AWS_LAMBDA_CPP_TAG#v}" \
               -DBUILD_SHARED_LIBS=OFF
         cmake --build build/dependencies/aws-lambda-cpp-build -j
         cmake --install build/dependencies/aws-lambda-cpp-build
@@ -95,16 +102,21 @@ phases:
   post_build:
     commands:
       - |
+        set -e
+        if [ "${CODEBUILD_BUILD_SUCCEEDING:-0}" != "1" ]; then
+          echo "Skipping deployment after build failure."
+          exit 0
+        fi
+        artifact="$CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuSolverBackend.zip"
+        test -f "$artifact"
         if [ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" ]; then
           echo "Tagging the version..."
           git tag ${VERSION}-${GIT_REVISION}
           git push origin ${VERSION}-${GIT_REVISION}
           echo "Tagged the version: ${VERSION}-${GIT_REVISION}"
         fi
-        if [ -f $CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuSolverBackend.zip ]; then
-          echo "Uploading to aws lambda"
-          aws lambda update-function-code --function-name $FUCTION_NAME --zip-file fileb://$CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuSolverBackend.zip
-        fi
+        echo "Uploading to aws lambda"
+        aws lambda update-function-code --function-name "$FUCTION_NAME" --zip-file "fileb://$artifact"
 
 reports:
   unittest-reports:
