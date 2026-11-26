@@ -31,9 +31,10 @@
 *.out
 *.app
 
-# Mac
+# Local system and editor files
 .DS_Store
 .vscode
+.idea/
 *.dSYM
 
 # cmake
@@ -41,6 +42,15 @@ build/
 lib/
 bin/
 aws/
+cmake-build-*/
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+Testing/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
 
 # gatsby
 frontend/coverage/
@@ -49,5 +59,11 @@ frontend/test-results/
 frontend/node_modules/
 frontend/.cache/
 frontend/src/gatsby-types.d.ts
+*.tsbuildinfo
+npm-debug.log*
+
+# Local environment overrides
+.env.local
+.env.*.local
 
 .venv/

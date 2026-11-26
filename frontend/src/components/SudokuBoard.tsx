@@ -174,7 +174,9 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
                 <td key={colIndex} style={getTdStyle(rowIndex, colIndex)}>
                   {isInput ? (
                     <input
-                      ref={(el) => (inputRefs.current[rowIndex][colIndex] = el)}
+                      ref={(el) => {
+                        inputRefs.current[rowIndex][colIndex] = el
+                      }}
                       type="text"
                       inputMode="numeric"
                       pattern="[1-9]"

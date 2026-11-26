@@ -12,7 +12,7 @@ add_library(
   DancingNode.cpp ColumnNode.cpp RowNode.cpp HeaderNode.cpp
   IDancingLinksBodyNode.cpp IDancingLinksNode.cpp)
 
-target_compile_features(${target_name} PRIVATE cxx_std_20)
+target_compile_features(${target_name} PRIVATE cxx_std_23)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
@@ -29,7 +29,7 @@ set_target_properties(${target_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
 set(target_name "SudokuSolver")
 add_library(${target_name} STATIC SudokuSolver.cpp SudokuValidator.cpp)
 
-target_compile_features(${target_name} PRIVATE cxx_std_20)
+target_compile_features(${target_name} PRIVATE cxx_std_23)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include

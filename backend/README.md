@@ -13,11 +13,14 @@
 - SUDOKU_DIM : 解く数独のサイズを表します。3なら9x9、4なら16x16
 
 ### 環境構築
+
+C++23 をサポートするコンパイラと Boost 1.75 以上が必要です。
+
 ```
 $ pwd
 sudoku-solver/backend
 # aws-lambda-cppのインストール
-$ cmake -S extern/aws-lambda-cpp/ -B extern/aws-lambda-cpp/build -DCMAKE_INSTALL_PREFIX=.
+$ cmake -S extern/aws-lambda-cpp/ -B extern/aws-lambda-cpp/build -DCMAKE_INSTALL_PREFIX=. -DAWS_LAMBDA_CPP_VERSION=1.0.1
 $ cmake --build extern/aws-lambda-cpp/build -j
 $ cmake --install extern/aws-lambda-cpp/build
 # SudokuSolberのビルド

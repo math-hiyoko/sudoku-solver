@@ -11,7 +11,7 @@ add_executable(
   JsonHandlerTest.cpp Solve4x4SudokuTest.cpp Solve9x9SudokuTest.cpp
   Solve16x16SudokuTest.cpp ValidateSudokuTest.cpp)
 
-target_compile_features(${target_name} PRIVATE cxx_std_20)
+target_compile_features(${target_name} PRIVATE cxx_std_23)
 target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
                                                   ${Boost_INCLUDE_DIRS})
 target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)

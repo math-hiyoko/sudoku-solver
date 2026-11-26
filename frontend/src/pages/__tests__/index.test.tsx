@@ -1,6 +1,8 @@
 import React from 'react'
+import { renderToStaticMarkup } from 'react-dom/server.node'
+import { I18nextProvider } from 'react-i18next'
 import { screen } from '@testing-library/react'
-import { renderWithI18n } from '../../__tests__/utils/i18n-test-utils'
+import { createTestI18n, renderWithI18n } from '../../__tests__/utils/i18n-test-utils'
 import IndexPage, { Head } from '../index'
 import type { PageProps, HeadProps } from 'gatsby'
 
@@ -73,8 +75,12 @@ describe('IndexPage', () => {
 
 describe('Head component', () => {
   it('renders correct title', () => {
-    const { container } = renderWithI18n(<Head {...mockHeadProps} />)
-    const title = container.querySelector('title')
-    expect(title?.textContent).toBe('数独ソルバー｜複数解にも対応した無料オンライン数独解答ツール')
+    const markup = renderToStaticMarkup(
+      <I18nextProvider i18n={createTestI18n()}>
+        <Head {...mockHeadProps} />
+      </I18nextProvider>
+    )
+    const page = new DOMParser().parseFromString(markup, 'text/html')
+    expect(page.title).toBe('数独ソルバー｜複数解にも対応した無料オンライン数独解答ツール')
   })
 })

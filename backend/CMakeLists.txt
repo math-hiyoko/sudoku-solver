@@ -155,5 +155,3 @@ find_and_report_packages()
 setup_format()
 load_env_file()
 add_and_report_subdirectories()
-
-unset(CMAKE_BUILD_TYPE CACHE)

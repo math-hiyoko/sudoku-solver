@@ -77,14 +77,13 @@ describe('NotFoundPage', () => {
 
 describe('404 Head component', () => {
   it('renders correct title', () => {
-    const { container } = renderWithI18n(<Head {...mockHeadProps} />)
-    const title = container.querySelector('title')
-    expect(title?.textContent).toBe('ページが見つかりません | 数独ソルバー')
+    renderWithI18n(<Head {...mockHeadProps} />)
+    expect(document.title).toBe('ページが見つかりません | 数独ソルバー')
   })
 
   it('includes noindex meta tag', () => {
-    const { container } = renderWithI18n(<Head {...mockHeadProps} />)
-    const meta = container.querySelector('meta[name="robots"]')
+    renderWithI18n(<Head {...mockHeadProps} />)
+    const meta = document.head.querySelector('meta[name="robots"]')
     expect(meta).toHaveAttribute('content', 'noindex, nofollow')
   })
 })

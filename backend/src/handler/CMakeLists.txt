@@ -14,7 +14,7 @@ target_include_directories(${target_name} PRIVATE ${Boost_INCLUDE_DIRS}
 target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)
 target_link_libraries(${target_name} INTERFACE AWS::aws-lambda-runtime
                                                Boost::json SudokuSolver)
-target_compile_features(${target_name} PRIVATE cxx_std_20)
+target_compile_features(${target_name} PRIVATE cxx_std_23)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
 foreach(env_var IN LISTS env_vars)
@@ -28,7 +28,7 @@ set_target_properties(${target_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
 set(target_name "SudokuSolverBackend")
 add_executable(${target_name} main.cpp)
 
-target_compile_features(${target_name} PRIVATE cxx_std_20)
+target_compile_features(${target_name} PRIVATE cxx_std_23)
 target_include_directories(${target_name} PRIVATE ${Boost_INCLUDE_DIRS}
                                                   ${PROJECT_SOURCE_DIR}/include)
 target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)

@@ -7,13 +7,8 @@ phases:
   install:
     commands:
       - echo "Installing dependencies..."
-      - yum -y update
-      - |
-        yum -y install cmake \
-                       gcc \
-                       libomp \
-                       boost-devel \
-                       boost-json
+      - dnf -y install cmake gcc14-c++ boost-devel boost-json libcurl-devel make zip
+      - export CC=gcc14-gcc CXX=gcc14-g++
 
   pre_build:
     commands:
@@ -37,13 +32,15 @@ phases:
 
   build:
     commands:
-      - cd $CODEBUILD_SRC_DIR/backend
+      - cd "$CODEBUILD_SRC_DIR/backend"
       - echo "Building external projects..."
       - |
+        AWS_LAMBDA_CPP_TAG=$(git -C "$CODEBUILD_SRC_DIR" config --file .gitmodules --get submodule.backend/extern/aws-lambda-cpp.tag)
         cmake -S extern/aws-lambda-cpp/ \
               -B extern/aws-lambda-cpp/build \
-              -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+              -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
               -DCMAKE_INSTALL_PREFIX=. \
+              -DAWS_LAMBDA_CPP_VERSION="${AWS_LAMBDA_CPP_TAG#v}" \
               -DBUILD_SHARED_LIBS=OFF
         cmake --build extern/aws-lambda-cpp/build -j
         cmake --install extern/aws-lambda-cpp/build
@@ -51,7 +48,7 @@ phases:
       - |
         cmake -S . \
               -B build \
-              -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+              -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
               -DCMAKE_PREFIX_PATH=.
         cmake --build build -j
       - echo "Running Tests..."
@@ -64,16 +61,21 @@ phases:
   post_build:
     commands:
       - |
+        set -e
+        if [ "${CODEBUILD_BUILD_SUCCEEDING:-0}" != "1" ]; then
+          echo "Skipping deployment after build failure."
+          exit 0
+        fi
+        artifact="$CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuSolverBackend.zip"
+        test -f "$artifact"
         if [ "$CODEBUILD_WEBHOOK_TRIGGER" == "branch/main" ]; then
           echo "Tagging the version..."
           git tag ${VERSION}-${GIT_REVISION}
           git push origin ${VERSION}-${GIT_REVISION}
           echo "Tagged the version: ${VERSION}-${GIT_REVISION}"
         fi
-        if [ -f $CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuSolverBackend.zip ]; then
-          echo "Uploading to aws lambda"
-          aws lambda update-function-code --function-name $FUCTION_NAME --zip-file fileb://$CODEBUILD_SRC_DIR/backend/build/src/handler/SudokuSolverBackend.zip
-        fi
+        echo "Uploading to aws lambda"
+        aws lambda update-function-code --function-name "$FUCTION_NAME" --zip-file "fileb://$artifact"
 
 reports:
   unittest-reports:

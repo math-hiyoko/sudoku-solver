@@ -8,11 +8,12 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 20
+      nodejs: 24.x
     commands:
       - echo Installing source NPM dependencies...
       - cd $CODEBUILD_SRC_DIR/frontend
       - npm config set cache "$NPM_CACHE_DIR"
+      - npm install --global "$(node -p 'require("./package.json").packageManager')" --no-audit --no-fund
       - npm ci --no-audit --no-fund
 
   pre_build:
