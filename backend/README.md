@@ -13,15 +13,23 @@
 - SUDOKU_DIM : 解く数独のサイズを表します。3なら9x9、4なら16x16
 
 ### 環境構築
+
+バックエンドのビルドには C++23 が必要です。
+ローカルでの検証環境は GCC 16.2、CMake 4.5.1、Boost 1.92.0 です。
+Boost の JSON と Pool、libcurl の開発用ヘッダー、C++ コンパイラの OpenMP サポートが必要です。
+CodeBuild では Amazon Linux 2023 の GCC 14 を使用します。
+
 ```
 $ pwd
 sudoku-solver/backend
+$ git submodule update --init
 # aws-lambda-cppのインストール
-$ cmake -S extern/aws-lambda-cpp/ -B extern/aws-lambda-cpp/build -DCMAKE_INSTALL_PREFIX=.
-$ cmake --build extern/aws-lambda-cpp/build -j
-$ cmake --install extern/aws-lambda-cpp/build
-# SudokuSolberのビルド
-$ cmake -S . -B build -DCMAKE_PREFIX_PATH=.
+$ cmake -S extern/aws-lambda-cpp -B build/dependencies/aws-lambda-cpp-build \
+    -DCMAKE_INSTALL_PREFIX="$PWD/build/dependencies" -DAWS_LAMBDA_CPP_VERSION=1.0.1 -DBUILD_SHARED_LIBS=OFF
+$ cmake --build build/dependencies/aws-lambda-cpp-build -j
+$ cmake --install build/dependencies/aws-lambda-cpp-build
+# SudokuSolverのビルド
+$ cmake -S . -B build -DCMAKE_PREFIX_PATH="$PWD/build/dependencies"
 $ cmake --build build -j
 $ ctest --test-dir build --verbose --output-on-failure -j # testsディレクトリ内のテストを行う
 $ ./bin/bench  # ベンチマークテスト

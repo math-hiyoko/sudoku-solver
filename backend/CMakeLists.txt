@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.21...4.5)
 
 # プロジェクト名と対象言語の指定
 project(sudoku_solver_backend LANGUAGES CXX)
@@ -44,9 +44,6 @@ macro(find_and_report_packages)
         FATAL_ERROR
           "${lib_name} not found. Please install the library and try again.")
     endif()
-
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
   endforeach()
 endmacro()
 
@@ -143,8 +140,12 @@ macro(add_and_report_subdirectories)
   enable_testing()
   # 依存先から依存元の順にサブディレクトリを追加
   set(CMAKE_OPTIMIZE_DEPENDENCIES ON)
-  set(subdirs extern src sample tests benchmark)
-  foreach(subdir IN LISTS subdirs)
+  message(STATUS "Adding subdirectory: extern")
+  add_subdirectory(extern)
+
+  set(CMAKE_CXX_STANDARD 23)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  foreach(subdir IN ITEMS src sample tests benchmark)
     message(STATUS "Adding subdirectory: ${subdir}")
     add_subdirectory(${subdir})
   endforeach()
@@ -155,5 +156,3 @@ find_and_report_packages()
 setup_format()
 load_env_file()
 add_and_report_subdirectories()
-
-unset(CMAKE_BUILD_TYPE CACHE)

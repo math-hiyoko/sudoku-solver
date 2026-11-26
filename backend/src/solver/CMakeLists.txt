@@ -12,12 +12,10 @@ add_library(
   DancingNode.cpp ColumnNode.cpp RowNode.cpp HeaderNode.cpp
   IDancingLinksBodyNode.cpp IDancingLinksNode.cpp)
 
-target_compile_features(${target_name} PRIVATE cxx_std_20)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
-target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
-                                                  ${Boost_INCLUDE_DIRS})
-target_link_libraries(${target_name} INTERFACE OpenMP::OpenMP_CXX)
+target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(${target_name} PUBLIC Boost::pool OpenMP::OpenMP_CXX)
 foreach(env_var IN LISTS env_vars)
   target_compile_definitions(${target_name} PRIVATE ${env_var})
 endforeach()
@@ -29,13 +27,11 @@ set_target_properties(${target_name} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
 set(target_name "SudokuSolver")
 add_library(${target_name} STATIC SudokuSolver.cpp SudokuValidator.cpp)
 
-target_compile_features(${target_name} PRIVATE cxx_std_20)
 target_compile_options(${target_name} PRIVATE -O3 -finline-functions -flto
                                               -fstrict-aliasing -funroll-loops)
-target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include
-                                                  ${Boost_INCLUDE_DIRS})
+target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/lib)
-target_link_libraries(${target_name} INTERFACE DancingLinks)
+target_link_libraries(${target_name} PUBLIC DancingLinks)
 foreach(env_var IN LISTS env_vars)
   target_compile_definitions(${target_name} PRIVATE ${env_var})
 endforeach()

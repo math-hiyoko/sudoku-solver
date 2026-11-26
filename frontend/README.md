@@ -9,21 +9,20 @@
 
 ## 🚀 Quick start
 
-1.  **Create a Gatsby site.**
-
-    Use the Gatsby CLI to create a new site, specifying the minimal TypeScript starter.
+1.  **Install the project dependencies.**
 
     ```shell
-    # create a new Gatsby site using the minimal TypeScript starter
-    npm init gatsby -- -ts
+    cd frontend
+    nvm install
+    npm install --global "$(node -p 'require("./package.json").packageManager')"
+    npm ci
     ```
 
 2.  **Start developing.**
 
-    Navigate into your new site’s directory and start it up.
+    Start the development server from the same directory.
 
     ```shell
-    cd my-gatsby-site/
     npm run develop
     ```
 
